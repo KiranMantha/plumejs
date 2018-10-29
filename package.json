@@ -16,6 +16,10 @@
   },
   "keywords": ["plumejs", "light-weight", "plume", "spa", "vanilla js"],
   "author": "KiranMantha",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KiranMantha/plumejs"
+  },
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.1.2",
