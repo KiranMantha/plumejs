@@ -14,12 +14,22 @@
     "build:es:min:hoist": "cross-env FORMAT=es MIN=1 HOIST=1 webpack",
     "build:cjs:min:hoist": "cross-env FORMAT=cjs MIN=1 HOIST=1 webpack"
   },
-  "keywords": ["plumejs", "light-weight", "plume", "spa", "vanilla js"],
-  "author": "KiranMantha",
+  "keywords": [
+    "plumejs",
+    "light-weight",
+    "plume",
+    "spa",
+    "vanilla js"
+  ],
+  "author": "KiranMantha <kiranv.mantha@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/KiranMantha/plumejs"
   },
+  "bugs": {
+    "url": "https://github.com/KiranMantha/plumejs/issues"
+  },
+  "homepage": "https://github.com/KiranMantha/plumejs#readme",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.1.2",
