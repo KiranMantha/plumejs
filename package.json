@@ -1,6 +1,6 @@
 {
   "name": "plumejs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a light weight(5kb gzipped) framework to build spa",
   "main": "index.js",
   "scripts": {
