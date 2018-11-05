@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/KiranMantha/plumejs.svg?branch=master)](https://travis-ci.org/KiranMantha/plumejs)
+
+
 Plumejs is a very light weight vanilla js framework to build spa's. it comes with features like router, two way data binding(TWDB), change detection during async operations, data-sharing via factories, dependency injection, built-in pub-sub etc.
 
 Plumejs is a conceptual combination of angularjs and react. just like angular one can register factories, TWDB, routing, inline templates/templateURls and like react it has `updateCtx` function to update the view after modal updations and a render function to render the component.
