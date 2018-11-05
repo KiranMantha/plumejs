@@ -2,7 +2,7 @@ import plume from './plume';
 
 const chunks =  { 
   render: plume.render,
-  registerFactory: plume.registerFactory,
+  factory: plume.factory,
   router: plume.router
 }
 

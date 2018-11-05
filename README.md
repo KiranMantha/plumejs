@@ -63,9 +63,9 @@ render('#app', {
 Creating factory is as simple as creating a component
 
 ```
-  import registerFactory from './plumejs';
+  import factory from './plumejs';
 
-  registerFactory('personService', function () {
+  factory('personService', function () {
     return {
       getPersons: function () {
         return fetch('persons-api').then(function(res){
@@ -90,6 +90,8 @@ Creating factory is as simple as creating a component
     }]
   ---
 ```
+
+factories in plumejs are singleton
 
 # Implementing Routing
 

@@ -21,13 +21,22 @@ plume.router.addRoutes([
   }
 ]);
 
-plume.registerFactory('testService', function () {
+plume.factory('testService', function () {
   return {
     getUsers: function (i) {
       return fetch('https://api.github.com/users?since=135');
     }
   }
 });
+
+plume.factory('testSrvc', ['testService', function (ts) {
+  return {
+    getUsers: function (i) {
+      console.log(ts);
+      return ts.getUsers();
+    }
+  }
+}]);
 
 plume.render('#test', {
   template: `
@@ -48,7 +57,7 @@ plume.render('#test', {
       <button click='testfunc("func")'>test</button>
     </div>
     `,
-  controller: ['testService', function (testService) {
+  controller: ['testSrvc', function (testService) {
     var k = 'test';
     this.name = 'kiran';
     this.con = true;

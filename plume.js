@@ -22,6 +22,87 @@ var plume = (function () {
 
   var _router = router(ajaxHtmlLoad);
 
+  //indexof for arrays, nodelist
+  var indexof = function (collection, item) {
+    if (Object.prototype.toString.call(collection) === "[object Array]") {
+      return collection.indexOf(item);
+    } else {
+      return Array.prototype.indexOf.call(collection, item);
+    }
+  };
+
+  //foreach for arrays, collections, objects
+  var foreach = function (collection, callback, scope) {
+    if (Object.prototype.toString.call(collection) === "[object Object]") {
+      for (var prop in collection) {
+        if (Object.prototype.hasOwnProperty.call(collection, prop)) {
+          callback.call(scope, collection[prop], prop, collection);
+        }
+      }
+    } else {
+      for (var i = 0; i < collection.length; i++) {
+        callback.call(scope, collection[i], i, collection);
+      }
+    }
+  };
+
+  var get = function (obj, path) {
+    var value, patharr, k;
+    if (path) {
+      if (!isNaN(parseInt(path))) {
+        return path;
+      }
+      patharr = path.trim().split(".");
+      if (obj) {
+        for (var i = 0; i < patharr.length; i++) {
+          k = k ? k[patharr[i]] : obj[patharr[i]];
+          if (k && typeof k !== "object") {
+            value = k;
+            return value;
+          }
+        }
+        value = k;
+        if (typeof value === "undefined") {
+          if (typeof defaultValue !== "undefined") value = defaultValue;
+          else value = "";
+        }
+      }
+    }
+    return value;
+  };
+
+  function $args(func) {
+    return Function.toString
+      .call(func)
+      .replace(/[/][/].*$/gm, "") // strip single-line comments
+      .replace(/\s+/g, "") // strip white space
+      .replace(/[/][*][^/*]*[*][/]/g, "") // strip multi-line comments
+      .split("){", 1)[0]
+      .replace(/^[^(]*[(]/, "") // extract the parameters
+      .replace(/=[^,]+/g, "") // strip any ES6 defaults
+      .split(",")
+      .filter(Boolean); // split & filter [""]
+  }
+
+  function setDI(func) {
+    var di = [],
+      finalArr = [],
+      func = func instanceof Array ? func : [func],
+      afunc = func[func.length - 1],
+      args = $args(afunc);
+    if (args.length > 0) {
+      foreach(args, function (o, i) {
+        var srvc = func[i];
+        if (typeof srvc === 'string' && services[srvc]) {
+          var k = services[srvc];
+          di.push(k);
+        }
+      });
+    }
+    finalArr = [afunc, di];
+    return finalArr;
+  }
+
   var _render = function (sel, obj) {
     var isExpression = /{{(.+?)}}/g,
       isFuncWithArgs = /\(\s*([^)]+?)\s*\)/,
@@ -34,55 +115,6 @@ var plume = (function () {
       },
       inputElems = ["input", "select"],
       _twdb = new twdb();
-
-    //indexof for arrays, nodelist
-    var indexof = function (collection, item) {
-      if (Object.prototype.toString.call(collection) === "[object Array]") {
-        return collection.indexOf(item);
-      } else {
-        return Array.prototype.indexOf.call(collection, item);
-      }
-    };
-
-    //foreach for arrays, collections, objects
-    var foreach = function (collection, callback, scope) {
-      if (Object.prototype.toString.call(collection) === "[object Object]") {
-        for (var prop in collection) {
-          if (Object.prototype.hasOwnProperty.call(collection, prop)) {
-            callback.call(scope, collection[prop], prop, collection);
-          }
-        }
-      } else {
-        for (var i = 0; i < collection.length; i++) {
-          callback.call(scope, collection[i], i, collection);
-        }
-      }
-    };
-
-    var get = function (obj, path) {
-      var value, patharr, k;
-      if (path) {
-        if (!isNaN(parseInt(path))) {
-          return path;
-        }
-        patharr = path.trim().split(".");
-        if (obj) {
-          for (var i = 0; i < patharr.length; i++) {
-            k = k ? k[patharr[i]] : obj[patharr[i]];
-            if (k && typeof k !== "object") {
-              value = k;
-              return value;
-            }
-          }
-          value = k;
-          if (typeof value === "undefined") {
-            if (typeof defaultValue !== "undefined") value = defaultValue;
-            else value = "";
-          }
-        }
-      }
-      return value;
-    };
 
     var parseHtml = function (tmpl) {
       var template, dom;
@@ -390,35 +422,6 @@ var plume = (function () {
       }
     };
 
-    function $args(func) {
-      return Function.toString
-        .call(func)
-        .replace(/[/][/].*$/gm, "") // strip single-line comments
-        .replace(/\s+/g, "") // strip white space
-        .replace(/[/][*][^/*]*[*][/]/g, "") // strip multi-line comments
-        .split("){", 1)[0]
-        .replace(/^[^(]*[(]/, "") // extract the parameters
-        .replace(/=[^,]+/g, "") // strip any ES6 defaults
-        .split(",")
-        .filter(Boolean); // split & filter [""]
-    }
-
-    var setDI = function (func) {
-      var args = $args(func);
-      if (args.length > 0) {
-        var di = [];
-        foreach(args, function (i) {
-          if (services[i]) {
-            var k = setDI(services[i]);
-            di.push(k);
-          }
-        });
-        return func.apply(null, di);
-      } else {
-        return func();
-      }
-    };
-
     var diff = function (obj1, obj2) {
       var _diff = Object.keys(obj1).reduce((result, key) => {
         if (!obj2.hasOwnProperty(key)) {
@@ -447,23 +450,13 @@ var plume = (function () {
         }
       },
         ctx,
-        ctrl1 = obj.controller instanceof Array ? obj.controller : [obj.controller],
-        ctrl = ctrl1[ctrl1.length - 1],
-        args = $args(ctrl),
-        oldref;
+        oldref,
+        deps = setDI(obj.controller);
 
-      if (args.length > 0) {
-        var di = [];
-        foreach(args, function (o, i) {
-          var srvc = ctrl1[i];
-          if (typeof srvc === 'string' && services[srvc]) {
-            var k = setDI(services[srvc]);
-            di.push(k);
-          }
-        });
-        ctrl.apply(mappedObj, di);
+      if (deps[1].length > 0) {
+        deps[0].apply(mappedObj, deps[1]);
       } else {
-        ctrl.call(mappedObj);
+        deps[0].call(mappedObj);
       }
 
       bindCtx(null, html, mappedObj);
@@ -497,15 +490,17 @@ var plume = (function () {
     render: function (el, obj) {
       return new _render(el, obj).render();
     },
-    registerFactory: function (name, func) {
+    factory: function (name, func) {
       if (name && func && !services[name]) {
-        services[name] = func;
+        var deps = setDI(func);
+        if (deps[1].length > 0) {
+          services[name] = deps[0].apply({}, deps[1]);
+        } else {
+          services[name] = deps[0]();
+        }
       }
     },
-    router: _router,
-    ajaxHtmlLoad: function () {
-      ajaxHtmlLoad("ajax.html");
-    }
+    router: _router
   });
 
   window["plume"] = returnObject;

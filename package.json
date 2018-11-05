@@ -1,9 +1,23 @@
 {
   "name": "plumejs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a light weight(5kb gzipped) framework to build spa",
   "main": "index.js",
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "<rootDir>/coverage",
+    "projects": [
+      {
+        "displayName": "PLUMEJS",
+        "testMatch": [
+          "<rootDir>/__tests__/*.spec.js"
+        ]
+      }
+    ]
+  },
   "scripts": {
+    "remove-testdb": "rimraf __tests__/*",
+    "test": "jest",
     "build": "run-p build:**",
     "build:es": "cross-env FORMAT=es webpack",
     "build:cjs": "cross-env FORMAT=cjs webpack",
@@ -14,12 +28,22 @@
     "build:es:min:hoist": "cross-env FORMAT=es MIN=1 HOIST=1 webpack",
     "build:cjs:min:hoist": "cross-env FORMAT=cjs MIN=1 HOIST=1 webpack"
   },
-  "keywords": ["plumejs", "light-weight", "plume", "spa", "vanilla js"],
-  "author": "KiranMantha",
+  "keywords": [
+    "plumejs",
+    "light-weight",
+    "plume",
+    "spa",
+    "vanilla js"
+  ],
+  "author": "KiranMantha <kiranv.mantha@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/KiranMantha/plumejs"
   },
+  "bugs": {
+    "url": "https://github.com/KiranMantha/plumejs/issues"
+  },
+  "homepage": "https://github.com/KiranMantha/plumejs#readme",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.1.2",
@@ -28,6 +52,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "compression-webpack-plugin": "^2.0.0",
     "cross-env": "^5.2.0",
+    "jest": "^23.6.0",
     "npm-run-all": "^4.1.3",
     "size-limit": "^0.20.1",
     "uglifyjs-webpack-plugin": "^2.0.1",
