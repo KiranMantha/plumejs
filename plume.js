@@ -6,10 +6,13 @@ import router from './lib/router.js';
 import ready from './lib/mo.js';
 
 var plume = (function () {
+  'use strict';
   var services = {},
-    returnObject = {};
+  controllers = {},
+    returnObject = {},
+    _router;
 
-  var ajaxHtmlLoad = function (url, cb) {
+  function ajaxHtmlLoad(url, cb) {
     var xhr = new XMLHttpRequest();
     xhr.onloadend = function () {
       if (xhr.status === 200) {
@@ -20,10 +23,8 @@ var plume = (function () {
     xhr.send();
   };
 
-  var _router = router(ajaxHtmlLoad);
-
   //indexof for arrays, nodelist
-  var indexof = function (collection, item) {
+  function indexof(collection, item) {
     if (Object.prototype.toString.call(collection) === "[object Array]") {
       return collection.indexOf(item);
     } else {
@@ -32,7 +33,7 @@ var plume = (function () {
   };
 
   //foreach for arrays, collections, objects
-  var foreach = function (collection, callback, scope) {
+  function foreach(collection, callback, scope) {
     if (Object.prototype.toString.call(collection) === "[object Object]") {
       for (var prop in collection) {
         if (Object.prototype.hasOwnProperty.call(collection, prop)) {
@@ -46,7 +47,7 @@ var plume = (function () {
     }
   };
 
-  var get = function (obj, path) {
+  function get(obj, path) {
     var value, patharr, k;
     if (path) {
       if (!isNaN(parseInt(path))) {
@@ -103,7 +104,7 @@ var plume = (function () {
     return finalArr;
   }
 
-  var _render = function (sel, obj) {
+  function _render(sel, obj) {
     var isExpression = /{{(.+?)}}/g,
       isFuncWithArgs = /\(\s*([^)]+?)\s*\)/,
       getFuncName = /^\s*[A-Za-z][A-Za-z0-9_]*([^\(]*)/i,
@@ -436,20 +437,23 @@ var plume = (function () {
       return _diff;
     };
 
+    var buildContext = function() {
+      
+    }
+
     var compile = function (el) {
       var mappedObj = {
-        updateCtx: function () {
-          var _diff = diff(oldref, this);
-          if (_diff.length > 0) {
-            for (var i of _diff) {
-              rebind(this, i, this[i]);
+          updateCtx: function () {
+            var _diff = diff(oldref, this);
+            if (_diff.length > 0) {
+              for (var i of _diff) {
+                rebind(this, i, this[i]);
+              }
+              setTwbd(this);
+              oldref = Object.assign({}, this);
             }
-            setTwbd(this);
-            oldref = Object.assign({}, this);
           }
-        }
-      },
-        ctx,
+        },
         oldref,
         deps = setDI(obj.controller);
 
@@ -470,21 +474,25 @@ var plume = (function () {
     };
 
     this.render = function () {
-      ready(sel, function (el) {
-        if (obj.template) {
-          html = parseHtml(obj.template);
-          html && compile(el);
-        } else if (obj.templateUrl) {
-          ajaxHtmlLoad(obj.templateUrl, function (h) {
-            html = parseHtml(h);
+      if (obj.template || obj.templateUrl) {
+        ready(sel, function (el) {
+          if (obj.template) {
+            html = parseHtml(obj.template);
             html && compile(el);
-          });
-        } else {
-          throw Error("Required either template or templateUrl");
-        }
-      });
+          } else if (obj.templateUrl) {
+            ajaxHtmlLoad(obj.templateUrl, function (h) {
+              html = parseHtml(h);
+              html && compile(el);
+            });
+          }
+        });
+      } else {
+        throw Error("Required either template or templateUrl");
+      }
     };
-  };
+  }
+
+  _router = router(ajaxHtmlLoad);
 
   returnObject = Object.freeze({
     render: function (el, obj) {
@@ -492,15 +500,20 @@ var plume = (function () {
     },
     factory: function (name, func) {
       if (name && func && !services[name]) {
-        var deps = setDI(func);
-        if (deps[1].length > 0) {
-          services[name] = deps[0].apply({}, deps[1]);
-        } else {
-          services[name] = deps[0]();
-        }
+        var deps = setDI(func),
+          obj = deps[1].length > 0 ? deps[0].apply({}, deps[1]) : deps[0]();
+        Object.defineProperty(services, name, {
+          value: obj,
+          configurable: false,
+          enumerable: false,
+          writable: false
+        });
       }
     },
-    router: _router
+    router: _router,
+    get: function(name) {
+      return services[name] || controllers[name] || undefined;
+    }
   });
 
   window["plume"] = returnObject;

@@ -1,9 +1,8 @@
 import plume from './plume';
 
-const chunks =  { 
+export const plumejs =  { 
   render: plume.render,
   factory: plume.factory,
-  router: plume.router
+  router: plume.router,
+  get: plume.get
 }
-
-export default chunks;
