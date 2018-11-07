@@ -1,14 +1,14 @@
 //https://github.com/Andarist/nanoclone-comparisons/blob/master/webpack.config.js
-import './lib/replacewith-polyfill.js';
-import twdb from './lib/two-way-data-bind.js';
-import valOf from './lib/val.js';
-import router from './lib/router.js';
-import ready from './lib/mo.js';
+import "./lib/replacewith-polyfill.js";
+import twdb from "./lib/two-way-data-bind.js";
+import valOf from "./lib/val.js";
+import router from "./lib/router.js";
+import ready from "./lib/mo.js";
 
 var plume = (function () {
-  'use strict';
+  "use strict";
   var services = {},
-  controllers = {},
+    controllers = {},
     returnObject = {},
     _router;
 
@@ -21,7 +21,7 @@ var plume = (function () {
     };
     xhr.open("GET", url);
     xhr.send();
-  };
+  }
 
   //indexof for arrays, nodelist
   function indexof(collection, item) {
@@ -30,7 +30,7 @@ var plume = (function () {
     } else {
       return Array.prototype.indexOf.call(collection, item);
     }
-  };
+  }
 
   //foreach for arrays, collections, objects
   function foreach(collection, callback, scope) {
@@ -45,7 +45,7 @@ var plume = (function () {
         callback.call(scope, collection[i], i, collection);
       }
     }
-  };
+  }
 
   function get(obj, path) {
     var value, patharr, k;
@@ -70,7 +70,7 @@ var plume = (function () {
       }
     }
     return value;
-  };
+  }
 
   function $args(func) {
     return Function.toString
@@ -94,7 +94,7 @@ var plume = (function () {
     if (args.length > 0) {
       foreach(args, function (o, i) {
         var srvc = func[i];
-        if (typeof srvc === 'string' && services[srvc]) {
+        if (typeof srvc === "string" && services[srvc]) {
           var k = services[srvc];
           di.push(k);
         }
@@ -165,7 +165,10 @@ var plume = (function () {
           indx = indexof(pel.childNodes, el);
           foreach(loop, function (item) {
             var k = {},
-              cn = (key === "select") ? el.children[0].cloneNode(true) : el.cloneNode(true);
+              cn =
+              key === "select" ?
+              el.children[0].cloneNode(true) :
+              el.cloneNode(true);
             k[_val] = item;
             if (key === "select") {
               el.appendChild(cn);
@@ -276,7 +279,7 @@ var plume = (function () {
           values = [];
           for (var i = 0; i < args.length; i++) {
             val = get(localCtx, args[i]) || get(ctx, args[i]);
-            val = val ? val : args[i].replace(/['"]+/g, '');
+            val = val ? val : args[i].replace(/['"]+/g, "");
             values.push(val);
           }
           el["on" + key] = function () {
@@ -437,11 +440,7 @@ var plume = (function () {
       return _diff;
     };
 
-    var buildContext = function() {
-      
-    }
-
-    var compile = function (el) {
+    var buildContext = function () {
       var mappedObj = {
           updateCtx: function () {
             var _diff = diff(oldref, this);
@@ -450,7 +449,7 @@ var plume = (function () {
                 rebind(this, i, this[i]);
               }
               setTwbd(this);
-              oldref = Object.assign({}, this);
+              oldref = JSON.parse(JSON.stringify(this));
             }
           }
         },
@@ -462,7 +461,11 @@ var plume = (function () {
       } else {
         deps[0].call(mappedObj);
       }
+      oldref = JSON.parse(JSON.stringify(mappedObj));
+      return mappedObj;
+    };
 
+    var compile = function (el, mappedObj) {
       bindCtx(null, html, mappedObj);
       if (el.firstChild) {
         el.removeChild(el.firstChild);
@@ -470,19 +473,30 @@ var plume = (function () {
       el.appendChild(html);
       mappedObj.init && mappedObj.init();
       setTwbd(mappedObj);
-      oldref = Object.assign({}, mappedObj);
     };
 
     this.render = function () {
       if (obj.template || obj.templateUrl) {
+        var ctx;
+        if (!controllers[sel]) {
+          ctx = buildContext();
+          Object.defineProperty(controllers, sel, {
+            value: JSON.parse(JSON.stringify(ctx)),
+            configurable: false,
+            enumerable: false,
+            writable: false
+          });
+        } else {
+          ctx = controllers[sel];
+        }
         ready(sel, function (el) {
           if (obj.template) {
             html = parseHtml(obj.template);
-            html && compile(el);
+            html && compile(el, ctx);
           } else if (obj.templateUrl) {
             ajaxHtmlLoad(obj.templateUrl, function (h) {
               html = parseHtml(h);
-              html && compile(el);
+              html && compile(el, ctx);
             });
           }
         });
@@ -511,8 +525,9 @@ var plume = (function () {
       }
     },
     router: _router,
-    get: function(name) {
-      return services[name] || controllers[name] || undefined;
+    get: function (name) {
+      var _obj = services[name] ? services[name] : (controllers[name] ? controllers[name] : undefined);
+      return _obj;
     }
   });
 

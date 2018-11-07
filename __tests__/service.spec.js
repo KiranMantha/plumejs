@@ -1,5 +1,4 @@
-import { plumeTestBed } from '../index';
-import plumejs from '../plume';
+import { plumejs } from '../index';
 
 describe("Plumejs Service", () => {
   var service1,service2;
@@ -11,7 +10,7 @@ describe("Plumejs Service", () => {
         }
       }
     });
-    service1 = plumeTestBed.get('testservice');
+    service1 = plumejs.get('testservice');
   });
   it('sample factory test', () => {
     expect(service1.greet()).toBe('hello');
@@ -25,7 +24,7 @@ describe("Plumejs Service", () => {
           }
         }
       }]);
-      service2 = plumeTestBed.get('testservice1');
+      service2 = plumejs.get('testservice1');
     });
     it('should return hello from testservice', () => {
       expect(service2.greet()).toBe('hello');
