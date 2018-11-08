@@ -19,5 +19,9 @@ describe("Plumejs Controller", () => {
   });
   it('sample controller test', () => {
     expect(ctrl1.greet).toBe('Hello');
-  });  
+  });
+  it('should set controller value in dom', () => {
+    var span = document.getElementById('testctrl1');
+    expect(span.textContent).toBe('Hello');
+  });
 });
