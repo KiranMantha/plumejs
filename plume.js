@@ -110,6 +110,7 @@ var plume = (function () {
       getFuncName = /^\s*[A-Za-z][A-Za-z0-9_]*([^\(]*)/i,
       teTags = ["select"],
       html,
+      pNode,
       scope = {
         if: {},
         for: {}
@@ -318,7 +319,12 @@ var plume = (function () {
         },
         bind: function () {
           var v = get(ctx, value) || get(localCtx, value);
-          valOf([el], v);
+          var index = el.getAttribute('te_index');
+          if (index) {
+            el.childNodes[index].nodeValue = v;
+          } else {
+            valOf([el], v);
+          }
         },
         default: function () {
           return;
@@ -389,7 +395,7 @@ var plume = (function () {
     };
 
     var setTwbd = function (mappedObj) {
-      foreach(html.querySelectorAll("[bind]"), function (node) {
+      foreach(pNode.querySelectorAll("[bind]"), function (node) {
         var bindProp = node.getAttribute("bind");
         if (inputElems.indexOf(node.nodeName.toLowerCase()) > -1) {
           _twdb.bind(node, mappedObj, bindProp, true);
@@ -401,6 +407,9 @@ var plume = (function () {
 
     var rebind = function (ctx, key, val) {
       var rerendereed = {};
+      foreach(pNode.querySelectorAll("[bind='" + key + "']"), function(node) {
+        bindCtx(node.parentNode, node, ctx, {});
+      });
       if (scope.if[key] && scope.if[key].length > 0) {
         foreach(scope.if[key], function (obj) {
           rerendereed[key] = false;
@@ -471,19 +480,15 @@ var plume = (function () {
         el.removeChild(el.firstChild);
       }
       el.appendChild(html);
+      pNode = el;
       mappedObj.init && mappedObj.init();
       setTwbd(mappedObj);
     };
 
     this.render = function () {
       if (obj.template || obj.templateUrl) {
-        var ctx;
-        if (!controllers[sel]) {
-          ctx = buildContext();
-          controllers[sel] = JSON.parse(JSON.stringify(ctx));
-        } else {
-          ctx = JSON.parse(JSON.stringify(controllers[sel]));
-        }
+        var ctx = buildContext();
+        controllers[sel] = ctx;
         ready(sel, function (el) {
           if (obj.template) {
             html = parseHtml(obj.template);

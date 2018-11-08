@@ -24,4 +24,10 @@ describe("Plumejs Controller", () => {
     var span = document.getElementById('testctrl1');
     expect(span.textContent).toBe('Hello');
   });
+  it('should set controller value in dom after updation', () => {
+    var span = document.getElementById('testctrl1'); 
+    ctrl1.greet = 'Hello World';
+    ctrl1.updateCtx();
+    expect(span.textContent).toBe('Hello World');
+  });
 });
