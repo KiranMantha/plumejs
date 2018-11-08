@@ -480,14 +480,9 @@ var plume = (function () {
         var ctx;
         if (!controllers[sel]) {
           ctx = buildContext();
-          Object.defineProperty(controllers, sel, {
-            value: JSON.parse(JSON.stringify(ctx)),
-            configurable: false,
-            enumerable: false,
-            writable: false
-          });
+          controllers[sel] = JSON.parse(JSON.stringify(ctx));
         } else {
-          ctx = controllers[sel];
+          ctx = JSON.parse(JSON.stringify(controllers[sel]));
         }
         ready(sel, function (el) {
           if (obj.template) {
@@ -516,12 +511,7 @@ var plume = (function () {
       if (name && func && !services[name]) {
         var deps = setDI(func),
           obj = deps[1].length > 0 ? deps[0].apply({}, deps[1]) : deps[0]();
-        Object.defineProperty(services, name, {
-          value: obj,
-          configurable: false,
-          enumerable: false,
-          writable: false
-        });
+          services[name] = obj;       
       }
     },
     router: _router,

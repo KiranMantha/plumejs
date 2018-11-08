@@ -4,6 +4,7 @@
   "description": "a light weight(5kb gzipped) framework to build spa",
   "main": "index.js",
   "jest": {
+    "setupTestFrameworkScriptFile": "<rootDir>/mocks/jestSetup.js",
     "collectCoverage": true,
     "coverageDirectory": "<rootDir>/coverage",
     "projects": [

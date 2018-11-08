@@ -14,7 +14,7 @@
     - https://bugzilla.mozilla.org/show_bug.cgi?id=749920
  * Don't use WebKitMutationObserver as Safari (6.0.5-6.1) use a buggy implementation
 */
-const MutationObserver = (function(undefined) {
+const MutationObserver = (function() {
   "use strict";
   /**
    * @param {function(Array.<MutationRecord>, MutationObserver)} listener
@@ -617,6 +617,6 @@ const MutationObserver = (function(undefined) {
   }
 
   return MutationObserver;
-})(void 0);
+})();
 
 export default MutationObserver;
