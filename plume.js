@@ -1,6 +1,5 @@
 //https://github.com/Andarist/nanoclone-comparisons/blob/master/webpack.config.js
 import "./lib/replacewith-polyfill.js";
-import twdb from "./lib/two-way-data-bind.js";
 import valOf from "./lib/val.js";
 import router from "./lib/router.js";
 import ready from "./lib/mo.js";
@@ -65,7 +64,7 @@ var plume = (function () {
         value = k;
         if (typeof value === "undefined") {
           if (typeof defaultValue !== "undefined") value = defaultValue;
-          else value = "";
+          else value = "noprop";
         }
       }
     }
@@ -115,8 +114,7 @@ var plume = (function () {
         if: {},
         for: {}
       },
-      inputElems = ["input", "select"],
-      _twdb = new twdb();
+      inputElems = ["input", "select"];
 
     var parseHtml = function (tmpl) {
       var template, dom;
@@ -167,9 +165,9 @@ var plume = (function () {
           foreach(loop, function (item) {
             var k = {},
               cn =
-              key === "select" ?
-              el.children[0].cloneNode(true) :
-              el.cloneNode(true);
+                key === "select" ?
+                  el.children[0].cloneNode(true) :
+                  el.cloneNode(true);
             k[_val] = item;
             if (key === "select") {
               el.appendChild(cn);
@@ -273,23 +271,28 @@ var plume = (function () {
           funcName = getFuncName.exec(value)[0],
           prevFunc = el["on" + key],
           args,
-          values,
-          val;
+          values = [],
+          val,
+          has$e = false;
         if ((match = isFuncWithArgs.exec(value))) {
-          args = match[1].split(",");
-          values = [];
+          args = match[1].split(",");          
           for (var i = 0; i < args.length; i++) {
-            val = get(localCtx, args[i]) || get(ctx, args[i]);
-            val = val ? val : args[i].replace(/['"]+/g, "");
-            values.push(val);
+            if (args[i] !== '$event') {
+              val = get(localCtx, args[i]) || get(ctx, args[i]);
+              val = val ? val : args[i].replace(/['"]+/g, "");
+              values.push(val);
+            } else {
+              has$e = true;
+            }
           }
-          el["on" + key] = function () {
+          el["on" + key] = function (e) {
+            has$e && values.unshift(e);
             get(ctx, funcName).apply(ctx, values);
             prevFunc && prevFunc();
           };
         } else {
-          el["on" + key] = function () {
-            get(ctx, funcName).apply(ctx);
+          el["on" + key] = function (e) {
+            get(ctx, funcName).apply(ctx, [e]);
             prevFunc && prevFunc();
           };
         }
@@ -320,7 +323,7 @@ var plume = (function () {
         bind: function () {
           var v = get(ctx, value) || get(localCtx, value);
           var index = el.getAttribute('te_index');
-          if (index) {
+          if (index && v !== "noprop") {
             el.childNodes[index].nodeValue = v;
           } else {
             valOf([el], v);
@@ -394,21 +397,10 @@ var plume = (function () {
       }
     };
 
-    var setTwbd = function (mappedObj) {
-      foreach(pNode.querySelectorAll("[bind]"), function (node) {
-        var bindProp = node.getAttribute("bind");
-        if (inputElems.indexOf(node.nodeName.toLowerCase()) > -1) {
-          _twdb.bind(node, mappedObj, bindProp, true);
-        } else {
-          _twdb.bind(node, mappedObj, bindProp);
-        }
-      });
-    };
-
     var rebind = function (ctx, key, val) {
       var rerendereed = {};
-      foreach(pNode.querySelectorAll("[bind='" + key + "']"), function(node) {
-        bindCtx(node.parentNode, node, ctx, {});
+      foreach(pNode.querySelectorAll("[bind='" + key + "']"), function (node) {
+        bindAttributes(node.parentNode, node, ctx, {});
       });
       if (scope.if[key] && scope.if[key].length > 0) {
         foreach(scope.if[key], function (obj) {
@@ -435,33 +427,18 @@ var plume = (function () {
       }
     };
 
-    var diff = function (obj1, obj2) {
-      var _diff = Object.keys(obj1).reduce((result, key) => {
-        if (!obj2.hasOwnProperty(key)) {
-          result.push(key);
-        } else if (JSON.stringify(obj1[key]) === JSON.stringify(obj2[key])) {
-          var resultKeyIndex = result.indexOf(key);
-          result.splice(resultKeyIndex, 1);
-        }
-        return result;
-      }, Object.keys(obj2));
-
-      return _diff;
-    };
-
     var buildContext = function () {
       var mappedObj = {
-          updateCtx: function () {
-            var _diff = diff(oldref, this);
-            if (_diff.length > 0) {
-              for (var i of _diff) {
-                rebind(this, i, this[i]);
-              }
-              setTwbd(this);
-              oldref = JSON.parse(JSON.stringify(this));
+        updateCtx: function (o) {
+          var _obj = (typeof o === 'function') ? o(oldref): o;
+          var keys = Object.keys(_obj);
+            for (var i of keys) {
+              this[i] = _obj[i];
+              rebind(this, i, this[i]);
             }
-          }
-        },
+            oldref = JSON.parse(JSON.stringify(this));
+        }
+      },
         oldref,
         deps = setDI(obj.controller);
 
@@ -482,7 +459,6 @@ var plume = (function () {
       el.appendChild(html);
       pNode = el;
       mappedObj.init && mappedObj.init();
-      setTwbd(mappedObj);
     };
 
     this.render = function () {
@@ -516,13 +492,12 @@ var plume = (function () {
       if (name && func && !services[name]) {
         var deps = setDI(func),
           obj = deps[1].length > 0 ? deps[0].apply({}, deps[1]) : deps[0]();
-          services[name] = obj;       
+        services[name] = obj;
       }
     },
     router: _router,
     get: function (name) {
-      var _obj = services[name] ? services[name] : (controllers[name] ? controllers[name] : undefined);
-      return _obj;
+      return services[name] || controllers[name] || undefined;
     }
   });
 

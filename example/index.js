@@ -2,8 +2,7 @@ import plume from '../plume.js';
 
 plume.router.setRouterOutlet(document.getElementById('content'));
 
-plume.router.addRoutes([
-  {
+plume.router.addRoutes([{
     path: '',
     redirectTo: '/home'
   },
@@ -80,16 +79,15 @@ plume.render('#test', {
 
     this.init = function () {
       var _this = this;
-      setTimeout(function () {
-        testService.getUsers().then(function (response) {
+      testService.getUsers().then(function (response) {
           return response.json();
         })
-          .then(function (data) {
-            _this.skills = data;
-            _this.options = [1, 2, 3];
-            _this.updateCtx();
+        .then(function (data) {
+          _this.updateCtx({
+            skills: data,
+            options: [1, 2, 3]
           });
-      }, 2000);
+        });
     }
   }]
 });
