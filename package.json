@@ -18,7 +18,8 @@
   },
   "scripts": {
     "remove-testdb": "rimraf __tests__/*",
-    "test": "jest",
+    "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
+    "test-local": "jest",
     "build": "run-p build:**",
     "build:es": "cross-env FORMAT=es webpack",
     "build:cjs": "cross-env FORMAT=cjs webpack",
