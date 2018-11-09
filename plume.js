@@ -269,7 +269,6 @@ var plume = (function () {
       var eventHandler = function () {
         var match,
           funcName = getFuncName.exec(value)[0],
-          prevFunc = el["on" + key],
           args,
           values = [],
           val,
@@ -288,15 +287,12 @@ var plume = (function () {
           el["on" + key] = function (e) {
             has$e && values.unshift(e);
             get(ctx, funcName).apply(ctx, values);
-            prevFunc && prevFunc();
           };
         } else {
           el["on" + key] = function (e) {
             get(ctx, funcName).apply(ctx, [e]);
-            prevFunc && prevFunc();
           };
         }
-        el["te" + key] = el["on" + key];
         el.removeAttribute(key);
       };
 
@@ -428,8 +424,8 @@ var plume = (function () {
     };
 
     var buildContext = function () {
-      var mappedObj = {
-        updateCtx: function (o) {
+      var mappedObj = Object.defineProperty({}, 'updateCtx', {
+        value: function (o) {
           var _obj = (typeof o === 'function') ? o(oldref): o;
           var keys = Object.keys(_obj);
             for (var i of keys) {
@@ -437,8 +433,11 @@ var plume = (function () {
               rebind(this, i, this[i]);
             }
             oldref = JSON.parse(JSON.stringify(this));
-        }
-      },
+        },
+        enumerable: false,
+        configurable: false,
+        writable: false
+      }),
         oldref,
         deps = setDI(obj.controller);
 

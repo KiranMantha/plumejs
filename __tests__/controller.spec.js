@@ -71,14 +71,29 @@ describe("Plumejs Controller", () => {
         template: `
         <div>
           <label>{{ greet }}</label>
+          <div if-value='persons.length > 0'>
+            <ul>
+              <li item='person' loop='persons'>{{person}}</li>
+            </ul>
+          </div>
+          <label id='lbloption'>{{ option }}</label>
+          <input type='text' input='handleChange($event)'/>
         </div>
       `,
         controller: ['testService', function (ts) {
           this.greet = '';
+          this.persons = [];
+          this.option='';
           this.init = function(){
             var _greet = ts.greet();
             this.updateCtx({
               greet: _greet
+            });
+          }
+
+          this.handleChange = function(e) {
+            this.updateCtx({
+              option: e.currentTarget.value
             });
           }
         }]
@@ -92,6 +107,25 @@ describe("Plumejs Controller", () => {
     it('should set controller value in dom', () => {
       var lbl = span2.querySelector('label');
       expect(lbl.textContent).toBe('Hello');
+    });
+    it('should display all persons in async operation', (done) => {
+      var li = span2.querySelectorAll('li');
+      setTimeout(() => {
+        ctrl2.updateCtx({
+          persons: ['person1', 'person2']
+        });
+        li = span2.querySelectorAll('li');
+        expect(li.length).toBe(2);
+        done();
+      }, 1000);
+      expect(li.length).toBe(0);
+    });
+    it('should update label text on input change', () => {
+      var input = span2.querySelector('input');
+      input.value = '123';
+      input.trigger('input');
+      var label = span2.querySelector('#lbloption');
+      expect(label.textContent).toBe('123');
     });
   });
 });
