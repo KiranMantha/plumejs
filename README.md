@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/KiranMantha/plumejs.svg?branch=master)](https://travis-ci.org/KiranMantha/plumejs)
 
+[![Coverage Status](https://coveralls.io/repos/github/KiranMantha/plumejs/badge.svg?branch=master)](https://coveralls.io/github/KiranMantha/plumejs?branch=master)
+
 
 Plumejs is a very light weight vanilla js framework to build spa's. it comes with features like router, change detection during async operations, data-sharing via factories, dependency injection, built-in pub-sub etc.
 
