@@ -84,9 +84,10 @@ Creating factory is as simple as creating a component
       this.data = [];
 
       this.init = function() {
-        ps.getPersons().then(function(data){
-          this.data = data;
-          this.updateCtx();
+        ps.getPersons().then(function(data) {
+          this.updateCtx({
+            data: data
+          });
         });
       }
     }]
