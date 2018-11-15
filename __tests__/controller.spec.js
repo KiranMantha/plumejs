@@ -3,14 +3,23 @@ import {
 } from '../index';
 
 describe("Plumejs Controller", () => {
-  var ctrl1, ctrl2, span1, span2;
+  var ctrl1, ctrl2, ctrl3, span1, span2, span3;
 
-  beforeAll(()=>{
+  beforeAll(() => {
     document.body.innerHTML =
-        '<div>' +
-        '  <span id="testctrl1"></span>' +
-        '  <span id="testctrl2"></span>' +
-        '</div>';
+      '<div>' +
+      '  <span id="testctrl1"></span>' +
+      '  <span id="testctrl2"></span>' +
+      '  <span id="testctrl3"></span>' +
+      '</div>';
+  });
+
+  describe('error cases', () => {
+    it('should throw error if template or templateUrl is not supplied', () => {
+      expect(() => {
+        plumejs.render('#testctrl1', {controller: function() {}})
+      }).toThrow('Required either template or templateUrl');
+    });
   });
 
   describe('without dependencies', () => {
@@ -60,17 +69,20 @@ describe("Plumejs Controller", () => {
 
   describe('with dependencies', () => {
     beforeAll(() => {
-      plumejs.factory('testService', function(){
+      plumejs.factory('testService', function () {
         return {
-          greet: function(){
+          greet: function () {
             return 'Hello';
           }
         }
-      })      
+      })
       plumejs.render('#testctrl2', {
         template: `
         <div>
           <label>{{ greet }}</label>
+          <div id='personsCount' if-value='hasPersons'>
+            <span>persons count is: {{persons.length}}</span>
+          </div>
           <div if-value='persons.length > 0'>
             <ul>
               <li item='person' loop='persons'>{{person}}</li>
@@ -83,15 +95,16 @@ describe("Plumejs Controller", () => {
         controller: ['testService', function (ts) {
           this.greet = '';
           this.persons = [];
-          this.option='';
-          this.init = function(){
+          this.hasPersons = false;
+          this.option = '';
+          this.init = function () {
             var _greet = ts.greet();
             this.updateCtx({
               greet: _greet
             });
           }
 
-          this.handleChange = function(e) {
+          this.handleChange = function (e) {
             this.updateCtx({
               option: e.currentTarget.value
             });
@@ -112,10 +125,13 @@ describe("Plumejs Controller", () => {
       var li = span2.querySelectorAll('li');
       setTimeout(() => {
         ctrl2.updateCtx({
-          persons: ['person1', 'person2']
+          persons: ['person1', 'person2'],
+          hasPersons: true
         });
         li = span2.querySelectorAll('li');
         expect(li.length).toBe(2);
+        var spnPersons = span2.querySelector('#personsCount');
+        expect(spnPersons.textContent.replace(/[\r\n]/g, "").trim()).toBe('persons count is: 2');
         done();
       }, 1000);
       expect(li.length).toBe(0);
@@ -127,5 +143,27 @@ describe("Plumejs Controller", () => {
       var label = span2.querySelector('#lbloption');
       expect(label.textContent).toBe('123');
     });
+  });
+
+  describe('with templateUrl', () => {
+    beforeAll(() => {
+      var mockTemplate = '<label>{{greet}}</label>';
+      window.returnMockHttpResponse({
+        responseText: mockTemplate
+      });      
+    });    
+    it('should set controller value in dom', () => {
+      plumejs.render('#testctrl3', {
+        templateUrl: './test.tmpl.html',
+        controller: function () {
+          this.greet = 'Hello';
+        }
+      });
+      ctrl3 = plumejs.get('#testctrl3');
+      span3 = document.getElementById('testctrl3');
+
+      var lbl = span3.querySelector('label');
+      expect(lbl.textContent).toBe('Hello');
+    });    
   });
 });

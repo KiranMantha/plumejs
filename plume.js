@@ -165,9 +165,9 @@ var plume = (function () {
           foreach(loop, function (item) {
             var k = {},
               cn =
-                key === "select" ?
-                  el.children[0].cloneNode(true) :
-                  el.cloneNode(true);
+              key === "select" ?
+              el.children[0].cloneNode(true) :
+              el.cloneNode(true);
             k[_val] = item;
             if (key === "select") {
               el.appendChild(cn);
@@ -274,7 +274,7 @@ var plume = (function () {
           val,
           has$e = false;
         if ((match = isFuncWithArgs.exec(value))) {
-          args = match[1].split(",");          
+          args = match[1].split(",");
           for (var i = 0; i < args.length; i++) {
             if (args[i] !== '$event') {
               val = get(localCtx, args[i]) || get(ctx, args[i]);
@@ -334,17 +334,18 @@ var plume = (function () {
     };
 
     var bindText = function (pel, el, ctx, localCtx) {
-      var match,
-        node_val = el.nodeValue.replace(/[\s\r\n]/g, "").trim(),
-        val;
+      var node_val = el.nodeValue.replace(/[\r\n]/g, "").trim(),
+        bindProp = '',
+        targetctx = Object.assign({}, JSON.parse(JSON.stringify(ctx)), JSON.parse(JSON.stringify(localCtx !== undefined ? localCtx : {})));
       if (node_val !== "") {
-        while ((match = isExpression.exec(node_val))) {
-          val = get(localCtx, match[1].trim()) || get(ctx, match[1].trim());
-          el.nodeValue = node_val.replace(match.input, val);
-          if (pel.nodeName.toLowerCase() !== "option") {
-            pel.setAttribute("bind", match[1].trim());
-            pel.setAttribute("te_index", indexof(pel.childNodes, el));
-          }
+        el.nodeValue = node_val.replace(/\{\{\s?([\w.]+)\s?\}\}/g, (match, variable) => {
+          bindProp = variable.trim();
+          return get(targetctx, bindProp) || '';
+        });
+
+        if (bindProp && pel.nodeName.toLowerCase() !== "option") {
+          pel.setAttribute("bind", bindProp);
+          pel.setAttribute("te_index", indexof(pel.childNodes, el));
         }
       }
     };
@@ -425,19 +426,19 @@ var plume = (function () {
 
     var buildContext = function () {
       var mappedObj = Object.defineProperty({}, 'updateCtx', {
-        value: function (o) {
-          var _obj = (typeof o === 'function') ? o(oldref): o;
-          var keys = Object.keys(_obj);
+          value: function (o) {
+            var _obj = (typeof o === 'function') ? o(oldref) : o;
+            var keys = Object.keys(_obj);
             for (var i of keys) {
               this[i] = _obj[i];
               rebind(this, i, this[i]);
             }
             oldref = JSON.parse(JSON.stringify(this));
-        },
-        enumerable: false,
-        configurable: false,
-        writable: false
-      }),
+          },
+          enumerable: false,
+          configurable: false,
+          writable: false
+        }),
         oldref,
         deps = setDI(obj.controller);
 
@@ -461,23 +462,28 @@ var plume = (function () {
     };
 
     this.render = function () {
-      if (obj.template || obj.templateUrl) {
-        var ctx = buildContext();
-        controllers[sel] = ctx;
-        ready(sel, function (el) {
-          if (obj.template) {
-            html = parseHtml(obj.template);
-            html && compile(el, ctx);
-          } else if (obj.templateUrl) {
-            ajaxHtmlLoad(obj.templateUrl, function (h) {
-              html = parseHtml(h);
-              html && compile(el, ctx);
-            });
-          }
-        });
-      } else {
+      if (!obj) {
+        throw Error('rendering object should not be empty');
+      }
+      if (!obj.template && !obj.templateUrl) {
         throw Error("Required either template or templateUrl");
       }
+      if (!obj.controller) {
+        throw Error('controller is required and should be a function or an array');
+      }
+      var ctx = buildContext();
+      controllers[sel] = ctx;
+      ready(sel, function (el) {
+        if (obj.template) {
+          html = parseHtml(obj.template);
+          html && compile(el, ctx);
+        } else if (obj.templateUrl) {
+          ajaxHtmlLoad(obj.templateUrl, function (h) {
+            html = parseHtml(h);
+            html && compile(el, ctx);
+          });
+        }
+      });
     };
   }
 

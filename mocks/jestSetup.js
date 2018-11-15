@@ -8,3 +8,41 @@ function trigger(eventName, isBubbleing) {
 }
 
 Element.prototype.trigger = trigger;
+
+
+function createXHRmock() {
+  var open, send, status, onloadend, setRequestHeader, response, responseText;
+    open = jest.fn();
+    status = 200;
+    onloadend = jest.fn();
+    setRequestHeader = jest.fn();
+    response = '';
+    responseText = '';
+    // be aware we use *function* because we need to get *this* 
+    // from *new XmlHttpRequest()* call
+    send = jest.fn().mockImplementation(function(){   
+      this.onloadend && this.onloadend.call(this);
+      this.onerror && this.onerror.call(this);
+      this.setRequestHeader && this.setRequestHeader.call(this);
+    });
+
+    var xhrMockClass = function () {
+        return {
+            open: open,
+            send: send,
+            status: status,
+            setRequestHeader: setRequestHeader,
+            response: response,
+            responseText: responseText
+        };
+    };
+
+    window.XMLHttpRequest = jest.fn().mockImplementation(xhrMockClass);
+    window.returnMockHttpResponse = function(res) {
+      status = res.status ? res.status : 200;
+      response = res.response ? res.response : '';
+      responseText = res.responseText ? res.responseText : '';
+    }
+}
+
+createXHRmock();
