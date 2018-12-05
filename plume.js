@@ -2,7 +2,7 @@
 import "./lib/replacewith-polyfill.js";
 import valOf from "./lib/val.js";
 import router from "./lib/router.js";
-import ready from "./lib/mo.js";
+import mo from "./lib/mo.js";
 
 var plume = (function() {
 	"use strict";
@@ -55,7 +55,7 @@ var plume = (function() {
 			patharr = path.trim().split(".");
 			if (obj) {
 				for (var i = 0; i < patharr.length; i++) {
-					k = k ? k[patharr[i]] : obj[patharr[i]];
+					k = k ? k[patharr[i]] : ( obj.hasOwnProperty(patharr[i]) ? obj[patharr[i]]: patharr[i]);
 					if (k && typeof k !== "object") {
 						value = k;
 						return value;
@@ -133,10 +133,7 @@ var plume = (function() {
 			template.innerHTML = tmpl;
 			dom = template.children;
 			if (dom.length > 1) {
-				throw Error("template", "Template should contain one root element");
-			}
-			if (dom.length === 0) {
-				throw Error("template", "Template should not be empty");
+				throw Error("Template should contain one root element");
 			}
 
 			foreach(dom[0].querySelectorAll("[if-value]"), function(node) {
@@ -149,20 +146,15 @@ var plume = (function() {
 		};
 
 		var mapProp = function(pel, el, key, value, ctx, localCtx) {
-			var regError = function() {
-				if (el.children.length > 1) {
-					throw Error(
-						el.nodeName.toLowerCase() + " tag",
-						"Should contain only one root element."
-					);
-				}
-				if (el.children.length === 0) {
-					throw Error(
-						el.nodeName.toLowerCase() + " tag",
-						"Should contain one root element and should not contain text"
-					);
-				}
-			};
+			// var regError = function() {
+			// 	console.log(el.outerHTML);
+			// 	if (el.children.length > 1) {
+			// 		throw Error(el.nodeName.toLowerCase() + " tag: Should contain only one root element");
+			// 	}
+			// 	if (el.children.length === 0) {
+			// 		throw Error(el.nodeName.toLowerCase() + " tag: Should contain one root element and should not contain text");
+			// 	}
+			// };
 
 			var parseFor = function() {
 				var _val = el.getAttribute("item"),
@@ -212,7 +204,7 @@ var plume = (function() {
 			};
 
 			var parseIf = function() {
-				regError();
+				//regError();
 				var props = [],
 					propvalues = [],
 					_val = el.getAttribute("if-value"),
@@ -251,7 +243,10 @@ var plume = (function() {
 					}
 
 					if (evalExpr) {
-						bindCtx(pel, el.children[0], ctx, localCtx);
+						foreach(el.childNodes, function(node) {
+							bindCtx(el, node, ctx, localCtx);
+						});
+						//bindCtx(pel, el.children[0], ctx, localCtx);
 						el.removeAttribute("if-value");
 					} else {
 						var tn = document.createTextNode("");
@@ -288,6 +283,7 @@ var plume = (function() {
 				if ((match = isFuncWithArgs.exec(value))) {
 					args = match[1].split(",");
 					for (var i = 0; i < args.length; i++) {
+						args[i] = args[i].split('"').join('');
 						if (args[i] !== "$event") {
 							val = get(localCtx, args[i]) || get(ctx, args[i]);
 							val = val ? val : args[i].replace(/['"]+/g, "");
@@ -495,7 +491,7 @@ var plume = (function() {
 			}
 			var ctx = buildContext();
 			controllers[sel] = ctx;
-			ready(sel, function(el) {
+			mo.ready(sel, function(el) {
 				if (obj.template) {
 					html = parseHtml(obj.template);
 					html && compile(el, ctx);
@@ -525,6 +521,9 @@ var plume = (function() {
 		router: _router,
 		get: function(name) {
 			return services[name] || controllers[name] || undefined;
+		},
+		destroy: function(sel) {
+			mo.destroy(sel);
 		}
 	});
 

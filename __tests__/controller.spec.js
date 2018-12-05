@@ -7,20 +7,13 @@ describe("Plumejs Controller", () => {
 
   beforeAll(() => {
     document.body.innerHTML =
-      '<div>' +
+      '<div id="parent">' +
       '  <span id="testctrl1"></span>' +
       '  <span id="testctrl2"></span>' +
       '  <span id="testctrl3"></span>' +
+      '  <span id="testctrl4"></span>' +
       '</div>';
-  });
-
-  describe('error cases', () => {
-    it('should throw error if template or templateUrl is not supplied', () => {
-      expect(() => {
-        plumejs.render('#testctrl1', {controller: function() {}})
-      }).toThrow('Required either template or templateUrl');
-    });
-  });
+  });  
 
   describe('without dependencies', () => {
     beforeAll(() => {
@@ -165,5 +158,39 @@ describe("Plumejs Controller", () => {
       var lbl = span3.querySelector('label');
       expect(lbl.textContent).toBe('Hello');
     });    
+  });
+
+  describe('error cases', () => {
+    beforeEach(()=>{
+      plumejs.destroy('#testctrl4');
+      document.getElementById('testctrl4').innerHTML = '';
+    });
+    
+    it('should throw error if template or templateUrl is not supplied', () => {
+      expect(() => {
+        plumejs.render('#testctrl4', {controller: function() {}})
+      }).toThrow('Required either template or templateUrl');
+    });
+
+    it('should throw error if rendering object is not supplied', () => {
+      expect(()=>{
+        plumejs.render('#testctrl4')
+      }).toThrow('rendering object should not be empty')
+    });
+
+    it('should throw error if controller is not supplied', () => {
+      expect(() => {
+        plumejs.render('#testctrl4', {template: '<div>node1</div><div>node1</div>'})
+      }).toThrow('controller is required and should be a function or an array');
+    });
+
+    it('should throw error if root node is not supplied', () => {
+      expect(() => {
+        plumejs.render('#testctrl4', { template: `        
+          <div>node1</div>
+          <div>node2</div>
+        `, controller: function(){}})
+      }).toThrow('Template should contain one root element');
+    });
   });
 });
