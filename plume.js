@@ -55,7 +55,7 @@ var plume = (function() {
 			patharr = path.trim().split(".");
 			if (obj) {
 				for (var i = 0; i < patharr.length; i++) {
-					k = k ? k[patharr[i]] : ( obj.hasOwnProperty(patharr[i]) ? obj[patharr[i]]: patharr[i]);
+					k = k ? k[patharr[i]] : obj[patharr[i]];
 					if (k && typeof k !== "object") {
 						value = k;
 						return value;
