@@ -146,15 +146,6 @@ var plume = (function() {
 		};
 
 		var mapProp = function(pel, el, key, value, ctx, localCtx) {
-			// var regError = function() {
-			// 	console.log(el.outerHTML);
-			// 	if (el.children.length > 1) {
-			// 		throw Error(el.nodeName.toLowerCase() + " tag: Should contain only one root element");
-			// 	}
-			// 	if (el.children.length === 0) {
-			// 		throw Error(el.nodeName.toLowerCase() + " tag: Should contain one root element and should not contain text");
-			// 	}
-			// };
 
 			var parseFor = function() {
 				var _val = el.getAttribute("item"),
@@ -204,7 +195,6 @@ var plume = (function() {
 			};
 
 			var parseIf = function() {
-				//regError();
 				var props = [],
 					propvalues = [],
 					_val = el.getAttribute("if-value"),
@@ -246,7 +236,6 @@ var plume = (function() {
 						foreach(el.childNodes, function(node) {
 							bindCtx(el, node, ctx, localCtx);
 						});
-						//bindCtx(pel, el.children[0], ctx, localCtx);
 						el.removeAttribute("if-value");
 					} else {
 						var tn = document.createTextNode("");
