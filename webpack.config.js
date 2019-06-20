@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const {
     FORMAT,
@@ -11,47 +11,40 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 let config = {
     mode: 'production',
+    devtool: 'cheap-module-source-map',
     entry: {
-        plume: './plume.js',
-        main: './example/index.js'
+        plume: './src/plume.ts',
+        main: './example/index.ts'
     },
     output: {
-        libraryTarget: 'umd',
-        libraryExport: 'default',
-        path: path.resolve(__dirname, './dist/'),
+        path: path.resolve(__dirname, 'dist'),
         filename: `[name]${ HOIST ? '-hoisted' : '' }.${ FORMAT }${ MIN ? '.min' : '' }.js`,
     },
     module: {
         rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: 'babel-loader',
-                options: {
-                    babelrc: false,
-                    cacheDirectory: true,
-                    presets: ['@babel/preset-env']
-                }
-            }]
+            test: /\.ts$/,
+            loader: 'babel-loader',
+            exclude: /node_modules/
         }]
     },
+    resolve: {
+        extensions: ['.ts']
+    },
     plugins: [
-        new CleanWebpackPlugin(['dist'])
+        new CleanWebpackPlugin()
     ],
     optimization: {
         minimizer: [
-            MIN && new UglifyJsPlugin(),
             HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
+            MIN && new TerserPlugin({
+                terserOptions: {
+                    mangle: false
+                }
+            }),
             new CompressionPlugin({
                 algorithm: 'gzip'
             }),
         ].filter(Boolean)
-    },
-    stats: {
-        // Examine all modules
-        maxModules: Infinity,
-        // Display bailout reasons
-        optimizationBailout: true
     }
 }
 
