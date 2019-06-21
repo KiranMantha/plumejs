@@ -8,7 +8,11 @@ const ServiceResolver = (() => {
 	let _services: IService = {};
 	const _getService = (name: string) => {
 		if (isString(name)) {
-			return _services[name];
+			if(_services[name]) {
+				return _services[name];
+			} else {
+				throw Error(`${name} is not a registered provider.`);
+			}
 		} else {
 			return {};
 		}

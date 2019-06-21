@@ -1,7 +1,9 @@
 // Import stylesheets
 import { Component, Service, html, IWebComponent } from '../index';
 
-@Service()
+@Service({
+  name: 'SampleService'
+})
 class SampleService {
   constructor() { }
   testMeth() {
@@ -10,6 +12,7 @@ class SampleService {
 }
 
 @Service({
+  name: 'TestService',
   providers: ['SampleService']
 })
 class TestService {
@@ -24,7 +27,8 @@ class TestService {
 }
 
 @Component({
-  selector: 'test-ele'
+  name: 'test-ele',
+  providers: ['props']
 })
 class TestEle implements IWebComponent {
   update:any;
@@ -61,7 +65,7 @@ class TestEle implements IWebComponent {
 }
 
 @Component({
-  selector: 'sample-ele',
+  name: 'sample-ele',
   providers: ['TestService']
 })
 class SampleEle implements IWebComponent {

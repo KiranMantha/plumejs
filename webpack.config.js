@@ -36,11 +36,7 @@ let config = {
     optimization: {
         minimizer: [
             HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
-            MIN && new TerserPlugin({
-                terserOptions: {
-                    mangle: false
-                }
-            }),
+            MIN && new TerserPlugin(),
             new CompressionPlugin({
                 algorithm: 'gzip'
             }),

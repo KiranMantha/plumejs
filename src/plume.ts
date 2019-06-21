@@ -6,12 +6,8 @@ import { instantiate } from "./lib/instance";
 import { render, html } from "lighterhtml-plus";
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
 
-interface IWebComponentOptions {
-	selector: string;
-	providers?: Array<string>;
-}
-
-interface IServiceOptions {
+interface IDecoratorOptions {
+	name: string;
 	providers?: Array<string>;
 }
 
@@ -22,9 +18,9 @@ interface IWebComponent {
 	beforeMount?: () => void;
 }
 
-const Component = (options: IWebComponentOptions) => {
+const Component = (options: IDecoratorOptions) => {
 	return (target: Function) => {
-		if (options.selector.indexOf("-") <= 0) {
+		if (options.name.indexOf("-") <= 0) {
 			throw new Error("You need at least 1 dash in the custom element name!");
 		}
 		if (options.providers) {
@@ -37,7 +33,7 @@ const Component = (options: IWebComponentOptions) => {
 	};
 };
 
-const Service = (options: IServiceOptions = {}) => {
+const Service = (options: IDecoratorOptions) => {
 	return (target: Function) => {
 		if (options.providers) {
 			if (!isArray(options.providers))
@@ -45,13 +41,13 @@ const Service = (options: IServiceOptions = {}) => {
 		} else {
 			options.providers = [];
 		}
-		registerService(target.name, target, options.providers);
+		registerService(options.name, target, options.providers);
 	};
 };
 
-const registerElement = (options: IWebComponentOptions, target: Function) => {
+const registerElement = (options: IDecoratorOptions, target: Function) => {
 	window.customElements.define(
-		options.selector,
+		options.name,
 		class extends HTMLElement {
 			render:any;
 			data:any;
