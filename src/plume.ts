@@ -37,7 +37,7 @@ const Service = (options: IDecoratorOptions) => {
 	return (target: Function) => {
 		if (options.providers) {
 			if (!isArray(options.providers))
-				throw "ServiceMetaData.providers must be an array";
+				throw Error("ServiceMetaData.providers must be an array");
 		} else {
 			options.providers = [];
 		}
