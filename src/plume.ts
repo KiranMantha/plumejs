@@ -1,10 +1,12 @@
 //https://github.com/ibhi/webcomponent-with-di/blob/master/src/users.component.js
 //https://medium.com/@gilfink/creating-a-custom-element-decorator-using-typescript-302e7ed3a3d1
-import { _id, klass, _nextId, isArray } from "./lib/utils";
+import { klass, isArray } from "./lib/utils";
 import { registerService } from "./lib/service_resolver";
 import { instantiate } from "./lib/instance";
 import { render, html } from "lighterhtml-plus";
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
+
+'use strict';
 
 interface IDecoratorOptions {
 	name: string;
@@ -12,6 +14,7 @@ interface IDecoratorOptions {
 }
 
 interface IWebComponent {
+	element?: ShadowRoot;
 	mount?: () => void;
 	unmount?: () => void;
 	render: () => void;
@@ -49,18 +52,30 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 	window.customElements.define(
 		options.name,
 		class extends HTMLElement {
-			render:any;
-			data:any;
-      private shadow:any;
-      [klass]:any;
+			render:any;      
+			[klass]:any;
+			private shadow:any;
+			private __data:any;
 			constructor() {
 				super();
 				this.shadow = this.attachShadow({ mode: "closed" });
       }
 
-      [_id](){
+      get __id(){
         return this.dataset.hash;
-      }
+			}
+
+			get data():any {
+				return this.__data ? this.__data : {};
+			}
+			
+			set data(val) {
+				this.__data = val;
+				if(this[klass] && this[klass]['props']) {
+					this[klass]['props'] = val;
+					this[klass]['update']();
+				}
+			}
 
 			renderTemplate() {
 				return this.render();
@@ -75,12 +90,14 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 			}
 
 			connectedCallback() {
-				this[klass] = instantiate<typeof target>(target, options.providers, this.data);
-				delete this.data;
+				this[klass] = instantiate(target, options.providers, this.data);
+				this[klass]['element'] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
+				Object.seal(this);
+				Object.seal(this[klass]);
 			}
 
 			update() {

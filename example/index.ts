@@ -2,6 +2,66 @@
 import { Component, Service, html, IWebComponent } from '../index';
 
 @Service({
+  name: 'PersonService'
+})
+export class PersonService {
+  getPersons() {
+    return fetch('https://jsonplaceholder.typicode.com/users').then(res => res.json());
+  }
+}
+
+@Component({
+  name: 'person-list',
+  providers: ['PersonService']
+})
+class PersonsList implements IWebComponent {
+  data:Array<string> = [];
+  persondetails:any = {};
+  update:any;
+  element:any;
+  constructor(private personSrvc:PersonService){}
+  mount(){
+    this.personSrvc.getPersons().then(data => {
+      this.data = data;
+      this.update(); // triggers change detection and update view
+    })
+  }
+
+  alertName(user:any){
+    this.persondetails = user;
+    this.update();
+  }
+
+  render(){
+    return html`<div>
+      <ul>
+      ${
+        this.data.map((user:any) => html`<li onclick=${()=>{ this.alertName(user); }}>${user.name}</li>`)
+      }
+      </ul>
+      <person-details id='person-details' data=${this.persondetails}></person-details>
+    </div>`
+  }
+}
+
+@Component({
+  name: 'person-details',
+  providers: ['props']
+})
+export class PersonDetails implements IWebComponent {
+  constructor(private props:any){}
+
+  render(){
+    if(this.props.name){
+      return html`<div>${this.props.name}</div>`
+    } else {
+      return html``;
+    }
+  }
+}
+
+
+@Service({
   name: 'SampleService'
 })
 class SampleService {

@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
 const {
-    FORMAT,
     MIN,
     HOIST
 } = process.env;
@@ -18,7 +17,7 @@ let config = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: `[name]${ HOIST ? '-hoisted' : '' }.${ FORMAT }${ MIN ? '.min' : '' }.js`,
+        filename: `[name]${ MIN ? '.min' : '' }.js`,
     },
     module: {
         rules: [{

@@ -28,14 +28,9 @@
     "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test-local": "jest",
     "build": "run-p build:**",
-    "build:es": "cross-env FORMAT=es webpack",
-    "build:cjs": "cross-env FORMAT=cjs webpack",
-    "build:es:min": "cross-env FORMAT=es MIN=1 webpack",
-    "build:cjs:min": "cross-env FORMAT=cjs MIN=1 webpack",
-    "build:es:hoist": "cross-env FORMAT=es HOIST=1 webpack",
-    "build:cjs:hoist": "cross-env FORMAT=cjs HOIST=1 webpack",
-    "build:es:min:hoist": "cross-env FORMAT=es MIN=1 HOIST=1 webpack",
-    "build:cjs:min:hoist": "cross-env FORMAT=cjs MIN=1 HOIST=1 webpack"
+    "build:min": "cross-env MIN=1 webpack",
+    "build:hoist": "cross-env HOIST=1 webpack",
+    "build:min:hoist": "cross-env MIN=1 HOIST=1 webpack"
   },
   "keywords": [
     "plumejs",

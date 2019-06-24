@@ -1,6 +1,6 @@
 import { setDI } from './di';
 
-function instantiate<T>(fn:Function, deps:Array<string> = [], props:any = {}):T {
+function instantiate(fn:Function, deps:Array<string> = [], props:any = {}) {
   let $deps = setDI(fn, deps, props), instance;
   if ($deps[1].length > 0) {
     //es5: (deps[0].bind.apply(deps[0], [null].deps[1]));

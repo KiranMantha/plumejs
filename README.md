@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/KiranMantha/plumejs.svg?branch=master)](https://travis-ci.org/KiranMantha/plumejs) [![Coverage Status](https://coveralls.io/repos/github/KiranMantha/plumejs/badge.svg?branch=master)](https://coveralls.io/github/KiranMantha/plumejs?branch=master)
 
 
-Plumejs is a very light weight vanilla js framework to build spa's. it comes with features like router, change detection during async operations, data-sharing via factories, dependency injection, built-in pub-sub etc.
+Plumejs is a very light weight typescript framework to build spa's.It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
 
-Plumejs is a conceptual combination of angularjs and react. just like angular one can register factories, routing, inline templates/templateURls and like react it has `updateCtx` function to update the view after modal updations and a render function to render the component.
+Plumejs is a conceptual combination of angularjs and react. just like angular one can register factories, components, life-cycle hooks and like react it have `props` to pass data from one component to other, `update` function to update the view after modal updations and a render function to render the component.
 
 Plumejs is built as UMD module. Hence it can be load via script tag in html or as es6 module in nodejs. Plumejs has very few syntaxes enabling faster learning curve.
 
@@ -13,154 +13,145 @@ To start with Plumejs
 
 Creating component is a non-hectic task.
 
-1. create a placeholder in html as `<div id='app'></div>`
-2. import `render` function and create component as follows
+1. import `Component, html` functions and create component as follows
 
 ```
-  import { render } from 'plumejs';
+  import { Component, html } from 'plumejs';
 
-  render('#app', {
-    template: '<div>{{ greet }}</div>',
-    controller: function() {
-      this.greet = 'hi';
+  @Component({
+    name: 'test-ele'
+  })
+  class TestEle {
+    test:string;
+    constructor(){
+      this.text = 'hello world!'
     }
-  });
-
-```
-
-Component provide `init` hook to perform model data initialization as follows:
-
-```
-render('#app', {
-  template: `
-    <div>
-      <div if-value='data.length > 0'>
-        <ul>
-            <li item='person' loop='data' click="alert(person)">{{ person.name }}</li>
-          </ul>
-      </div>
-    </div>
-  `
-  controller: function() {
-    this.data = [];
-
-    this.alert = function(p) {
-      alert(p);
-    }
-
-    this.init = function() {
-      fetch('persons-api').then(function(res){
-        return res.json();
-      }).then(function(data){
-        this.updateCtx({ data: data }); // triggers change detection and update view
-      });
+    render(){
+      return html(`<div>${this.text}</div>`)
     }
   }
-});
 
 ```
 
-# Creating Factories
-
-Creating factory is as simple as creating a component
+Component provide `mount` hook to perform model data initialization as follows:
 
 ```
-  import factory from './plumejs';
+@Component({
+  name: 'person-list'
+})
+class PersonsList {
+  data:Array<string> = [];
+  constructor(){}
+  mount(){
+    fetch('persons-api').then(res => res.json()).then(data => {
+      this.data = data;
+      this.update(); // triggers change detection and update view
+    })
+  }
 
-  factory('personService', function () {
-    return {
-      getPersons: function () {
-        return fetch('persons-api').then(function(res){
-          return res.json();
-        });
-      }
+  alertName(name:string){
+    alert(name);
+  }
+
+  render(){
+    return html(`<div>
+      <ul>${
+        this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
+      }</ul>
+    </div>`)
+  }
+}
+
+```
+
+We can even share data between two components as below:
+
+```
+  import { Component, html } from 'plumejs';
+
+  @Component({
+    name: 'person-list'
+  })
+  class PersonsList {
+    data:Array<string> = [];
+    persondetails:any = {};
+    constructor(){}
+    mount(){
+      fetch('persons-api').then(res => res.json()).then(data => {
+        this.data = data;
+        this.update(); // triggers change detection and update view
+      })
     }
-  });
 
-  // in controller
-
-  ---
-    controller: ['personService', function(ps) {
-      this.data = [];
-
-      this.init = function() {
-        ps.getPersons().then(function(data) {
-          this.updateCtx({
-            data: data
-          });
-        });
-      }
-    }]
-  ---
-```
-
-factories in plumejs are singleton
-
-# Implementing Routing
-
-Plumejs provides simple api to incorporate routing in the application. Inorder for router to work, we need to provide a router outlet and routes.
-
-Adding routes is as follows: 
-
-1. Add router outlet in html as `<div id='content'></div>`
-2. register the router outlet in plume router
-
-```
-import { router } from './plume.js'
-
-plume.router.setRouterOutlet(document.getElementById('content'));
-
-```
-
-3. now add routes to plume router
-
-```
-  plume.router.addRoutes([
-    {
-      path: '',
-      redirectTo: '/component1'
-    },
-    {
-      path: '/component1',
-      template: `<div id='component1'></div>`
-    },
-    {
-      path: '/component2',
-      template: `<div id='component2'></div>`
-    },
-    {
-      path: '/component3/:id',
-      template: `<div id='component3'></div>`
+    alertName(name:string){
+      this.persondetails.name = name;
+      this.update();
     }
-  ]);
 
-```
-
-where `component1, component2, component3` are registered using `render` function as:
-`render('#component1', ...) render('#component2', ...) render('#component3', ...)`
-
-Accessing route params for current route is as follows:
-
-```
-// In component file
-
-import {render, router} from './plume.js'
-
-render('#component1', {
-  template: '',
-  controller: function() {
-    this.init = function() {
-      console.log(router.currentRoute().params);
+    render(){
+      return html`<div>
+        <ul>${
+          this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
+        }</ul>
+        <person-details data=${this.persondetails}></person-details>
+      </div>`
     }
   }
-});
+
+  @Component({
+    name: 'person-details',
+    providers: ['props']
+  })
+  export class PersonDetails {
+    constructor(private props){}
+
+    render(){
+      return html`${
+        <div>${this.props.name}</div>
+      }`
+    }
+  }
 
 ```
 
-Plume router module also supports navigation from component to other as follows:
+# Creating Services
+
+Creating service is as simple as creating a component
 
 ```
-// inside component controller
-router.navigateTo('/component2');
+  import { Service } from './plumejs';
 
+  @Service({
+    name: 'PersonService'
+  })
+  export class PersonService {
+    getPersons() {
+      return fetch('persons-api').then(res => res.json());
+    }
+  }
+
+  // in component
+
+  @Component({
+    name: 'test-ele',
+    providers: ['PersonService']
+  })
+  class TestEle {
+    test:string;
+    data:Array<string> = [];
+    constructor(private personSrvc:PersonService){
+      this.text = 'hello world!'
+    }
+
+    mount(){
+      this.personSrvc.getPersons().then(data => {
+        this.data = data;
+        this.update(); // triggers change detection and update view
+      })
+    }
+
+    ...
+  }
 ```
+
+Services in plumejs are singleton
