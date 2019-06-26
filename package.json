@@ -2,23 +2,26 @@
   "name": "plumejs",
   "version": "1.0.1",
   "description": "a light weight(5kb gzipped) framework to build spa",
-  "main": "index.js",
+  "main": "index.ts",
   "jest": {
-    "setupTestFrameworkScriptFile": "<rootDir>/mocks/jestSetup.js",
+    "setupFilesAfterEnv": ["<rootDir>/mocks/jestSetup.js"],
     "collectCoverage": true,
     "coverageDirectory": "<rootDir>/coverage",
     "moduleFileExtensions": [
       "ts",
-      "js"
+      "tsx",
+      "js",
+      "jsx",
+      "node"
     ],
     "transform": {
-      "^.+\\.ts?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest"
     },
     "projects": [
       {
         "displayName": "PLUMEJS",
         "testMatch": [
-          "<rootDir>/__tests__/*.spec.ts"
+          "<rootDir>/__tests__/service.spec.ts"
         ]
       }
     ]

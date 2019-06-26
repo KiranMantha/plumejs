@@ -1,7 +1,7 @@
 //https://github.com/ibhi/webcomponent-with-di/blob/master/src/users.component.js
 //https://medium.com/@gilfink/creating-a-custom-element-decorator-using-typescript-302e7ed3a3d1
 import { klass, isArray } from "./lib/utils";
-import { registerService } from "./lib/service_resolver";
+import { registerService, getService } from "./lib/service_resolver";
 import { instantiate } from "./lib/instance";
 import { render, html } from "lighterhtml-plus";
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
@@ -111,4 +111,4 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 	);
 };
 
-export { Component, Service, html, IWebComponent };
+export { Component, Service, html, IWebComponent, getService };

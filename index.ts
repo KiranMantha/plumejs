@@ -1,2 +1,2 @@
-import { Component, Service, html, IWebComponent } from './src/plume';
-export {Component, Service, html, IWebComponent};
+import { Component, Service, html, getService } from './src/plume';
+export {Component, Service, html, getService};
