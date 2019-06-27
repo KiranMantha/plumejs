@@ -5,6 +5,9 @@ import { registerService, getService } from "./lib/service_resolver";
 import { instantiate } from "./lib/instance";
 import { render, html } from "lighterhtml-plus";
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
+import WatchJS from 'melanke-watchjs';
+
+const { watch, unwatch } = WatchJS;
 
 'use strict';
 
@@ -52,29 +55,26 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 	window.customElements.define(
 		options.name,
 		class extends HTMLElement {
-			render:any;      
-			[klass]:any;
-			private shadow:any;
-			private __data:any;
+			render: any;
+			[klass]: any;
+			private shadow: any;
+			data: any;
 			constructor() {
 				super();
 				this.shadow = this.attachShadow({ mode: "closed" });
-      }
-
-      get __id(){
-        return this.dataset.hash;
+				watch(this, ['data'], (prop: any, action: any, newvalue: any, oldvalue: any) => {
+					console.log('from watch', prop, action, newvalue, oldvalue);
+					if (oldvalue !== newvalue) {
+						if (this[klass] && this[klass]['props']) {
+							this[klass]['props'] = this.data;
+							this[klass]['update']();
+						}
+					}
+				});
 			}
 
-			get data():any {
-				return this.__data ? this.__data : {};
-			}
-			
-			set data(val) {
-				this.__data = val;
-				if(this[klass] && this[klass]['props']) {
-					this[klass]['props'] = val;
-					this[klass]['update']();
-				}
+			get __id() {
+				return this.dataset.hash;
 			}
 
 			renderTemplate() {
@@ -105,10 +105,11 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 			}
 
 			disconnectedCallback() {
+				unwatch(this, ['data'])
 				this[klass].unmount && this[klass].unmount();
 			}
 		}
 	);
 };
 
-export { Component, Service, html, IWebComponent, getService };
+export { Component, Service, html, getService };

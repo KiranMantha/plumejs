@@ -4,7 +4,9 @@
   "description": "a light weight(5kb gzipped) framework to build spa",
   "main": "index.ts",
   "jest": {
-    "setupFilesAfterEnv": ["<rootDir>/mocks/jestSetup.js"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/mocks/jestSetup.js"
+    ],
     "collectCoverage": true,
     "coverageDirectory": "<rootDir>/coverage",
     "moduleFileExtensions": [
@@ -54,7 +56,8 @@
   "license": "ISC",
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "lighterhtml-plus": "^0.15.2"
+    "lighterhtml-plus": "^0.15.2",
+    "melanke-watchjs": "^1.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

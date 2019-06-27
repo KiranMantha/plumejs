@@ -1,5 +1,5 @@
 // Import stylesheets
-import { Component, Service, html, IWebComponent } from '../index';
+import { Component, Service, html } from '../index';
 
 @Service({
   name: 'PersonService'
@@ -14,7 +14,7 @@ export class PersonService {
   name: 'person-list',
   providers: ['PersonService']
 })
-class PersonsList implements IWebComponent {
+class PersonsList {
   data:Array<string> = [];
   persondetails:any = {};
   update:any;
@@ -48,7 +48,7 @@ class PersonsList implements IWebComponent {
   name: 'person-details',
   providers: ['props']
 })
-export class PersonDetails implements IWebComponent {
+export class PersonDetails {
   constructor(private props:any){}
 
   render(){
@@ -90,7 +90,7 @@ class TestService {
   name: 'test-ele',
   providers: ['props']
 })
-class TestEle implements IWebComponent {
+class TestEle {
   update:any;
   constructor(private props:any) {
     this.props = props;
@@ -106,12 +106,10 @@ class TestEle implements IWebComponent {
 
   counts(e:any) {
     this.props.oncount('testing from click');
-    this.update();
   }
 
   change(val:string){
     this.props.oncount(val);
-    this.update();
   }
 
   mount() {
@@ -128,7 +126,7 @@ class TestEle implements IWebComponent {
   name: 'sample-ele',
   providers: ['TestService']
 })
-class SampleEle implements IWebComponent {
+class SampleEle {
   test:string;
   outCount:Function;
   update:any;
