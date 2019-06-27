@@ -63,7 +63,6 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 				super();
 				this.shadow = this.attachShadow({ mode: "closed" });
 				watch(this, ['data'], (prop: any, action: any, newvalue: any, oldvalue: any) => {
-					console.log('from watch', prop, action, newvalue, oldvalue);
 					if (oldvalue !== newvalue) {
 						if (this[klass] && this[klass]['props']) {
 							this[klass]['props'] = this.data;
