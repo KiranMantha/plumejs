@@ -6,7 +6,10 @@ const {
     HOIST
 } = process.env;
 const CompressionPlugin = require('compression-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const WebpackPrebuild = require('pre-build-webpack');
+const PostCompile = require('post-compile-webpack-plugin')
+const del = require('del');
+const copy = require('copy');
 
 let config = {
     mode: 'production',
@@ -30,7 +33,15 @@ let config = {
         extensions: ['.ts']
     },
     plugins: [
-        new CleanWebpackPlugin()
+        new WebpackPrebuild(() => {
+            del([path.resolve(__dirname, 'dist'), path.resolve(__dirname, 'docs')])
+        }),
+        new PostCompile(() => {
+            copy('dist/*.gz', 'docs', function (err, file) {
+                //copy('dist/*.js', 'docs', function (err, file) {});
+                copy('example/*.html', 'docs', function (err, file) {});
+            });
+        })
     ],
     optimization: {
         minimizer: [

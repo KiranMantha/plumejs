@@ -58,16 +58,17 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 			render: any;
 			[klass]: any;
 			private shadow: any;
-			data: any;
+			_propindex:string = '';
+			props:any;
 			constructor() {
 				super();
 				this.shadow = this.attachShadow({ mode: "closed" });
-				watch(this, ['data'], (prop: any, action: any, newvalue: any, oldvalue: any) => {
+				watch(this, 'props', (prop: any, action: any, newvalue: any, oldvalue: any) => {
 					if (oldvalue !== newvalue) {
-						if (this[klass] && this[klass]['props']) {
-							this[klass]['props'] = this.data;
-							this[klass]['update']();
-						}
+						if (this[klass] && this[klass][this._propindex]) {
+              this[klass][this._propindex] = this['props'];
+              this.update();
+            }
 					}
 				});
 			}
@@ -89,7 +90,9 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 			}
 
 			connectedCallback() {
-				this[klass] = instantiate(target, options.providers, this.data);
+				let _instanceobj = instantiate(target, options.providers, this['props']);
+        this._propindex = _instanceobj.props_arg;
+        this[klass] = _instanceobj.instance;
 				this[klass]['element'] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();
@@ -104,7 +107,7 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 			}
 
 			disconnectedCallback() {
-				unwatch(this, ['data'])
+				unwatch(this, 'props')
 				this[klass].unmount && this[klass].unmount();
 			}
 		}

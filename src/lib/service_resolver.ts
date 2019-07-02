@@ -21,7 +21,7 @@ const ServiceResolver = (() => {
 	const _service = (name: string, fn: Function, deps: Array<string> = []) => {
 		if (name && fn) {
 			if (!_services[name]) {
-				_services[name] = instantiate(fn, deps);
+				_services[name] = instantiate(fn, deps).instance;
 			}
 		} else {
 			throw "error: Requires name and constructor to define service";
