@@ -11,7 +11,7 @@ export class PersonService {
 }
 
 @Component({
-  name: 'person-list',
+  name: 'persons-list',
   providers: ['PersonService']
 })
 class PersonsList {
@@ -39,7 +39,7 @@ class PersonsList {
         this.data.map((user:any) => html`<li onclick=${()=>{ this.alertName(user); }}>${user.name}</li>`)
       }
       </ul>
-      <person-details id='person-details' data=${this.persondetails}></person-details>
+      <person-details id='person-details' props=${this.persondetails}></person-details>
     </div>`
   }
 }
@@ -52,8 +52,11 @@ export class PersonDetails {
   constructor(private props:any){}
 
   render(){
+    console.log('selected: user', this.props);
     if(this.props.name){
-      return html`<div>${this.props.name}</div>`
+      return html`<div>Name: ${this.props.name}</div>
+      <div>Company: ${this.props.company.name}</div>
+      `
     } else {
       return html``;
     }
@@ -143,7 +146,7 @@ class SampleEle {
   render() {
     return html`<div>
     testing web component1 ${this.test}
-    <test-ele data=${this.props}></test-ele>
+    <test-ele props=${this.props}></test-ele>
     </div>`
   }
 

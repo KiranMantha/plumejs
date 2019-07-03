@@ -65,8 +65,8 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 				this.shadow = this.attachShadow({ mode: "closed" });
 				watch(this, 'props', (prop: any, action: any, newvalue: any, oldvalue: any) => {
 					if (oldvalue !== newvalue) {
-						if (this[klass] && this[klass][this._propindex]) {
-              this[klass][this._propindex] = this['props'];
+						if (this[klass] && this[klass]['props']) {
+              this[klass]['props'] = this['props'];
               this.update();
             }
 					}
@@ -90,9 +90,7 @@ const registerElement = (options: IDecoratorOptions, target: Function) => {
 			}
 
 			connectedCallback() {
-				let _instanceobj = instantiate(target, options.providers, this['props']);
-        this._propindex = _instanceobj.props_arg;
-        this[klass] = _instanceobj.instance;
+				this[klass] = instantiate(target, options.providers, this['props']);
 				this[klass]['element'] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();

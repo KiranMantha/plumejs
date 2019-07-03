@@ -36,11 +36,9 @@ let config = {
         new WebpackPrebuild(() => {
             del([path.resolve(__dirname, 'dist'), path.resolve(__dirname, 'docs')])
         }),
-        new PostCompile(() => {
-            copy('dist/*.gz', 'docs', function (err, file) {
-                //copy('dist/*.js', 'docs', function (err, file) {});
-                copy('example/*.html', 'docs', function (err, file) {});
-            });
+        new PostCompile(() => {            
+            copy('dist/*.js', 'docs', function (err, file) {});
+            copy('example/*.html', 'docs', function (err, file) {});            
         })
     ],
     optimization: {
