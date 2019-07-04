@@ -11,8 +11,7 @@ export class PersonService {
 }
 
 @Component({
-  name: 'persons-list',
-  providers: ['PersonService']
+  name: 'persons-list'
 })
 class PersonsList {
   data:Array<string> = [];
@@ -45,8 +44,7 @@ class PersonsList {
 }
 
 @Component({
-  name: 'person-details',
-  providers: ['props']
+  name: 'person-details'
 })
 export class PersonDetails {
   constructor(private props:any){}
@@ -75,8 +73,7 @@ class SampleService {
 }
 
 @Service({
-  name: 'TestService',
-  providers: ['SampleService']
+  name: 'TestService'
 })
 class TestService {
   constructor(private sampleSrvc: SampleService) { }
@@ -90,8 +87,7 @@ class TestService {
 }
 
 @Component({
-  name: 'test-ele',
-  providers: ['props']
+  name: 'test-ele'
 })
 class TestEle {
   update:any;
@@ -126,8 +122,7 @@ class TestEle {
 }
 
 @Component({
-  name: 'sample-ele',
-  providers: ['TestService']
+  name: 'sample-ele'
 })
 class SampleEle {
   test:string;
