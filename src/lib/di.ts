@@ -7,15 +7,12 @@ const setDI = (fn:Function, deps:Array<string>, props:any):Array<any> => {
     func_deps = deps && isArray(deps) ? deps : [];
   if (func_deps.length > 0) {
     foreach(func_deps, (o:any, i:number) => {
-      let depsrvc = {};
       if (o !== 'props') {
-        depsrvc = Injector.get(o);
-      } else {
-        depsrvc = props;
-      }
-      if (depsrvc) {
-        let k = depsrvc;
-        di.push(k);
+        let depsrvc = Injector.get(o);
+        if (depsrvc) {
+          let k = depsrvc;
+          di.push(k);
+        }
       }
     });
   }
