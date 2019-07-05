@@ -6,9 +6,5 @@ module.exports = {
     compress: true,
     hot: true,
     port: 9000
-  },
-  entry: {
-    plume: './docs/plume.min.js',
-    main: './docs/main.min.js'
   }
 };

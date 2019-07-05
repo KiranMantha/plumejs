@@ -3,9 +3,10 @@ type Type<T> = {
 };
 
 type DecoratorOptions = {
-  name: string;,
-  providers?:Array<any>
+  selector: string
 }
+
+type Token<T> = Type<T>;
 
 type Dictionary = {
   [key: string]: any;

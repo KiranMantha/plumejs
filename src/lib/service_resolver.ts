@@ -1,14 +1,14 @@
 import { instantiate } from "./instance";
 import { isString } from "./utils";
 
-const ServiceResolver = (() => {
+const Injector = (() => {
 	interface IService {
 		[key: string]: any;
 	}
 	let _services: IService = {};
 	const _getService = (name: string) => {
 		if (isString(name)) {
-			if(_services[name]) {
+			if (_services[name]) {
 				return _services[name];
 			} else {
 				throw Error(`${name} is not a registered provider.`);
@@ -29,9 +29,9 @@ const ServiceResolver = (() => {
 	};
 
 	return {
-		getService: _getService,
-		registerService: _service
+		get: _getService,
+		register: _service
 	};
 })();
 
-export const { getService, registerService } = ServiceResolver;
+export { Injector };

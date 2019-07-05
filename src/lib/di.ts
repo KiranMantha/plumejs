@@ -1,5 +1,5 @@
 import { foreach, isArray } from './utils';
-import { getService } from './service_resolver';
+import { Injector } from './service_resolver';
 
 const setDI = (fn:Function, deps:Array<string>, props:any):Array<any> => {
   let di:Array<any> = [],
@@ -9,7 +9,7 @@ const setDI = (fn:Function, deps:Array<string>, props:any):Array<any> => {
     foreach(func_deps, (o:any, i:number) => {
       let depsrvc = {};
       if (o !== 'props') {
-        depsrvc = getService(o)
+        depsrvc = Injector.get(o);
       } else {
         depsrvc = props;
       }

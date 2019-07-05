@@ -1,29 +1,42 @@
-import { klass } from './utils';
-import { render, html } from "lighterhtml-plus";
-import WatchJS from 'melanke-watchjs';
-const { watch, unwatch } = WatchJS;
+import { klass, INPUT_METADATA_KEY } from "./utils";
+import { render } from "lighterhtml-plus";
+import { watch, unwatch } from "melanke-watchjs";
 import { instantiate } from "./instance";
 
-const registerElement = (options: DecoratorOptions, target: Function, providers:Array<any> = []) => {
+const getValue = (obj:any, key:string) => {
+	return obj[key] || null;
+}
+
+const registerElement = (
+	options: DecoratorOptions,
+	target: Function,
+	providers: Array<any> = []
+) => {
 	window.customElements.define(
-		options.name,
+		options.selector,
 		class extends HTMLElement {
 			render: any;
 			[klass]: any;
 			private shadow: any;
-			_propindex:string = '';
-			props:any;
+			_inputprop: string;
 			constructor() {
 				super();
 				this.shadow = this.attachShadow({ mode: "closed" });
-				watch(this, 'props', (prop: any, action: any, newvalue: any, oldvalue: any) => {
-					if (oldvalue !== newvalue) {
-						if (this[klass] && this[klass]['props']) {
-              this[klass]['props'] = this['props'];
-              this.update();
-            }
-					}
-				});
+				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+				if (this._inputprop) {
+					watch(
+						this,
+						this._inputprop,
+						(prop: any, action: any, newvalue: any, oldvalue: any) => {
+							if (oldvalue !== newvalue) {
+								if (this[klass] && this[klass][this._inputprop]) {
+									this[klass][this._inputprop] =  getValue(this, this._inputprop);
+									this.update();
+								}
+							}
+						}
+					);
+				}
 			}
 
 			get __id() {
@@ -43,8 +56,12 @@ const registerElement = (options: DecoratorOptions, target: Function, providers:
 			}
 
 			connectedCallback() {
-				this[klass] = instantiate(target, providers, this['props']);
-				this[klass]['element'] = this.shadow;
+				this[klass] = instantiate(
+					target,
+					providers,
+					getValue(this, this._inputprop) || {}
+				);
+				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();
 				this[klass]["update"] = this.update.bind(this);
@@ -58,11 +75,11 @@ const registerElement = (options: DecoratorOptions, target: Function, providers:
 			}
 
 			disconnectedCallback() {
-				unwatch(this, 'props')
+				unwatch(this, "props");
 				this[klass].unmount && this[klass].unmount();
 			}
 		}
 	);
 };
 
-export { registerElement }; 
+export { registerElement };

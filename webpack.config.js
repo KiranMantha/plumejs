@@ -44,10 +44,12 @@ let config = {
     optimization: {
         minimizer: [
             HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
-            MIN && new TerserPlugin(),
-            new CompressionPlugin({
-                algorithm: 'gzip'
-            }),
+            MIN && new TerserPlugin({
+                terserOptions: {
+                    keep_classnames:true,
+                    keep_fnames: true
+                }
+            })
         ].filter(Boolean)
     }
 }
