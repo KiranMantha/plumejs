@@ -77,6 +77,7 @@
     "coveralls": "^3.0.4",
     "cross-env": "^5.2.0",
     "del": "^4.1.1",
+    "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
     "npm-run-all": "^4.1.5",
     "post-compile-webpack-plugin": "^0.1.2",

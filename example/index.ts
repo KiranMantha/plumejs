@@ -1,5 +1,5 @@
 // Import stylesheets
-import { Component, Injectable, html, Input } from "../index";
+import { Component, Injectable, html, Input, Router } from "../index";
 
 @Injectable()
 export class PersonService {
@@ -18,7 +18,9 @@ class PersonsList {
 	persondetails: any = {};
 	update: any;
 	element: any;
-	constructor(private personSrvc: PersonService) {}
+	constructor(private personSrvc: PersonService, private router:Router) {
+		console.log('current route ', this.router.getCurrentRoute());
+	}
 	mount() {
 		this.personSrvc.getPersons().then(data => {
 			this.data = data;
@@ -33,6 +35,7 @@ class PersonsList {
 
 	render() {
 		return html`
+		<h1>Sample service injection with http call and passing data to other component</h1>
 			<div>
 				<ul>
 					${this.data.map(
@@ -156,6 +159,7 @@ class SampleEle {
 	render() {
 		return html`
 			<div>
+				<h1>Sample two way data binding</h1>
 				testing web component1 ${this.test}
 				<test-ele testprops=${this.props}></test-ele>
 			</div>
@@ -180,4 +184,47 @@ class SampleEle {
 	unmount() {
 		console.log("component unloaded");
 	}
+}
+
+
+@Component({
+  selector: 'app-root'
+})
+class AppRoot {
+	constructor(private router:Router) { }
+	
+  routes:Array<Route> = [
+		{
+			path: '',
+			redirectTo: '/home'
+		},
+		{
+			path: '/home',
+			template: `<sample-ele></sample-ele>`
+		},
+		{
+			path: '/persons/:id',
+			template: `<persons-list></persons-list>`
+		}
+	]
+	
+	navigate = (path:string) => {
+    this.router.navigateTo(path);
+  }
+
+  render() {
+    return html`
+     <div>
+      <ul>
+      <li>
+          <a onclick=${() => { this.navigate('/home') }}>Home</a>
+        </li>
+        <li>
+          <a onclick=${() => { this.navigate('/persons/123') }}>persons</a>
+        </li>
+      </ul>
+      <router-outlet routes=${this.routes}></router-outlet>
+    </div>
+    `
+  }
 }

@@ -1,5 +1,5 @@
 import { instantiate } from "./instance";
-import { isString } from "./utils";
+import { isString, isFunction } from "./utils";
 
 const Injector = (() => {
 	interface IService {
@@ -18,10 +18,18 @@ const Injector = (() => {
 		}
 	};
 
-	const _service = (name: string, fn: Function, deps: Array<string> = []) => {
+	const _service = (
+		name: string,
+		fn: Function | Object,
+		deps: Array<string> = []
+	) => {
 		if (name && fn) {
 			if (!_services[name]) {
-				_services[name] = instantiate(fn, deps);
+				if (isFunction(fn)) {
+					_services[name] = instantiate(fn, deps);
+				} else {
+					_services[name] = fn;
+				}
 			}
 		} else {
 			throw "error: Requires name and constructor to define service";

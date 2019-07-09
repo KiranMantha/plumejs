@@ -27,17 +27,13 @@ const Component = (options: DecoratorOptions) => (target: any) => {
 	registerElement(options, target, s);
 };
 
-const Injectable = () => {
-	return (target: Function) => {
-		let s = getDeps(target);
-		Injector.register(target.name, target, s);
-	};
+const Injectable = () => (target: Function) => {
+	let s = getDeps(target);
+	Injector.register(target.name, target, s);
 };
 
-const Input = () => {
-	return (target: any, key: string) => {
-		Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
-	};
+const Input = () => (target: any, key: string) => {
+	Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
 };
 
 export { Component, Injectable, Input };

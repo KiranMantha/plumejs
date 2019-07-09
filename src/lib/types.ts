@@ -13,3 +13,16 @@ type Dictionary = {
 };
 
 type GenericClassDecorator<T> = (target: T) => void;
+
+type RouteItem = {
+	Params: any;
+	Url: string;
+  Template: string;
+  ParamCount: number;
+}
+
+type Route = {
+  path: string;
+  template?: string;
+  redirectTo?:string;
+}

@@ -10,6 +10,7 @@ const WebpackPrebuild = require('pre-build-webpack');
 const PostCompile = require('post-compile-webpack-plugin')
 const del = require('del');
 const copy = require('copy');
+const HtmlWebpack = require('html-webpack-plugin');
 
 let config = {
     mode: 'production',
@@ -40,6 +41,11 @@ let config = {
             copy('dist/*.js', 'docs', function (err, file) {});
             copy('example/*.html', 'docs', function (err, file) {});            
         })
+        // ,new HtmlWebpack({
+        //     filename: 'index.html',
+        //     inject: 'head',
+        //     template: path.resolve(__dirname, 'example', 'index.html')
+        // }),
     ],
     optimization: {
         minimizer: [
@@ -51,6 +57,10 @@ let config = {
                 }
             })
         ].filter(Boolean)
+        // ,splitChunks: {
+        //     chunks: 'all',
+        //     name: 'vendor'
+        // }
     }
 }
 
