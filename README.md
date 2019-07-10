@@ -156,3 +156,59 @@ Creating service is as simple as creating a component
 Services in plumejs are singleton
 
 Note: The constructor arguments are strictly typed and should not be native types or 'any'. Else they will return undefined.
+
+# Routing
+
+Routing can be implemented in 2 simple steps
+
+1. Declare routes array as below
+
+```
+  const routes = [{
+    path: '',
+    redirectto: '/home',
+  },{
+    path: '/home',
+    template: '<app-home></app-home>',
+  },{
+    path: '/contactus',
+    template: '<app-contactus></app-contactus>',
+  },{
+    path: '/details/:id',
+    template: '<app-details></app-details>',
+  }]
+```
+
+2. add `<router-outlet routes=${ this.routes }></router-outlet>` in your component
+
+That's it. Now we have the routing in our application.
+
+To navigate from one route to other from a component:
+
+```
+  import {Router} from './plumejs'
+  @Component({
+    selecotr: '<your-selector></your-selector>'
+  })
+  class YourClass {
+    constructor(private router: Router){}
+
+    onclick() {
+      this.router.navigateTo('your-route');
+    }
+  }
+```
+
+To Access current route parameters
+
+```
+  route = [{
+    path: '/details/:id'
+    ....
+  }]
+  ...
+
+  if window.url is /details/123
+  const currentRoute = this.router.getCurrentRoute();
+  const id = currentRoute.params.id; /// returns 123
+```
