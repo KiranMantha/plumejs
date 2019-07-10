@@ -109,7 +109,7 @@ export class InternalRouter {
   }
 
 	navigateTo(path: string = "") {
-		//window.history.pushState(null, '', path);
+		window.history.pushState(null, '', path);
 		this._navigateTo(path);
 	}
 
