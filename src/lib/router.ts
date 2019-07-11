@@ -5,7 +5,7 @@ import { InternalRouter } from "./routerService";
 @Component({
 	selector: "router-outlet"
 })
-export class RouterOutlet {
+class RouterOutlet {
 	template = "";
   update: any;
   
