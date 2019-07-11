@@ -33,7 +33,7 @@
     "serve": "webpack-dev-server --config webpack.server.config.js",
     "test": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test-local": "jest",
-    "build": "run-p build:**",
+    "build": "tsc",
     "build:min": "cross-env MIN=1 webpack",
     "build:hoist": "cross-env HOIST=1 webpack",
     "build:min:hoist": "cross-env MIN=1 HOIST=1 webpack"

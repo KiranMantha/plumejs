@@ -1,2 +1,4 @@
-/example
-/__tests__
+/example/
+/__tests__/
+/docs/
+/src/

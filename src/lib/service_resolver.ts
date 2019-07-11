@@ -18,11 +18,14 @@ const Injector = (() => {
 		}
 	};
 
-	const _service = (
-		name: string,
-		fn: Function | Object,
-		deps: Array<string> = []
-	) => {
+	function _service(name: string, fn:Function, deps: Array<string>): void;
+	function _service(name:string, fn:Object):void;
+
+	function _service(
+		name: any,
+		fn: any,
+		deps: any = []
+	) {
 		if (name && fn) {
 			if (!_services[name]) {
 				if (isFunction(fn)) {
