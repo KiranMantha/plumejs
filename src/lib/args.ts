@@ -1,4 +1,4 @@
-const args = fn => {
+const args = (fn:Function) => {
   return Function.toString
     .call(fn)
     .replace(/[/][/].*$/gm, "") // strip single-line comments

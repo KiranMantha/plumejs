@@ -1,9 +1,10 @@
 {
   "presets": [
-    ["@babel/preset-env", { "modules": false }],
+    ["@babel/preset-env", { "modules": false, "loose": true }],
     "@babel/typescript"
   ],
   "plugins": [
+    "babel-plugin-transform-typescript-metadata",
     ["@babel/plugin-proposal-decorators",{"legacy": true}],
     ["@babel/proposal-class-properties",{"loose": true}],
     "@babel/proposal-object-rest-spread"

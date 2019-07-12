@@ -1,14 +1,14 @@
 import { instantiate } from "./instance";
-import { isString } from "./utils";
+import { isString, isFunction } from "./utils";
 
-const ServiceResolver = (() => {
+const Injector = (() => {
 	interface IService {
 		[key: string]: any;
 	}
 	let _services: IService = {};
 	const _getService = (name: string) => {
 		if (isString(name)) {
-			if(_services[name]) {
+			if (_services[name]) {
 				return _services[name];
 			} else {
 				throw Error(`${name} is not a registered provider.`);
@@ -18,10 +18,21 @@ const ServiceResolver = (() => {
 		}
 	};
 
-	const _service = (name: string, fn: Function, deps: Array<string> = []) => {
+	function _service(name: string, fn:Function, deps: Array<string>): void;
+	function _service(name:string, fn:Object):void;
+
+	function _service(
+		name: any,
+		fn: any,
+		deps: any = []
+	) {
 		if (name && fn) {
 			if (!_services[name]) {
-				_services[name] = instantiate(fn, deps);
+				if (isFunction(fn)) {
+					_services[name] = instantiate(fn, deps);
+				} else {
+					_services[name] = fn;
+				}
 			}
 		} else {
 			throw "error: Requires name and constructor to define service";
@@ -29,9 +40,9 @@ const ServiceResolver = (() => {
 	};
 
 	return {
-		getService: _getService,
-		registerService: _service
+		get: _getService,
+		register: _service
 	};
 })();
 
-export const { getService, registerService } = ServiceResolver;
+export { Injector };

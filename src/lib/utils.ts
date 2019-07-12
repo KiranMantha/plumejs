@@ -58,9 +58,6 @@ const rxMethod = /(.+)(\((.+)?\)){1}/;
 const rxExpression = /{{(.+?)}}/g;
 const rxOutput = /\((.*?)\)/g;
 const rxWCElement = /(\-\w)/gm;
-const qSelectAll = (target:HTMLElement, selector:string) => {
-  return [...target.querySelectorAll(selector)];
-}
 const isNumber = (value:any) => typeof value === $number;
 const isArray = (value:any) => value instanceof Array;
 const isObject = (value:any) => value !== null && typeof value === $object;
@@ -86,5 +83,6 @@ const ajaxHtmlLoad = (url: string, method: string) => {
     xhr.send();
   });
 }
+const INPUT_METADATA_KEY = Symbol("design:inputTypes");
 
-export { parseHtml, foreach, rxProp, rxOutput, rxWCElement, rxMethod, rxExpression, qSelectAll, _id, _nextId, _componentRegistry, lookup, isNumber, isArray, isObject, isString, isFunction, isUndefined, isDefined, valueFn, ajaxHtmlLoad, klass };
+export { parseHtml, foreach, rxProp, rxOutput, rxWCElement, rxMethod, rxExpression, _id, _nextId, _componentRegistry, lookup, isNumber, isArray, isObject, isString, isFunction, isUndefined, isDefined, valueFn, ajaxHtmlLoad, klass, INPUT_METADATA_KEY };
