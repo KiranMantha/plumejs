@@ -1,5 +1,5 @@
 // Import stylesheets
-import { Component, Injectable, html, Input, Router, Route } from "../index";
+import { Component, Injectable, html, Input, Router, Route, useRef } from "../index";
 
 @Injectable()
 export class PersonService {
@@ -191,7 +191,11 @@ class SampleEle {
   selector: 'app-root'
 })
 class AppRoot {
-	constructor(private router:Router) { }
+	constructor(private router:Router) {
+		
+	}
+
+	inputField;
 	
   routes:Array<Route> = [
 		{
@@ -210,9 +214,14 @@ class AppRoot {
 	
 	navigate = (path:string) => {
     this.router.navigateTo(path);
-  }
+	}
+	
+	getRef(){
+		console.log(this.inputField);
+	}
 
   render() {
+		this.inputField = useRef(null);
     return html`
      <div>
       <ul>
@@ -223,7 +232,8 @@ class AppRoot {
           <a onclick=${() => { this.navigate('/persons/123') }}>persons</a>
         </li>
       </ul>
-      <router-outlet routes=${this.routes}></router-outlet>
+			<router-outlet routes=${this.routes}></router-outlet>
+			<input type='text' ref=${this.inputField} /><button onclick=${()=>{ this.getRef() }}>click</button>
     </div>
     `
   }

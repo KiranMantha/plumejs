@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
 const lighterhtml_plus_1 = require("lighterhtml-plus");
 const melanke_watchjs_1 = require("melanke-watchjs");
 const instance_1 = require("./instance");
+const augmentor_1 = __importDefault(require("augmentor"));
 const getValue = (obj, key) => {
     return obj[key] || null;
 };
@@ -28,7 +32,7 @@ const registerElement = (options, target, providers = []) => {
             return this.dataset.hash;
         }
         renderTemplate() {
-            return this.render();
+            return augmentor_1.default(this.render.bind(this))();
         }
         init() {
             return lighterhtml_plus_1.render.bind(this[utils_1.klass], this.shadow, this.renderTemplate)();

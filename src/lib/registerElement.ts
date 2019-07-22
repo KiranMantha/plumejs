@@ -3,6 +3,7 @@ import { render } from "lighterhtml-plus";
 import { watch, unwatch } from "melanke-watchjs";
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
+import augmentor from 'augmentor';
 
 const getValue = (obj:any, key:string) => {
 	return obj[key] || null;
@@ -45,7 +46,7 @@ const registerElement = (
 			}
 
 			renderTemplate() {
-				return this.render();
+				return augmentor(this.render.bind(this))();
 			}
 
 			private init() {
