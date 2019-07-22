@@ -1,6 +1,7 @@
 import { Component, Input } from "./decorators";
 import { html } from "lighterhtml-plus";
 import { InternalRouter } from "./routerService";
+import { Route } from "./types";
 
 @Component({
 	selector: "router-outlet"

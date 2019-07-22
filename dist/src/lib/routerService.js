@@ -33,7 +33,7 @@ class StaticRouter {
             Template: "",
             ParamCount: 0
         };
-        obj.Params = r.path.split("/").filter(h => {
+        obj.Params = r.path.split("/").filter((h) => {
             return h.length > 0;
         });
         obj.Url = r.path;

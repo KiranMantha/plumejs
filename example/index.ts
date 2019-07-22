@@ -1,5 +1,5 @@
 // Import stylesheets
-import { Component, Injectable, html, Input, Router } from "../index";
+import { Component, Injectable, html, Input, Router, Route } from "../index";
 
 @Injectable()
 export class PersonService {

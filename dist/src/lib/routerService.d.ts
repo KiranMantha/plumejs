@@ -1,3 +1,4 @@
+import { Route } from "./types";
 export declare class InternalRouter {
     currentRoute: {
         params: {};

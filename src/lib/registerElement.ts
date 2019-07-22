@@ -2,6 +2,7 @@ import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml-plus";
 import { watch, unwatch } from "melanke-watchjs";
 import { instantiate } from "./instance";
+import { DecoratorOptions } from "./types";
 
 const getValue = (obj:any, key:string) => {
 	return obj[key] || null;

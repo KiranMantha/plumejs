@@ -1,5 +1,6 @@
 import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
+import { RouteItem, Route } from "./types";
 
 class StaticRouter {
 	static checkParams(up: Array<string>, r: RouteItem) {
@@ -37,7 +38,7 @@ class StaticRouter {
 			Template: "",
 			ParamCount: 0
 		};
-		obj.Params = r.path.split("/").filter(h => {
+		obj.Params = r.path.split("/").filter((h:string) => {
 			return h.length > 0;
 		});
 		obj.Url = r.path;

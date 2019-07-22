@@ -1,13 +1,13 @@
-declare type DecoratorOptions = {
+export declare type DecoratorOptions = {
     selector: string;
 };
-declare type RouteItem = {
+export declare type RouteItem = {
     Params: any;
     Url: string;
     Template: string;
     ParamCount: number;
 };
-declare type Route = {
+export declare type Route = {
     path: string;
     template?: string;
     redirectTo?: string;
