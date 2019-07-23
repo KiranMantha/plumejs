@@ -1,5 +1,5 @@
 // Import stylesheets
-import { Component, Injectable, html, Input, Router, Route, useRef } from "../index";
+import { Component, Injectable, html, Input, Router, Route, useRef, Ref } from "../index";
 
 @Injectable()
 export class PersonService {
@@ -195,7 +195,7 @@ class AppRoot {
 		
 	}
 
-	inputField;
+	inputField:Ref<null> | undefined;
 	
   routes:Array<Route> = [
 		{

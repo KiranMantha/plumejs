@@ -12,3 +12,6 @@ export declare type Route = {
     template?: string;
     redirectTo?: string;
 };
+export declare type Ref<T> = {
+    current: T;
+};

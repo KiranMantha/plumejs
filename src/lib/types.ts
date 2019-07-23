@@ -14,3 +14,5 @@ export type Route = {
   template?: string;
   redirectTo?:string;
 }
+
+export type Ref<T> = {current: T};

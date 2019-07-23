@@ -14,6 +14,7 @@ let config = {
     devtool: 'cheap-module-source-map',
     entry: {
         main: path.resolve(__dirname,'example','index')
+        //polyfill: 'babel-core/polyfill.js'
     },
     output: {
         path: path.resolve(__dirname, 'docs'),
@@ -44,6 +45,8 @@ let config = {
             HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
             MIN && new TerserPlugin({
                 terserOptions: {
+                    ecma: 5,
+                    ie8: true,
                     keep_classnames:true,
                     keep_fnames: true
                 }

@@ -2,13 +2,13 @@
 
 Demo [here](https://kiranmantha.github.io/plumejs/)
 
-Plumejs is a very light weight typescript framework to build spa's.It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
+PlumeJs is a very light weight typescript framework to build spa's.It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
 
-Plumejs is a conceptual combination of angularjs and react. just like angular one can register factories, components, life-cycle hooks and like react it have `props` to pass data from one component to other, `update` function to update the view after modal updations and a render function to render the component.
+PlumeJs is a conceptual combination of angularjs and react. just like angular one can register factories, components, life-cycle hooks and like react it have `props` to pass data from one component to other, `update` function to update the view after modal updations and a render function to render the component.
 
-Plumejs is built as UMD module. Hence it can be load via script tag in html or as es6 module in nodejs. Plumejs has very few syntaxes enabling faster learning curve.
+PlumeJs is built as UMD module. Hence it can be load via script tag in html or as es6 module in nodejs. PlumeJs has very few syntaxes enabling faster learning curve.
 
-To start with Plumejs
+To start with PlumeJs
 
 # Creating Components
 
@@ -153,7 +153,7 @@ Creating service is as simple as creating a component
   }
 ```
 
-Services in plumejs are singleton
+Services in PlumeJs are singleton
 
 Note: The constructor arguments are strictly typed and should not be native types or 'any'. Else they will return undefined.
 
@@ -211,4 +211,30 @@ To Access current route parameters
   if window.url is /details/123
   const currentRoute = this.router.getCurrentRoute();
   const id = currentRoute.params.id; /// returns 123
+```
+
+Just like react, PlumeJs provides `useRef` as references. example:
+
+```
+import {Component, Ref, useRef}
+@Component({
+  selector: 'sample-comp'
+})
+class SampleComp {
+	inputField:Ref<null> | undefined;
+	
+	getRef(){
+		console.log(this.inputField);
+	}
+
+  render() {
+		this.inputField = useRef(null);
+    return html`
+     <div>
+			<input type='text' ref=${this.inputField} />
+      <button onclick=${()=>{ this.getRef() }}>click</button>
+    </div>
+    `
+  }
+}
 ```

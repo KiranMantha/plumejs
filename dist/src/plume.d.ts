@@ -1,10 +1,9 @@
 import { Injector } from "./lib/service_resolver";
-import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
 import { Component, Injectable, Input } from "./lib/decorators";
-import { hook, html } from 'lighterhtml-plus';
 import { Router } from "./lib/routerService";
-import { DecoratorOptions, Route } from './lib/types';
+import { DecoratorOptions, Route, Ref } from './lib/types';
 import './lib/router';
-import * as augmentor from 'augmentor';
-declare const useRef: typeof augmentor.useRef;
-export { Component, Injectable, html, hook, Injector, Input, Router, DecoratorOptions, Route, useRef };
+import { html } from 'lighterhtml-plus';
+import { useRef } from 'augmentor';
+import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
+export { Component, Injectable, html, Injector, Input, Router, DecoratorOptions, Route, useRef, Ref };

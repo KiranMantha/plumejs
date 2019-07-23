@@ -1,12 +1,22 @@
 {
   "presets": [
-    ["@babel/preset-env", { "modules": false, "loose": true }],
-    "@babel/typescript"
+    ["@babel/preset-env", {
+      "modules": "false",
+      "loose": true,
+      "targets": "> 0.25%, not dead",
+      "useBuiltIns": false
+    }],
+    "@babel/preset-typescript"
   ],
   "plugins": [
     "babel-plugin-transform-typescript-metadata",
-    ["@babel/plugin-proposal-decorators",{"legacy": true}],
-    ["@babel/proposal-class-properties",{"loose": true}],
+    ["@babel/plugin-proposal-decorators", {
+      "legacy": true,
+      "loose": true
+    }],
+    ["@babel/proposal-class-properties", {
+      "loose": true
+    }],
     "@babel/proposal-object-rest-spread"
   ]
 }

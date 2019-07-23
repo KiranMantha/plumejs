@@ -1,15 +1,8 @@
 let $object = 'object',
-  $array = 'array',
   $string = 'string',
   $function = 'function',
   $undefined = 'undefined',
   $number = 'number';
-const parseHtml = (tmpl:string) => {
-  let template;
-  template = document.createElement("template");
-  template.innerHTML = tmpl;
-  return template.content.cloneNode(true);
-};
 //foreach for arrays, collections, objects
 const foreach = (collection:Array<any>, callback:(o:any, i:any, c:Array<any>) => void, scope:any = {}) => {
   if (Object.prototype.toString.call(collection) === "[object Object]") {
@@ -48,16 +41,10 @@ const lookup = (obj:any, path:string, defaultValue:string = '') => {
   }
   return value;
 }
-const _$ = Symbol('_internals_');
 const _id = Symbol('id');
 const klass = Symbol('klass');
 const _nextId = Symbol('nextId');
 const _componentRegistry = Symbol('componentRegistry');
-const rxProp = /(.+[^(\((.+)\))])/;
-const rxMethod = /(.+)(\((.+)?\)){1}/;
-const rxExpression = /{{(.+?)}}/g;
-const rxOutput = /\((.*?)\)/g;
-const rxWCElement = /(\-\w)/gm;
 const isNumber = (value:any) => typeof value === $number;
 const isArray = (value:any) => value instanceof Array;
 const isObject = (value:any) => value !== null && typeof value === $object;
@@ -85,4 +72,4 @@ const ajaxHtmlLoad = (url: string, method: string) => {
 }
 const INPUT_METADATA_KEY = Symbol("design:inputTypes");
 
-export { parseHtml, foreach, rxProp, rxOutput, rxWCElement, rxMethod, rxExpression, _id, _nextId, _componentRegistry, lookup, isNumber, isArray, isObject, isString, isFunction, isUndefined, isDefined, valueFn, ajaxHtmlLoad, klass, INPUT_METADATA_KEY };
+export { foreach, _id, _nextId, _componentRegistry, lookup, isNumber, isArray, isObject, isString, isFunction, isUndefined, isDefined, valueFn, ajaxHtmlLoad, klass, INPUT_METADATA_KEY };
