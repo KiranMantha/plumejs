@@ -8,6 +8,8 @@ PlumeJs is a conceptual combination of angularjs and react. just like angular on
 
 PlumeJs is built as UMD module. Hence it can be load via script tag in html or as es6 module in nodejs. PlumeJs has very few syntaxes enabling faster learning curve.
 
+For most asked questions, please check [QA.md](https://github.com/KiranMantha/plumejs/blob/dev-branch/QA.md)
+
 To start with PlumeJs
 
 # Creating Components
@@ -18,9 +20,12 @@ Creating component is a non-hectic task.
 
 ```
   import { Component, html } from 'plumejs';
+  const test_ele_styles = require('./test-ele.scss')
 
   @Component({
-    selector: 'test-ele'
+    selector: 'test-ele',
+    styles: test_ele_styles,
+    root: true
   })
   class TestEle {
     test:string;
@@ -33,6 +38,10 @@ Creating component is a non-hectic task.
   }
 
 ```
+
+Note: through out the entire application there will be only one root component. adding more root components will not render the page and throw duplicate root component error.
+
+For styling one can use css or scss formats.
 
 Component provide `mount` hook to perform model data initialization as follows:
 
