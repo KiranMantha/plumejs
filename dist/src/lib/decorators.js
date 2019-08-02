@@ -26,7 +26,8 @@ var Component = function (options) { return function (target) {
         throw new Error("You need at least 1 dash in the custom element name!");
     }
     var s = getDeps(target);
-    registerElement_1.registerElement(options, target, s);
+    var isRoot = options.root ? options.root : false;
+    registerElement_1.registerElement(options, target, s, isRoot);
 }; };
 exports.Component = Component;
 var Injectable = function () { return function (target) {

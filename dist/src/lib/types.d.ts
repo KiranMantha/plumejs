@@ -1,17 +1,19 @@
-export declare type DecoratorOptions = {
+export interface DecoratorOptions {
     selector: string;
-};
-export declare type RouteItem = {
+    styles?: string;
+    root?: boolean;
+}
+export interface RouteItem {
     Params: any;
     Url: string;
     Template: string;
     ParamCount: number;
-};
-export declare type Route = {
+}
+export interface Route {
     path: string;
     template?: string;
     redirectTo?: string;
-};
+}
 export declare type Ref<T> = {
     current: T;
 };

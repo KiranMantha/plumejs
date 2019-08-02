@@ -1,6 +1,18 @@
 "use strict";
+var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = require("tslib");
 var decorators_1 = require("./decorators");
 var lighterhtml_plus_1 = require("lighterhtml-plus");
 var routerService_1 = require("./routerService");
@@ -30,7 +42,7 @@ var RouterOutlet = (function () {
             this.isRoutesAdded = true;
         }
         if (!this.template) {
-            return lighterhtml_plus_1.html(templateObject_1 || (templateObject_1 = tslib_1.__makeTemplateObject(["\n\t\t\t\t<div></div>\n\t\t\t"], ["\n\t\t\t\t<div></div>\n\t\t\t"])));
+            return lighterhtml_plus_1.html(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n\t\t\t\t<div></div>\n\t\t\t"], ["\n\t\t\t\t<div></div>\n\t\t\t"])));
         }
         else {
             var stringArray = ["" + this.template];
@@ -38,15 +50,15 @@ var RouterOutlet = (function () {
             return lighterhtml_plus_1.html(stringArray);
         }
     };
-    tslib_1.__decorate([
+    __decorate([
         decorators_1.Input(),
-        tslib_1.__metadata("design:type", Array)
+        __metadata("design:type", Array)
     ], RouterOutlet.prototype, "routes", void 0);
-    RouterOutlet = tslib_1.__decorate([
+    RouterOutlet = __decorate([
         decorators_1.Component({
             selector: "router-outlet"
         }),
-        tslib_1.__metadata("design:paramtypes", [routerService_1.InternalRouter])
+        __metadata("design:paramtypes", [routerService_1.InternalRouter])
     ], RouterOutlet);
     return RouterOutlet;
 }());

@@ -13,5 +13,4 @@ var lighterhtml_plus_1 = require("lighterhtml-plus");
 exports.html = lighterhtml_plus_1.html;
 var augmentor_1 = require("augmentor");
 exports.useRef = augmentor_1.useRef;
-require("@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js");
 //# sourceMappingURL=plume.js.map
