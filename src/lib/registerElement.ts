@@ -9,14 +9,12 @@ const getValue = (obj:any, key:string) => {
 	return obj[key] || null;
 }
 
-const getComputedCss = (path: string = '') => {
-	let globalsheet:any = new CSSStyleSheet();
-	globalsheet.replace(document.styleSheets[0]);
+const getComputedCss = (csspath: string = '') => {
+	// let globalsheet:any = new CSSStyleSheet();
+	// globalsheet.replace(document.styleSheets[0]);
 	let sheet:any = new CSSStyleSheet();
-	if(path) {
-		sheet.replaceSync(`${path}`);
-	}
-	return [globalsheet, sheet];
+	sheet.replace(csspath);
+	return [sheet];
 }
 
 const registerElement = (
@@ -64,7 +62,7 @@ const registerElement = (
 			}
 
 			connectedCallback() {
-				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
+				this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
 				this[klass] = instantiate(
 					target,
 					providers,

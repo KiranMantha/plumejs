@@ -8,6 +8,7 @@ const {
 const WebpackPrebuild = require('pre-build-webpack');
 const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 let config = {
     mode: 'production',
@@ -17,17 +18,27 @@ let config = {
     },
     output: {
         path: path.resolve(__dirname, '../docs'),
-        filename: `[name]${ MIN ? '.min' : '' }.js`,
+        filename: `[name].[hash]${ MIN ? '.min' : '' }.js`,
     },
     module: {
         rules: [{
             test: /\.ts$/,
             loader: 'babel-loader',
             exclude: /node_modules/
+        }, {
+            test: /\.(s*)css$/,
+            exclude: /node_modules/,
+            use: [{
+                    loader: "css-loader" // translates CSS into CommonJS
+                },
+                {
+                    loader: "sass-loader" // compiles Sass to CSS
+                }
+            ]
         }]
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js', '.css', '.scss']
     },
     plugins: [
         new WebpackPrebuild(() => {
@@ -44,7 +55,7 @@ let config = {
             HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
             MIN && new TerserPlugin({
                 terserOptions: {
-                    keep_classnames:true,
+                    keep_classnames: true,
                     keep_fnames: true
                 }
             })

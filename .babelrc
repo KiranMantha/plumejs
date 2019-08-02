@@ -1,10 +1,11 @@
 {
   "presets": [
     ["@babel/preset-env", {
-      "modules": "false",
+      "modules": false,
       "loose": true,
-      "targets": "> 0.25%, not dead",
-      "useBuiltIns": false
+      "targets": {
+        "browsers": ["last 2 versions", "ie >= 10"]
+      }
     }],
     "@babel/preset-typescript"
   ],
