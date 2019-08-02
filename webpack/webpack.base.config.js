@@ -13,11 +13,10 @@ let config = {
     mode: 'production',
     devtool: 'cheap-module-source-map',
     entry: {
-        main: path.resolve(__dirname,'example','index')
-        //polyfill: 'babel-core/polyfill.js'
+        main: './example/index'
     },
     output: {
-        path: path.resolve(__dirname, 'docs'),
+        path: path.resolve(__dirname, '../docs'),
         filename: `[name]${ MIN ? '.min' : '' }.js`,
     },
     module: {
@@ -28,15 +27,15 @@ let config = {
         }]
     },
     resolve: {
-        extensions: ['.ts']
+        extensions: ['.ts', '.js']
     },
     plugins: [
         new WebpackPrebuild(() => {
-            del([path.resolve(__dirname, 'docs')])
+            del([path.resolve(__dirname, '../docs')])
         }),
         new HtmlWebpack({
             filename: 'index.html',
-            template: path.resolve(__dirname, 'example', 'index.html'),
+            template: './example/index.html',
             inject: 'head'
         })
     ],
@@ -45,8 +44,6 @@ let config = {
             HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
             MIN && new TerserPlugin({
                 terserOptions: {
-                    ecma: 5,
-                    ie8: true,
                     keep_classnames:true,
                     keep_fnames: true
                 }

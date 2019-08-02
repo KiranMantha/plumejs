@@ -1,15 +1,17 @@
-export type DecoratorOptions = {
-  selector: string
+export interface DecoratorOptions {
+  selector: string,
+  styleUrl?: string,
+  styles?: string
 }
 
-export type RouteItem = {
+export interface RouteItem {
 	Params: any;
 	Url: string;
   Template: string;
   ParamCount: number;
 }
 
-export type Route = {
+export interface Route {
   path: string;
   template?: string;
   redirectTo?:string;

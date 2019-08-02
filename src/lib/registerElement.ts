@@ -9,6 +9,16 @@ const getValue = (obj:any, key:string) => {
 	return obj[key] || null;
 }
 
+const getComputedCss = (path: string = '') => {
+	let globalsheet:any = new CSSStyleSheet();
+	globalsheet.replace(document.styleSheets[0]);
+	let sheet:any = new CSSStyleSheet();
+	if(path) {
+		sheet.replaceSync(`${path}`);
+	}
+	return [globalsheet, sheet];
+}
+
 const registerElement = (
 	options: DecoratorOptions,
 	target: Function,
@@ -23,7 +33,7 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = this.attachShadow({ mode: "closed" });
+				this.shadow = this.attachShadow({ mode: "open" });
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(
@@ -41,10 +51,6 @@ const registerElement = (
 				}
 			}
 
-			get __id() {
-				return this.dataset.hash;
-			}
-
 			renderTemplate() {
 				return augmentor(this.render.bind(this))();
 			}
@@ -58,6 +64,7 @@ const registerElement = (
 			}
 
 			connectedCallback() {
+				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
 				this[klass] = instantiate(
 					target,
 					providers,
