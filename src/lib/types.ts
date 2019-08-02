@@ -1,6 +1,5 @@
 export interface DecoratorOptions {
   selector: string,
-  styleUrl?: string,
   styles?: string
 }
 
