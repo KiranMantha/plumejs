@@ -25,7 +25,8 @@ const Component = (options: DecoratorOptions) => (target: any) => {
 		throw new Error("You need at least 1 dash in the custom element name!");
 	}
 	let s = getDeps(target);
-	registerElement(options, target, s);
+	let isRoot = options.root ? options.root : false;
+	registerElement(options, target, s, isRoot);
 };
 
 const Injectable = () => (target: Function) => {

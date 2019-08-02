@@ -8,7 +8,6 @@ const {
 const WebpackPrebuild = require('pre-build-webpack');
 const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 let config = {
     mode: 'production',

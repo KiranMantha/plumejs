@@ -1,13 +1,1 @@
-$grey: #ccc;
-
-.test {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  li {
-    color: $grey;
-    &:before {
-      content: 'testing '
-    }
-  }
-}
+@import '~bootstrap/scss/bootstrap';

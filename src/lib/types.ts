@@ -1,6 +1,7 @@
 export interface DecoratorOptions {
   selector: string,
-  styles?: string
+  styles?: string,
+  root?:boolean
 }
 
 export interface RouteItem {

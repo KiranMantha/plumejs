@@ -12,16 +12,27 @@ const getValue = (obj:any, key:string) => {
 const getComputedCss = (csspath: string = '') => {
 	// let globalsheet:any = new CSSStyleSheet();
 	// globalsheet.replace(document.styleSheets[0]);
-	let sheet:any = new CSSStyleSheet();
+	let sheet:any = new CSSStyleSheet();	
 	sheet.replace(csspath);
-	return [sheet];
+	return [globalStyles, sheet];
 }
+
+let isRootNodeSet = false;
+let globalStyles:any = new CSSStyleSheet();
 
 const registerElement = (
 	options: DecoratorOptions,
 	target: Function,
-	providers: Array<any> = []
+	providers: Array<any> = [],
+	isRoot: boolean
 ) => {
+	if(isRoot && !isRootNodeSet) {
+		isRootNodeSet = true;
+		globalStyles.replace(options.styles);
+	} else if(isRoot && isRootNodeSet) {
+		throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
+	}
+
 	window.customElements.define(
 		options.selector,
 		class extends HTMLElement {

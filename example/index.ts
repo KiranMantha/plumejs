@@ -1,7 +1,64 @@
 // Import stylesheets
 //https://codepen.io/jovdb/pen/vdZmEz?editors=0010#0
 import { Component, Injectable, html, Input, Router, Route, useRef, Ref } from "../index";
-let style = require('./main.scss');
+let person_style = require('./persons-list.scss');
+let main = require('./main.scss');
+
+
+@Component({
+	selector: 'app-root',
+	root: true,
+	styles: main
+})
+class AppRoot {
+	constructor(private router:Router) {
+		
+	}
+
+	inputField:Ref<null> | undefined;
+	
+  routes:Array<Route> = [
+		{
+			path: '',
+			redirectTo: '/home'
+		},
+		{
+			path: '/home',
+			template: `<sample-ele></sample-ele>`
+		},
+		{
+			path: '/persons/:id',
+			template: `<persons-list></persons-list>`
+		}
+	]
+	
+	navigate = (path:string) => {
+    this.router.navigateTo(path);
+	}
+	
+	getRef(){
+		console.log(this.inputField);
+	}
+
+  render() {
+		this.inputField = useRef(null);
+    return html`
+     <div>
+      <ul>
+      <li>
+          <a onclick=${() => { this.navigate('/home') }}>Home</a>
+        </li>
+        <li>
+          <a onclick=${() => { this.navigate('/persons/123') }}>persons</a>
+        </li>
+      </ul>
+			<input type='text' ref=${this.inputField} /><button onclick=${()=>{ this.getRef() }}>click</button>
+			<persons-list></persons-list>
+    </div>
+    `
+  }
+}
+
 
 @Injectable()
 export class PersonService {
@@ -14,7 +71,7 @@ export class PersonService {
 
 @Component({
 	selector: "persons-list",
-	styles: style
+	styles: person_style
 })
 class PersonsList {
 	data: Array<string> = [];
@@ -58,22 +115,6 @@ class PersonsList {
 					id="person-details"
 					userDetails=${this.persondetails}
 				></person-details>
-				<form>
-					<div class="form-group">
-						<label for="exampleInputEmail1">Email address</label>
-						<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-					</div>
-					<div class="form-group">
-						<label for="exampleInputPassword1">Password</label>
-						<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-					</div>
-					<div class="form-group form-check">
-						<input type="checkbox" class="form-check-input" id="exampleCheck1">
-						<label class="form-check-label" for="exampleCheck1">Check me out</label>
-					</div>
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</form>
 			</div>
 		`;
 	}
@@ -92,6 +133,23 @@ export class PersonDetails {
 			return html`
 				<div>Name: ${this.userDetails.name}</div>
 				<div>Company: ${this.userDetails.company.name}</div>
+				
+				<form>
+					<div class="form-group">
+						<label for="exampleInputEmail1">Email address</label>
+						<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">Password</label>
+						<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+					</div>
+					<div class="form-group form-check">
+						<input type="checkbox" class="form-check-input" id="exampleCheck1">
+						<label class="form-check-label" for="exampleCheck1">Check me out</label>
+					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
 			`;
 		} else {
 			return html``;
@@ -205,55 +263,3 @@ export class PersonDetails {
 // 	}
 // }
 
-
-@Component({
-  selector: 'app-root'
-})
-class AppRoot {
-	constructor(private router:Router) {
-		
-	}
-
-	inputField:Ref<null> | undefined;
-	
-  routes:Array<Route> = [
-		{
-			path: '',
-			redirectTo: '/home'
-		},
-		{
-			path: '/home',
-			template: `<sample-ele></sample-ele>`
-		},
-		{
-			path: '/persons/:id',
-			template: `<persons-list></persons-list>`
-		}
-	]
-	
-	navigate = (path:string) => {
-    this.router.navigateTo(path);
-	}
-	
-	getRef(){
-		console.log(this.inputField);
-	}
-
-  render() {
-		this.inputField = useRef(null);
-    return html`
-     <div>
-      <ul>
-      <li>
-          <a onclick=${() => { this.navigate('/home') }}>Home</a>
-        </li>
-        <li>
-          <a onclick=${() => { this.navigate('/persons/123') }}>persons</a>
-        </li>
-      </ul>
-			<input type='text' ref=${this.inputField} /><button onclick=${()=>{ this.getRef() }}>click</button>
-			<persons-list></persons-list>
-    </div>
-    `
-  }
-}

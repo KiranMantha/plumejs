@@ -59,6 +59,7 @@
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "augmentor": "^0.2.6",
+    "bootstrap": "^4.3.1",
     "lighterhtml-plus": "^0.15.2",
     "melanke-watchjs": "^1.5.0"
   },
@@ -80,7 +81,6 @@
     "del": "^4.1.1",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
-    "jquery": "^3.4.1",
     "node-sass": "^4.12.0",
     "pre-build-webpack": "^0.1.0",
     "reflect-metadata": "^0.1.13",
