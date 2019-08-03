@@ -7,7 +7,7 @@ module.exports = merge(baseConfig, {
         contentBase: path.join(__dirname, "../docs"),
         compress: true,
         hot: true,
-        port: 3001
+        port: 3002
     },
     watch: true
 });

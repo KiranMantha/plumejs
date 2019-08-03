@@ -27,13 +27,7 @@ let config = {
         }, {
             test: /\.(s*)css$/,
             exclude: /node_modules/,
-            use: [{
-                    loader: "css-loader" // translates CSS into CommonJS
-                },
-                {
-                    loader: "sass-loader" // compiles Sass to CSS
-                }
-            ]
+            use: ["css-loader", "sass-loader"]
         }]
     },
     resolve: {

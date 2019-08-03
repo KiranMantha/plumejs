@@ -10,8 +10,6 @@ const getValue = (obj:any, key:string) => {
 }
 
 const getComputedCss = (csspath: string = '') => {
-	// let globalsheet:any = new CSSStyleSheet();
-	// globalsheet.replace(document.styleSheets[0]);
 	let sheet:any = new CSSStyleSheet();	
 	sheet.replace(csspath);
 	return [globalStyles, sheet];
@@ -28,7 +26,10 @@ const registerElement = (
 ) => {
 	if(isRoot && !isRootNodeSet) {
 		isRootNodeSet = true;
-		globalStyles.replace(options.styles);
+		const styletag = document.createElement('style');
+		styletag.innerText = (options.styles || '').toString();
+		globalStyles.replace((options.styles || '').toString());
+		document.getElementsByTagName('head')[0].appendChild(styletag);
 	} else if(isRoot && isRootNodeSet) {
 		throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
 	}
@@ -43,6 +44,7 @@ const registerElement = (
 			constructor() {
 				super();
 				this.shadow = this.attachShadow({ mode: "open" });
+				//this.shadow = this;
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(

@@ -1,24 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var instance_1 = require("./instance");
-var utils_1 = require("./utils");
-var Injector = (function () {
-    var _services = {};
-    var _getService = function (name) {
+const instance_1 = require("./instance");
+const utils_1 = require("./utils");
+const Injector = (() => {
+    let _services = {};
+    const _getService = (name) => {
         if (utils_1.isString(name)) {
             if (_services[name]) {
                 return _services[name];
             }
             else {
-                throw Error(name + " is not a registered provider.");
+                throw Error(`${name} is not a registered provider.`);
             }
         }
         else {
             return {};
         }
     };
-    function _service(name, fn, deps) {
-        if (deps === void 0) { deps = []; }
+    function _service(name, fn, deps = []) {
         if (name && fn) {
             if (!_services[name]) {
                 if (utils_1.isFunction(fn)) {
