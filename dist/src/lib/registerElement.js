@@ -33,6 +33,7 @@ const registerElement = (options, target, providers = [], isRoot) => {
         constructor() {
             super();
             this.shadow = this.attachShadow({ mode: "open" });
+            this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
             this._inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
             if (this._inputprop) {
                 melanke_watchjs_1.watch(this, this._inputprop, (prop, action, newvalue, oldvalue) => {
@@ -51,11 +52,7 @@ const registerElement = (options, target, providers = [], isRoot) => {
         init() {
             return lighterhtml_plus_1.render.bind(this[utils_1.klass], this.shadow, this.renderTemplate)();
         }
-        attributeChangedCallback() {
-            this.update();
-        }
         connectedCallback() {
-            this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
             this[utils_1.klass] = instance_1.instantiate(target, providers, getValue(this, this._inputprop) || {});
             this[utils_1.klass]["element"] = this.shadow;
             this[utils_1.klass].beforeMount && this[utils_1.klass].beforeMount();
@@ -69,7 +66,7 @@ const registerElement = (options, target, providers = [], isRoot) => {
             this.init();
         }
         disconnectedCallback() {
-            melanke_watchjs_1.unwatch(this, "props");
+            this._inputprop && melanke_watchjs_1.unwatch(this, this._inputprop);
             this[utils_1.klass].unmount && this[utils_1.klass].unmount();
         }
     });

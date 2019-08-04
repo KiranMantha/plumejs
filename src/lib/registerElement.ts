@@ -45,6 +45,7 @@ const registerElement = (
 				super();
 				this.shadow = this.attachShadow({ mode: "open" });
 				//this.shadow = this;
+				this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(
@@ -70,12 +71,7 @@ const registerElement = (
 				return render.bind(this[klass], this.shadow, this.renderTemplate)();
 			}
 
-			attributeChangedCallback() {
-				this.update();
-			}
-
-			connectedCallback() {
-				this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
+			connectedCallback() {				
 				this[klass] = instantiate(
 					target,
 					providers,
@@ -95,7 +91,7 @@ const registerElement = (
 			}
 
 			disconnectedCallback() {
-				unwatch(this, "props");
+				this._inputprop && unwatch(this, this._inputprop);
 				this[klass].unmount && this[klass].unmount();
 			}
 		}
