@@ -17,6 +17,28 @@ const foreach = (collection:Array<any>, callback:(o:any, i:any, c:Array<any>) =>
     }
   }
 }
+
+const lookup = (obj:any, path:string, defaultValue:any) => {
+  var value, patharr, k;
+  if (path) {
+    if (!isNaN(parseInt(path))) {
+      return path;
+    }
+    patharr = path.trim().split(".");
+    if (obj) {
+      for (var i = 0; i < patharr.length; i++) {
+        k = k ? k[patharr[i]] : obj[patharr[i]];
+        if (k && !isObject(k)) {
+          value = k;
+          return value;
+        }
+      }
+      value = k;
+    }
+  }
+  return value || defaultValue;
+}
+
 const klass = Symbol('klass');
 const isNumber = (value:any) => typeof value === $number;
 const isArray = (value:any) => value instanceof Array;
@@ -27,4 +49,4 @@ const isUndefined = (value:any) => typeof value == $undefined;
 const isDefined = (value:any) => typeof value != $undefined;
 const INPUT_METADATA_KEY = Symbol("design:inputTypes");
 
-export { foreach, isNumber, isArray, isObject, isString, isFunction, isUndefined, isDefined, klass, INPUT_METADATA_KEY };
+export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, klass, INPUT_METADATA_KEY };
