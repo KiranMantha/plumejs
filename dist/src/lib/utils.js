@@ -16,6 +16,27 @@ const foreach = (collection, callback, scope = {}) => {
     }
 };
 exports.foreach = foreach;
+const lookup = (obj, path, defaultValue) => {
+    var value, patharr, k;
+    if (path) {
+        if (!isNaN(parseInt(path))) {
+            return path;
+        }
+        patharr = path.trim().split(".");
+        if (obj) {
+            for (var i = 0; i < patharr.length; i++) {
+                k = k ? k[patharr[i]] : obj[patharr[i]];
+                if (k && !isObject(k)) {
+                    value = k;
+                    return value;
+                }
+            }
+            value = k;
+        }
+    }
+    return value || defaultValue;
+};
+exports.lookup = lookup;
 const klass = Symbol('klass');
 exports.klass = klass;
 const isNumber = (value) => typeof value === $number;

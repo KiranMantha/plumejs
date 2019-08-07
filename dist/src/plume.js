@@ -8,6 +8,8 @@ exports.Injectable = decorators_1.Injectable;
 exports.Input = decorators_1.Input;
 const routerService_1 = require("./lib/routerService");
 exports.Router = routerService_1.Router;
+const translationService_1 = require("./lib/translationService");
+exports.TranslationService = translationService_1.TranslationService;
 require("./lib/router");
 const lighterhtml_plus_1 = require("lighterhtml-plus");
 exports.html = lighterhtml_plus_1.html;

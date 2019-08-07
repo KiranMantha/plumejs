@@ -17,70 +17,69 @@ export class TranslationService {
 
 	private init() {
 		let _this = this;
-		Object.assign(String.prototype, {
-			translate: function(...args: any) {
-				let lang = null;
-				let values: any = {};
-				let i18n: any = null;
-				if (args.length > 0) {
-					if (args[0] && isString(args[0])) lang = args[0];
-					if (args[0] && isObject(args[0])) values = args[0];
-					if (args[1] && isObject(args[1])) values = args[1];
-				}
 
-				if (!lang) lang = _this.defaultLanguage;
-				const languages: any = _this.objTranslate[lang] || {};
+		String.prototype.translate = function(...args: any) {
+			let str = String(this);
+			let lang = null;
+			let values: any = {};
+			let i18n: any = null;
+			if (args.length > 0) {
+				if (args[0] && isString(args[0])) lang = args[0];
+				if (args[0] && isObject(args[0])) values = args[0];
+				if (args[1] && isObject(args[1])) values = args[1];
+			}
 
-				i18n = languages.hasOwnProperty(this) ? languages["" + this] : null;
-				const emptyI18N = i18n === null;
+			if (!lang) lang = _this.defaultLanguage;
+			const languages: any = _this.objTranslate[lang] || {};
 
-				if (emptyI18N) {
-					let t = "" + this;
-					const withVarNum = t.match(/(\[\d+])/g);
-					const withVarStr = t.match(/(\[\w+])/g);
-					if (withVarNum) t = t.replace(/(\[\d+])/g, "[:num]");
-					if (withVarStr) t = t.replace(/(\[\w+])/g, "[:str]");
+			i18n = languages.hasOwnProperty(str) ? languages[str] : null;
+			const emptyI18N = i18n === null;
 
-					i18n = lookup(languages, "" + this, "");
-					const hasI18N = i18n !== null;
+			if (emptyI18N) {
+				const withVarNum = str.match(/(\[\d+])/g);
+				const withVarStr = str.match(/(\[\w+])/g);
+				if (withVarNum) str = str.replace(/(\[\d+])/g, "[:num]");
+				if (withVarStr) str = str.replace(/(\[\w+])/g, "[:str]");
 
-					if (hasI18N) {
-						if (withVarNum) {
-							withVarNum.forEach((val, index) => {
-								i18n = i18n.replace(
-									`{$${index + 1}+2}`,
-									parseInt(val.match(/\d+/g) + "", 10) + 2
-								);
-								i18n = i18n.replace(
-									`{$${index + 1}+1}`,
-									parseInt(val.match(/\d+/g) + "", 10) + 1
-								);
-								i18n = i18n.replace(`$${index + 1}`, val.match(/\d+/g));
-							});
-						}
+				i18n = lookup(languages, str, "");
+				const hasI18N = i18n !== null;
 
-						if (withVarStr) {
-							withVarStr.forEach((val, index) => {
-								const rg = new RegExp(`$${index}`, "g");
-								i18n = i18n.replace(rg, val.match(/\w+/g));
-							});
-						}
+				if (hasI18N) {
+					if (withVarNum) {
+						withVarNum.forEach((val, index) => {
+							i18n = i18n.replace(
+								`{$${index + 1}+2}`,
+								parseInt(val.match(/\d+/g) + "", 10) + 2
+							);
+							i18n = i18n.replace(
+								`{$${index + 1}+1}`,
+								parseInt(val.match(/\d+/g) + "", 10) + 1
+							);
+							i18n = i18n.replace(`$${index + 1}`, val.match(/\d+/g));
+						});
+					}
+
+					if (withVarStr) {
+						withVarStr.forEach((val, index) => {
+							const rg = new RegExp(`$${index}`, "g");
+							i18n = i18n.replace(rg, val.match(/\w+/g));
+						});
 					}
 				}
-
-				if (values) {
-					i18n = i18n.replace(
-						/\{\s?([\w.]+)\s?\}/g,
-						(match: any, variable: string) => {
-							let prop = variable.trim();
-							return values[prop] || prop;
-						}
-					);
-				}
-
-				return i18n === null ? this : i18n;
 			}
-		});
+
+			if (values) {
+				i18n = i18n.replace(
+					/\{\s?([\w.]+)\s?\}/g,
+					(match: any, variable: string) => {
+						let prop = variable.trim();
+						return values[prop] || prop;
+					}
+				);
+			}
+
+			return i18n === null ? str : i18n;
+		};
 	}
 
 	getCurrentLanguage = (): string => {

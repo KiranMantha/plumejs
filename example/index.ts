@@ -1,6 +1,10 @@
 // Import stylesheets
 //https://codepen.io/jovdb/pen/vdZmEz?editors=0010#0
-import { Component, Injectable, html, Input, Router, Route, useRef, Ref } from "../index";
+import { Component, Injectable, html, Input, Router, Route, useRef, Ref, TranslationService } from "../index";
+import * as en from './i18n/en';
+import * as fr from './i18n/fr';
+
+
 let person_style = require('./persons-list.scss');
 let main = require('./main.scss');
 
@@ -11,8 +15,10 @@ let main = require('./main.scss');
 	styles: main
 })
 class AppRoot {
-	constructor(private router:Router) {
-		
+	constructor(private router:Router, translations:TranslationService) {
+		translations.setTranslate(en, 'en');
+		translations.setTranslate(fr, 'fr');
+		translations.setDefaultLanguage('en');
 	}
 
 	inputField:Ref<null> | undefined;
@@ -95,7 +101,8 @@ class PersonsList {
 
 	render() {
 		return html`
-		<h1>Sample service injection with http call and passing data to other component</h1>
+		<h4>Sample service injection with http call and passing data to other component</h4>
+		<div innerHTML='${ '10300'.translate('fr') }'></div>		
 			<div>
 				<ul class="list-group">
 					${this.data.map(
@@ -132,8 +139,7 @@ export class PersonDetails {
 		if (this.userDetails.name) {
 			return html`
 				<div>Name: ${this.userDetails.name}</div>
-				<div>Company: ${this.userDetails.company.name}</div>
-				
+				<div>Company: ${this.userDetails.company.name}</div>						
 				<form>
 					<div class="form-group">
 						<label for="exampleInputEmail1">Email address</label>
