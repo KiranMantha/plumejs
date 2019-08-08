@@ -2,11 +2,11 @@
 
 Demo [here](https://kiranmantha.github.io/plumejs/)
 
-PlumeJs is a very light weight typescript framework to build spa's.It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
+PlumeJs is a very light weight typescript framework to build spa's. It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
 
-PlumeJs is a conceptual combination of angularjs and react. just like angular one can register factories, components, life-cycle hooks and like react it have `props` to pass data from one component to other, `update` function to update the view after modal updations and a render function to render the component.
+PlumeJs is a conceptual combination of angularjs and react. just like angular one can register services, components, life-cycle hooks, `Input` for passing data from one component to another and like react `update` function to update the view after modal updations and a render function to render the component.
 
-PlumeJs is built as UMD module. Hence it can be load via script tag in html or as es6 module in nodejs. PlumeJs has very few syntaxes enabling faster learning curve.
+PlumeJs has very few syntaxes enabling faster learning curve.
 
 For most asked questions, please check [QA.md](https://github.com/KiranMantha/plumejs/blob/dev-branch/QA.md)
 
@@ -248,5 +248,56 @@ class SampleComp {
 }
 ```
 
+# Setting up Internationalization
+
+Adding translations in PLumeJS is a breeze. Checkout below for implementation:
+
+1. add `i18n` folder to your src folder (you can name it as per your standards)
+
+```
+src
+ |- i18n
+ 
+```
+
+2. add translation files to i18n folder
+```
+in i18n/en.ts
+
+const locale_en = {
+  'user': {
+    'name': 'My name is {name}'
+  }
+}
+export default locale_en;
+
+in i18n/fr.ts
+
+const locale_fr = {
+  'user': {
+    'name': 'je m`appelle {name}'
+  }
+}
+export default locale_fr;
+```
+
+3. import translation files in root component and pass them to translation service
+```
+import {..., TranslationService} from 'plumejs';
+import locale_en from '<folder-i18n>/en';
+import locale_fr from '<folder-i18n>/fr';
+
+@Component({
+  selector: 'app-root'
+})
+class AppComponent {
+  constructor(translations: TranslationService) {
+    translations.setTranslate(locale_en, 'en');
+    translations.setTranslate(locale_fr, 'fr');
+    translations.setDefaultLanguage('en');
+  }
+}
+```
+4. now translations are setup for english and french languages. 
 
 In the memory of my beloved cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)
