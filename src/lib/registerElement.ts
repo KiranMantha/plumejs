@@ -1,6 +1,6 @@
 import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml-plus";
-import { watch, unwatch } from "melanke-watchjs";
+import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
 import augmentor from 'augmentor';
