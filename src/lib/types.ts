@@ -1,6 +1,6 @@
 export interface DecoratorOptions {
   selector: string,
-  styles?: string,
+  styleUrl?: string,
   root?:boolean
 }
 
@@ -14,6 +14,7 @@ export interface RouteItem {
 export interface Route {
   path: string;
   template?: string;
+  templatePath?: string;
   redirectTo?:string;
 }
 

@@ -9,14 +9,17 @@ const getValue = (obj:any, key:string) => {
 	return obj[key] || null;
 }
 
-const getComputedCss = (csspath: string = '') => {
-	let sheet:any = new CSSStyleSheet();	
-	sheet.replace(csspath);
-	return [globalStyles, sheet];
-}
-
 let isRootNodeSet = false;
 let globalStyles:any = new CSSStyleSheet();
+let style_registry:any = {};
+
+const getComputedCss = (csspath: string = '') => {
+	let sheet:any = new CSSStyleSheet();
+	let styles = style_registry[csspath] ? style_registry[csspath] : require('src/' + csspath);
+	style_registry[csspath] = styles;
+	sheet.replace(styles);
+	return [globalStyles, sheet];
+}
 
 const registerElement = (
 	options: DecoratorOptions,
@@ -27,8 +30,9 @@ const registerElement = (
 	if(isRoot && !isRootNodeSet) {
 		isRootNodeSet = true;
 		const styletag = document.createElement('style');
-		styletag.innerText = (options.styles || '').toString();
-		globalStyles.replace((options.styles || '').toString());
+		let styles = require('src/' + options.styleUrl);
+		styletag.innerText = (styles || '').toString();
+		globalStyles.replace((styles || '').toString());
 		document.getElementsByTagName('head')[0].appendChild(styletag);
 	} else if(isRoot && isRootNodeSet) {
 		throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
@@ -44,8 +48,7 @@ const registerElement = (
 			constructor() {
 				super();
 				this.shadow = this.attachShadow({ mode: "open" });
-				//this.shadow = this;
-				this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
+				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(

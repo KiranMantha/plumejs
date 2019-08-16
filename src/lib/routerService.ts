@@ -2,6 +2,11 @@ import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route } from "./types";
 
+interface InternalRouteItem extends RouteItem {
+	IsRegistered?: boolean;
+	TemplatePath?: string;
+}
+
 class StaticRouter {
 	static checkParams(up: Array<string>, r: RouteItem) {
 		let pmc = 0,
@@ -31,12 +36,14 @@ class StaticRouter {
 		return pc;
 	}
 
-	static formatRoute(r: Route): RouteItem {
-		let obj: RouteItem = {
+	static formatRoute(r: Route): InternalRouteItem {
+		let obj: InternalRouteItem = {
 			Params: {},
 			Url: "",
 			Template: "",
-			ParamCount: 0
+			TemplatePath: '',
+			ParamCount: 0,
+			IsRegistered: false
 		};
 		obj.Params = r.path.split("/").filter((h:string) => {
 			return h.length > 0;
@@ -44,7 +51,9 @@ class StaticRouter {
 		obj.Url = r.path;
 		obj.Template = "";
 		if (r.template) {
+			if(!r.templatePath) throw Error('templatePath is required in route if template is mentioned.')
 			obj.Template = r.template;
+			obj.TemplatePath = r.templatePath;
 		}
 		obj.ParamCount = StaticRouter.getParamCount(obj.Params);
 		return obj;
@@ -55,7 +64,7 @@ export class InternalRouter {
 	currentRoute = {
 		params: {}
 	};
-	private routeList: Array<RouteItem> = [];
+	private routeList: Array<InternalRouteItem> = [];
 	private currentPage = "";
 	private previousPage = "";
 	private outletFn: Function = () => {};
@@ -79,6 +88,12 @@ export class InternalRouter {
 						) {
 							isRouteFound += 1;
 							this.currentRoute.params = _params;
+							if(!routeItem.IsRegistered) {
+								console.log('registering routeItem...');	
+								require('src/'+ routeItem.TemplatePath);
+								routeItem.IsRegistered = true;								
+							}
+							console.log('routeItem: ', routeItem);
 							this.outletFn && this.outletFn(routeItem.Template);
 							break;
 						}

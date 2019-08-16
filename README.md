@@ -20,11 +20,10 @@ Creating component is a non-hectic task.
 
 ```
   import { Component, html } from 'plumejs';
-  const test_ele_styles = require('./test-ele.scss')
 
   @Component({
     selector: 'test-ele',
-    styles: test_ele_styles,
+    styles: 'test-ele.scss', => the path is relative to src folder. no need to add './' as prefix.
     root: true
   })
   class TestEle {
@@ -179,12 +178,15 @@ Routing can be implemented in 2 simple steps
   },{
     path: '/home',
     template: '<app-home></app-home>',
+    templatePath: '<path-to-ts-file-of-home-component>' => the path is relative to src folder. no need to add './' as prefix.
   },{
     path: '/contactus',
     template: '<app-contactus></app-contactus>',
+    templatePath: '<path-to-ts-file-of-contactus-component>' => the path is relative to src folder. no need to add './' as prefix.
   },{
     path: '/details/:id',
     template: '<app-details></app-details>',
+    templatePath: '<path-to-ts-file-of-details-component>' => the path is relative to src folder. no need to add './' as prefix.
   }]
 ```
 

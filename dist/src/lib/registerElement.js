@@ -5,25 +5,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
 const lighterhtml_plus_1 = require("lighterhtml-plus");
-const melanke_watchjs_1 = require("melanke-watchjs");
+const watch_min_js_1 = require("melanke-watchjs/src/watch.min.js");
 const instance_1 = require("./instance");
 const augmentor_1 = __importDefault(require("augmentor"));
 const getValue = (obj, key) => {
     return obj[key] || null;
 };
-const getComputedCss = (csspath = '') => {
-    let sheet = new CSSStyleSheet();
-    sheet.replace(csspath);
-    return [globalStyles, sheet];
-};
 let isRootNodeSet = false;
 let globalStyles = new CSSStyleSheet();
+let style_registry = {};
+const getComputedCss = (csspath = '') => {
+    let sheet = new CSSStyleSheet();
+    let styles = style_registry[csspath] ? style_registry[csspath] : require('src/' + csspath);
+    style_registry[csspath] = styles;
+    sheet.replace(styles);
+    return [globalStyles, sheet];
+};
 const registerElement = (options, target, providers = [], isRoot) => {
     if (isRoot && !isRootNodeSet) {
         isRootNodeSet = true;
         const styletag = document.createElement('style');
-        styletag.innerText = (options.styles || '').toString();
-        globalStyles.replace((options.styles || '').toString());
+        let styles = require('src/' + options.styleUrl);
+        styletag.innerText = (styles || '').toString();
+        globalStyles.replace((styles || '').toString());
         document.getElementsByTagName('head')[0].appendChild(styletag);
     }
     else if (isRoot && isRootNodeSet) {
@@ -33,10 +37,10 @@ const registerElement = (options, target, providers = [], isRoot) => {
         constructor() {
             super();
             this.shadow = this.attachShadow({ mode: "open" });
-            this.shadow.adoptedStyleSheets = getComputedCss(options.styles);
+            this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
             this._inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
             if (this._inputprop) {
-                melanke_watchjs_1.watch(this, this._inputprop, (prop, action, newvalue, oldvalue) => {
+                watch_min_js_1.watch(this, this._inputprop, (prop, action, newvalue, oldvalue) => {
                     if (oldvalue !== newvalue) {
                         if (this[utils_1.klass] && this[utils_1.klass][this._inputprop]) {
                             this[utils_1.klass][this._inputprop] = getValue(this, this._inputprop);
@@ -66,7 +70,7 @@ const registerElement = (options, target, providers = [], isRoot) => {
             this.init();
         }
         disconnectedCallback() {
-            this._inputprop && melanke_watchjs_1.unwatch(this, this._inputprop);
+            this._inputprop && watch_min_js_1.unwatch(this, this._inputprop);
             this[utils_1.klass].unmount && this[utils_1.klass].unmount();
         }
     });

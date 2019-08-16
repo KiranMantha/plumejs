@@ -1,10 +1,5 @@
-const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const path = require('path');
-const {
-    MIN,
-    HOIST
-} = process.env;
 const WebpackPrebuild = require('pre-build-webpack');
 const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
@@ -17,7 +12,7 @@ let config = {
     },
     output: {
         path: path.resolve(__dirname, '../docs'),
-        filename: `[name].[hash]${ MIN ? '.min' : '' }.js`,
+        filename: `[name].[hash].js`,
     },
     module: {
         rules: [{
@@ -31,6 +26,9 @@ let config = {
         }]
     },
     resolve: {
+        alias: {
+            src: path.resolve(__dirname, '../example')
+        },
         extensions: ['.ts', '.js', '.css', '.scss']
     },
     plugins: [
@@ -45,14 +43,13 @@ let config = {
     ],
     optimization: {
         minimizer: [
-            HOIST && new webpack.optimize.ModuleConcatenationPlugin(),
-            MIN && new TerserPlugin({
+            new TerserPlugin({
                 terserOptions: {
                     keep_classnames: true,
                     keep_fnames: true
                 }
             })
-        ].filter(Boolean),
+        ],
         splitChunks: {
             chunks: 'all',
             name: 'vendor'

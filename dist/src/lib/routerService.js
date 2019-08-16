@@ -31,7 +31,9 @@ class StaticRouter {
             Params: {},
             Url: "",
             Template: "",
-            ParamCount: 0
+            TemplatePath: '',
+            ParamCount: 0,
+            IsRegistered: false
         };
         obj.Params = r.path.split("/").filter((h) => {
             return h.length > 0;
@@ -39,7 +41,10 @@ class StaticRouter {
         obj.Url = r.path;
         obj.Template = "";
         if (r.template) {
+            if (!r.templatePath)
+                throw Error('templatePath is required in route if template is mentioned.');
             obj.Template = r.template;
+            obj.TemplatePath = r.templatePath;
         }
         obj.ParamCount = StaticRouter.getParamCount(obj.Params);
         return obj;
@@ -72,6 +77,12 @@ class InternalRouter {
                             (Object.keys(_params).length > 0 || path === routeItem.Url)) {
                             isRouteFound += 1;
                             this.currentRoute.params = _params;
+                            if (!routeItem.IsRegistered) {
+                                console.log('registering routeItem...');
+                                require('src/' + routeItem.TemplatePath);
+                                routeItem.IsRegistered = true;
+                            }
+                            console.log('routeItem: ', routeItem);
                             this.outletFn && this.outletFn(routeItem.Template);
                             break;
                         }
