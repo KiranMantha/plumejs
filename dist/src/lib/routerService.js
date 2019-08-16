@@ -78,11 +78,9 @@ class InternalRouter {
                             isRouteFound += 1;
                             this.currentRoute.params = _params;
                             if (!routeItem.IsRegistered) {
-                                console.log('registering routeItem...');
                                 require('src/' + routeItem.TemplatePath);
                                 routeItem.IsRegistered = true;
                             }
-                            console.log('routeItem: ', routeItem);
                             this.outletFn && this.outletFn(routeItem.Template);
                             break;
                         }
