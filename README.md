@@ -302,4 +302,18 @@ class AppComponent {
 ```
 4. now translations are setup for english and french languages. 
 
+5. To pass html from translations:
+
+```
+<div>${{html: 'html-translation'.translate() }}</div>
+```
+
+The above object inside template literal contains 'html' key which properly allow lighterhtml to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
+
+For normal text translations:
+
+```
+<div>${ 'text-translation'.translate() }</div>
+```
+
 In the memory of my beloved cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)
