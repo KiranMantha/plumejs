@@ -89,7 +89,7 @@ export class InternalRouter {
 							isRouteFound += 1;
 							this.currentRoute.params = _params;
 							if(!routeItem.IsRegistered) {
-								require('src/'+ routeItem.TemplatePath);
+								routeItem.TemplatePath && require('src/'+ routeItem.TemplatePath);
 								routeItem.IsRegistered = true;								
 							}
 							this.outletFn && this.outletFn(routeItem.Template);

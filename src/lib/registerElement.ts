@@ -15,9 +15,11 @@ let style_registry:any = {};
 
 const getComputedCss = (csspath: string = '') => {
 	let sheet:any = new CSSStyleSheet();
-	let styles = style_registry[csspath] ? style_registry[csspath] : require('src/' + csspath);
-	style_registry[csspath] = styles;
-	sheet.replace(styles);
+	if(csspath) {
+		let styles = style_registry[csspath] ? style_registry[csspath] : require('src/' + csspath);
+		style_registry[csspath] = styles;
+		sheet.replace(styles);
+	}
 	return [globalStyles, sheet];
 }
 
@@ -27,7 +29,7 @@ const registerElement = (
 	providers: Array<any> = [],
 	isRoot: boolean
 ) => {
-	if(isRoot && !isRootNodeSet) {
+	if(isRoot && !isRootNodeSet && options.styleUrl) {
 		isRootNodeSet = true;
 		const styletag = document.createElement('style');
 		let styles = require('src/' + options.styleUrl);
@@ -47,7 +49,8 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = this.attachShadow({ mode: "open" });
+				//this.shadow = this.attachShadow({ mode: "open" });
+				this.shadow = this;
 				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
@@ -64,6 +67,7 @@ const registerElement = (
 						}
 					);
 				}
+				return this;
 			}
 
 			renderTemplate() {
@@ -74,16 +78,17 @@ const registerElement = (
 				return render.bind(this[klass], this.shadow, this.renderTemplate)();
 			}
 
-			connectedCallback() {				
+			connectedCallback() {
 				this[klass] = instantiate(
 					target,
 					providers,
 					getValue(this, this._inputprop) || {}
 				);
-				this[klass]["element"] = this.shadow;
+				this[klass]["element"] = this.shadow;				
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();
 				this[klass]["update"] = this.update.bind(this);
+				console.log('innerhtml', this.innerHTML);
 				this[klass].mount && this[klass].mount();
 				Object.seal(this);
 				Object.seal(this[klass]);
@@ -91,6 +96,10 @@ const registerElement = (
 
 			update() {
 				this.init();
+			}
+
+			getModel(){
+				return this[klass];
 			}
 
 			disconnectedCallback() {

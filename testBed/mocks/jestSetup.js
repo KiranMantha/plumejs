@@ -1,14 +1,14 @@
-const MutationObserver = require('./mo.mock');
+//https://github.com/unrealprogrammer/how-to-test-web-component
 
-Object.defineProperty(window, 'MutationObserver', { value: MutationObserver.default });
+require('document-register-element');
+require('./mo.mock.js');
+//import './attachShadow.js';
+require('@ungap/custom-elements-builtin');
 
-function trigger(eventName, isBubbleing) {
-  var event = new Event(eventName, { bubbles: isBubbleing !== undefined ? isBubbleing : false, cancelable: false });
+Element.prototype.trigger = function(eventName, isBubbleing) {
+  let event = new Event(eventName, { bubbles: isBubbleing !== undefined ? isBubbleing : false, cancelable: false });
   this.dispatchEvent(event);
-}
-
-Element.prototype.trigger = trigger;
-
+};
 
 function createXHRmock() {
   var open, send, status, onloadend, setRequestHeader, response, responseText;
@@ -20,7 +20,7 @@ function createXHRmock() {
     responseText = '';
     // be aware we use *function* because we need to get *this* 
     // from *new XmlHttpRequest()* call
-    send = jest.fn().mockImplementation(function(){   
+    send = jest.fn().mockImplementation(function(){
       this.onloadend && this.onloadend.call(this);
       this.onerror && this.onerror.call(this);
       this.setRequestHeader && this.setRequestHeader.call(this);
