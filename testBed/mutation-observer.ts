@@ -36,13 +36,6 @@ const mo = (() => {
       elements = doc.querySelectorAll(listener.selector);
       for (let j = 0, jLen = elements.length, element; j < jLen; j++) {
         element = elements[j];
-        // Make sure the callback isn't invoked with the 
-        // same element more than once
-        // if (!element.ready) {
-        //   element.ready = true;
-        //   // Invoke the callback with the element
-        //   listener.fn(element);
-        // }
         let k = element.constructor();
         element.connectedCallback.call(k);
         listener.fn(k);

@@ -1,6 +1,6 @@
 module.exports = {
   setupFilesAfterEnv: [
-    '<rootDir>/mocks/jestSetup.js'
+    '<rootDir>/testBed/mocks/jestSetup.js'
   ],
   displayName: 'PLUMEJS',
   preset: 'ts-jest',

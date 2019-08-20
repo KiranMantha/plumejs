@@ -2,7 +2,6 @@
 
 require('document-register-element');
 require('./mo.mock.js');
-//import './attachShadow.js';
 require('@ungap/custom-elements-builtin');
 
 Element.prototype.trigger = function(eventName, isBubbleing) {

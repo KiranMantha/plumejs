@@ -1,11 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const service_resolver_1 = require("./service_resolver");
-const utils_1 = require("./utils");
-class StaticRouter {
-    static checkParams(up, r) {
-        let pmc = 0, po = {}, pc = r.ParamCount;
-        for (let i = 0; i < up.length; i++) {
+import { Injector } from "./service_resolver";
+import { isFunction, isArray } from "./utils";
+var StaticRouter = (function () {
+    function StaticRouter() {
+    }
+    StaticRouter.checkParams = function (up, r) {
+        var pmc = 0, po = {}, pc = r.ParamCount;
+        for (var i = 0; i < up.length; i++) {
             var rtParam = r.Params[i];
             if (rtParam.indexOf(":") >= 0) {
                 po[rtParam.split(":")[1]] = up[i];
@@ -16,18 +16,18 @@ class StaticRouter {
             return po;
         }
         return false;
-    }
-    static getParamCount(p) {
-        let pc = 0;
-        p.forEach((k) => {
+    };
+    StaticRouter.getParamCount = function (p) {
+        var pc = 0;
+        p.forEach(function (k) {
             if (k.indexOf(":") >= 0) {
                 pc += 1;
             }
         });
         return pc;
-    }
-    static formatRoute(r) {
-        let obj = {
+    };
+    StaticRouter.formatRoute = function (r) {
+        var obj = {
             Params: {},
             Url: "",
             Template: "",
@@ -35,7 +35,7 @@ class StaticRouter {
             ParamCount: 0,
             IsRegistered: false
         };
-        obj.Params = r.path.split("/").filter((h) => {
+        obj.Params = r.path.split("/").filter(function (h) {
             return h.length > 0;
         });
         obj.Url = r.path;
@@ -48,29 +48,30 @@ class StaticRouter {
         }
         obj.ParamCount = StaticRouter.getParamCount(obj.Params);
         return obj;
-    }
-}
-class InternalRouter {
-    constructor() {
+    };
+    return StaticRouter;
+}());
+var InternalRouter = (function () {
+    function InternalRouter() {
         this.currentRoute = {
             params: {}
         };
         this.routeList = [];
         this.currentPage = "";
         this.previousPage = "";
-        this.outletFn = () => { };
+        this.outletFn = function () { };
     }
-    _navigateTo(path) {
+    InternalRouter.prototype._navigateTo = function (path) {
         if (this.currentPage !== path) {
             this.previousPage = this.currentPage;
             this.currentPage = path;
-            let uParams = path.split("/").filter(h => {
+            var uParams = path.split("/").filter(function (h) {
                 return h.length > 0;
             });
-            let isRouteFound = 0;
-            for (let i = 0; i < this.routeList.length; i++) {
+            var isRouteFound = 0;
+            for (var i = 0; i < this.routeList.length; i++) {
                 if (isRouteFound === 0) {
-                    let routeItem = this.routeList[i];
+                    var routeItem = this.routeList[i];
                     if (routeItem.Params.length === uParams.length) {
                         var _params = StaticRouter.checkParams(uParams, routeItem);
                         if (_params &&
@@ -78,7 +79,7 @@ class InternalRouter {
                             isRouteFound += 1;
                             this.currentRoute.params = _params;
                             if (!routeItem.IsRegistered) {
-                                require('src/' + routeItem.TemplatePath);
+                                routeItem.TemplatePath && require('src/' + routeItem.TemplatePath);
                                 routeItem.IsRegistered = true;
                             }
                             this.outletFn && this.outletFn(routeItem.Template);
@@ -88,11 +89,12 @@ class InternalRouter {
                 }
             }
         }
-    }
-    addRoutes(routes) {
-        if (utils_1.isArray(routes)) {
-            let redirectRoute = null;
-            for (let route of routes) {
+    };
+    InternalRouter.prototype.addRoutes = function (routes) {
+        if (isArray(routes)) {
+            var redirectRoute = null;
+            for (var _i = 0, routes_1 = routes; _i < routes_1.length; _i++) {
+                var route = routes_1[_i];
                 this.routeList.push(StaticRouter.formatRoute(route));
                 if (route.redirectTo) {
                     redirectRoute = route;
@@ -105,36 +107,39 @@ class InternalRouter {
         else {
             throw Error("router.addRoutes: the parameter must be an array");
         }
-    }
-    getCurrentRoute() {
+    };
+    InternalRouter.prototype.getCurrentRoute = function () {
         return this.currentRoute;
-    }
-    navigateTo(path = "") {
+    };
+    InternalRouter.prototype.navigateTo = function (path) {
+        if (path === void 0) { path = ""; }
         window.history.pushState(null, '', path);
         this._navigateTo(path);
-    }
-    setOutletFn(fn) {
+    };
+    InternalRouter.prototype.setOutletFn = function (fn) {
         this.outletFn = fn;
-    }
-    onNavigationStart(cb) {
-        if (cb && utils_1.isFunction(cb)) {
+    };
+    InternalRouter.prototype.onNavigationStart = function (cb) {
+        if (cb && isFunction(cb)) {
             window.addEventListener("hashchange", cb, false);
         }
-    }
-}
-exports.InternalRouter = InternalRouter;
-class Router {
-    constructor(_getCurrentRoute, _navigateTo, _onNavigationStart) {
-        this.getCurrentRoute = () => { };
-        this.navigateTo = () => { };
-        this.onNavigationStart = () => { };
+    };
+    return InternalRouter;
+}());
+export { InternalRouter };
+var Router = (function () {
+    function Router(_getCurrentRoute, _navigateTo, _onNavigationStart) {
+        this.getCurrentRoute = function () { };
+        this.navigateTo = function () { };
+        this.onNavigationStart = function () { };
         this.getCurrentRoute = _getCurrentRoute;
         this.navigateTo = _navigateTo;
         this.onNavigationStart = _onNavigationStart;
     }
-}
-exports.Router = Router;
-const _internalRouter = new InternalRouter();
-service_resolver_1.Injector.register("InternalRouter", _internalRouter);
-service_resolver_1.Injector.register("Router", new Router(_internalRouter.getCurrentRoute.bind(_internalRouter), _internalRouter.navigateTo.bind(_internalRouter), _internalRouter.onNavigationStart.bind(_internalRouter)));
+    return Router;
+}());
+export { Router };
+var _internalRouter = new InternalRouter();
+Injector.register("InternalRouter", _internalRouter);
+Injector.register("Router", new Router(_internalRouter.getCurrentRoute.bind(_internalRouter), _internalRouter.navigateTo.bind(_internalRouter), _internalRouter.onNavigationStart.bind(_internalRouter)));
 //# sourceMappingURL=routerService.js.map

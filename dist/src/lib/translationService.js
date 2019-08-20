@@ -1,22 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const service_resolver_1 = require("./service_resolver");
-const vanilla_i18n_1 = require("vanilla-i18n");
-class TranslationService {
-    constructor() {
+import { Injector } from "./service_resolver";
+import { setDefaultLanguage, setTranslate } from "vanilla-i18n";
+var TranslationService = (function () {
+    function TranslationService() {
         this.defaultLanguage = "";
     }
-    setTranslate(i18n, lang) {
-        vanilla_i18n_1.setTranslate(i18n, lang);
-    }
-    setDefaultLanguage(language) {
+    TranslationService.prototype.setTranslate = function (i18n, lang) {
+        setTranslate(i18n, lang);
+    };
+    TranslationService.prototype.setDefaultLanguage = function (language) {
         this.defaultLanguage = language;
-        vanilla_i18n_1.setDefaultLanguage(language);
-    }
-    getCurrentLanguage() {
+        setDefaultLanguage(language);
+    };
+    TranslationService.prototype.getCurrentLanguage = function () {
         return this.defaultLanguage;
-    }
-}
-exports.TranslationService = TranslationService;
-service_resolver_1.Injector.register("TranslationService", new TranslationService());
+    };
+    return TranslationService;
+}());
+export { TranslationService };
+Injector.register("TranslationService", new TranslationService());
 //# sourceMappingURL=translationService.js.map

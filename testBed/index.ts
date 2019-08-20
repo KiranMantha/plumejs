@@ -11,7 +11,6 @@ export default class TestBed {
     document.body.appendChild(appRoot);
     mo.ready(options.selector, (ele:any) => {
       appRoot = ele;
-      console.log('callback innerhtml', appRoot.innerHTML);
     });
     return appRoot;
   }
