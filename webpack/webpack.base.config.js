@@ -23,6 +23,9 @@ let config = {
             test: /\.(s*)css$/,
             exclude: /node_modules/,
             use: ["css-loader", "sass-loader"]
+        },{
+            test: /\.html$/,
+            use: ["html-loader"]
         }]
     },
     resolve: {

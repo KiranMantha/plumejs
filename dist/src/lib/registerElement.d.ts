@@ -1,3 +1,3 @@
 import { DecoratorOptions } from "./types";
-declare const registerElement: (options: DecoratorOptions, target: Function, providers: any[] | undefined, isRoot: boolean) => void;
+declare const registerElement: (options: DecoratorOptions, target: Function, providers: string[], isRoot: boolean, addModelToNode?: boolean) => void;
 export { registerElement };

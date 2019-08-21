@@ -20,8 +20,8 @@ var getComputedCss = function (csspath) {
     }
     return [globalStyles, sheet];
 };
-var registerElement = function (options, target, providers, isRoot) {
-    if (providers === void 0) { providers = []; }
+var registerElement = function (options, target, providers, isRoot, addModelToNode) {
+    if (addModelToNode === void 0) { addModelToNode = false; }
     if (isRoot && !isRootNodeSet && options.styleUrl) {
         isRootNodeSet = true;
         var styletag = document.createElement('style');
@@ -64,7 +64,6 @@ var registerElement = function (options, target, providers, isRoot) {
             this[klass].beforeMount && this[klass].beforeMount();
             this.update();
             this[klass]["update"] = this.update.bind(this);
-            console.log('innerhtml', this.innerHTML);
             this[klass].mount && this[klass].mount();
             Object.seal(this);
             Object.seal(this[klass]);
@@ -73,7 +72,7 @@ var registerElement = function (options, target, providers, isRoot) {
             this.init();
         };
         class_1.prototype.getModel = function () {
-            return this[klass];
+            return addModelToNode ? this[klass] : null;
         };
         class_1.prototype.disconnectedCallback = function () {
             this._inputprop && unwatch(this, this._inputprop);

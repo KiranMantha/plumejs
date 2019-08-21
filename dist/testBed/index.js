@@ -1,11 +1,11 @@
-import { Component } from '../index';
 import mo from './mutation-observer';
+import { MockComponent } from '../src/lib/decorators';
 var TestBed = (function () {
     function TestBed() {
     }
     TestBed.createComponent = function (options) {
         var appRoot;
-        Component({
+        MockComponent({
             selector: options.selector
         })(options.target);
         appRoot = document.createElement(options.selector);

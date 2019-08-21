@@ -26,8 +26,9 @@ const getComputedCss = (csspath: string = '') => {
 const registerElement = (
 	options: DecoratorOptions,
 	target: Function,
-	providers: Array<any> = [],
-	isRoot: boolean
+	providers: Array<string>,
+	isRoot: boolean,
+	addModelToNode: boolean = false
 ) => {
 	if(isRoot && !isRootNodeSet && options.styleUrl) {
 		isRootNodeSet = true;
@@ -88,7 +89,6 @@ const registerElement = (
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();
 				this[klass]["update"] = this.update.bind(this);
-				console.log('innerhtml', this.innerHTML);
 				this[klass].mount && this[klass].mount();
 				Object.seal(this);
 				Object.seal(this[klass]);
@@ -99,7 +99,7 @@ const registerElement = (
 			}
 
 			getModel(){
-				return this[klass];
+				return addModelToNode ? this[klass] : null;
 			}
 
 			disconnectedCallback() {
