@@ -1,7 +1,7 @@
 //https://github.com/unrealprogrammer/how-to-test-web-component
 
 require('document-register-element');
-require('./mo.mock.js');
+require('./defaults.js');
 require('@ungap/custom-elements-builtin');
 
 Element.prototype.trigger = function(eventName, isBubbleing) {

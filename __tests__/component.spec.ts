@@ -35,7 +35,7 @@ describe("Plumejs Component", () => {
     let btn = appRoot.querySelector('#test');
     let span = appRoot.querySelector('span');
     expect(span.innerHTML).not.toContain('hello');
-    btn.trigger('click');
+    btn.click();
     appRoot.update();
     expect(model.greetingMsg).toBe('hello');
     expect(span.innerHTML).toContain('hello');
