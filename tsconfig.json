@@ -15,7 +15,11 @@
     "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "declarationDir": "dist",                /* Output directory for generated declaration files. */
-    "importHelpers": true
+    "importHelpers": true,
+    "typeRoots": [
+      "@types",
+      "node_modules/@types"
+    ]
   },
   "include": ["src", "testBed", "index.ts"]
 }

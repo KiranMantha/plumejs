@@ -1,6 +1,6 @@
-/// <reference types="node" />
+/// <reference no-default-lib="true"/>
 interface Element {
-  trigger: (eventName:string, isBubbling:boolean) => void;
+  trigger: (eventName:string, isBubbling?:boolean) => void;
 }
 
 interface Window {

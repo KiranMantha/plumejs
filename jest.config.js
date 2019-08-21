@@ -10,6 +10,11 @@ module.exports = {
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[t]sx?$',
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
+  },
+  globals: {
+    'ts-jest': {
+      diagnostics: false
+    }
   }
   //testNamePattern: "component"
 };
