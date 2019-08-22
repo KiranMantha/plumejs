@@ -36,8 +36,8 @@ describe("Plumejs Component", () => {
     expect(span.innerHTML).not.toContain('hello');
     btn.click();
     appRoot.update();
-    //const model = appRoot.getModel();
-    //expect(model.greetingMsg).toBe('hello');
+    const model = appRoot.getModel();
+    expect(model.greetingMsg).toBe('hello');
     expect(span.innerHTML).toContain('hello');
   });
 });
