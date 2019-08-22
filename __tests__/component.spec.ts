@@ -15,7 +15,7 @@ class MockComponent {
     <h1>Hello World</h1>
     <button id='test' onclick=${()=>{ this.greet(); }}></button>
     <span>${ this.greetingMsg }</span>
-    `
+    `;
   }
 }
 
@@ -32,11 +32,11 @@ describe("Plumejs Component", () => {
 
   it('should return "hello" on button click', () => {    
     let btn = appRoot.querySelector('button');
-    let span = appRoot.querySelector('span');
-    const model = appRoot.getModel();
+    let span = appRoot.querySelector('span');    
     expect(span.innerHTML).not.toContain('hello');
-    btn.click();    
-    model.update();
+    btn.click();
+    appRoot.update();    
+    const model = appRoot.getModel();
     expect(model.greetingMsg).toBe('hello');
     expect(span.innerHTML).toContain('hello');
   });

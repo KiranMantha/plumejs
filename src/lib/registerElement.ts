@@ -90,8 +90,6 @@ const registerElement = (
 				this.update();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
-				Object.seal(this);
-				Object.seal(this[klass]);
 			}
 
 			update() {
