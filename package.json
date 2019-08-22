@@ -8,25 +8,6 @@
 		"dist/**/*",
 		"testBed/**/*"
 	],
-	"jest": {
-		"setupFilesAfterEnv": [
-			"<rootDir>/testBed/mocks/jestSetup.js"
-		],
-		"displayName": "PLUMEJS",
-		"preset": "ts-jest",
-		"collectCoverage": true,
-		"coverageDirectory": "<rootDir>/coverage",
-		"testEnvironment": "jsdom",
-		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.[t]sx?$",
-		"moduleNameMapper": {
-			"^@src/(.*)$": "<rootDir>/src/$1"
-		},
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false
-			}
-		}
-	},
 	"scripts": {
 		"start": "npm run serve",
 		"serve": "webpack-dev-server --config webpack/webpack.server.config.js",
