@@ -31,15 +31,15 @@ describe("Plumejs Component", () => {
   });
 
   it('should return "hello" on button click', () => {    
-    let btn = appRoot.querySelector('#test');
+    let btn = appRoot.querySelector('button');
     let span = appRoot.querySelector('span');
     expect(span.innerHTML).not.toContain('hello');
     process.stdout.write('btn: ' + btn + "\n");
-    btn && btn.click();
+    btn.click();
     appRoot.update();
     const model = appRoot.getModel();
     expect(btn).toBeTruthy();
-    //expect(model.greetingMsg).toBe('hello');
-    //expect(span.innerHTML).toContain('hello');
+    expect(model.greetingMsg).toBe('hello');
+    expect(span.innerHTML).toContain('hello');
   });
 });
