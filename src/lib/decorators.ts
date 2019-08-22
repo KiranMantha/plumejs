@@ -37,7 +37,7 @@ const Component = (options: DecoratorOptions) => (target: any) => {
 	registerElement(options, target, obj.deps, obj.isRoot);
 };
 
-const MockComponent = (options: DecoratorOptions) => (target: any) => {
+const MockComponent = (options: DecoratorOptions, target:any) => {
 	let obj = depsResolver(options, target);
 	registerElement(options, target, obj.deps, obj.isRoot, true);
 };
