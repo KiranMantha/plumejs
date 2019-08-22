@@ -90,10 +90,6 @@ const registerElement = (
 
 			connectedCallback() {
 				let _this = this;
-				target.prototype.update = function() {
-					_this[klass] = this;
-					_this.update();
-				};
 				this[klass] = instantiate(
 					target,
 					providers,
@@ -101,8 +97,12 @@ const registerElement = (
 				);
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
-				this.update();
+				this.init();
 				this[klass].mount && this[klass].mount();
+				this[klass]["update"] = function() {
+					_this[klass] = this;
+					_this.update();
+				};
 			}
 
 			update() {
