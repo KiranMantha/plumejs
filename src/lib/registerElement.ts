@@ -3,25 +3,27 @@ import { render } from "lighterhtml-plus";
 import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
-import augmentor from 'augmentor';
+import augmentor from "augmentor";
 
-const getValue = (obj:any, key:string) => {
+const getValue = (obj: any, key: string) => {
 	return obj[key] || null;
-}
+};
 
 let isRootNodeSet = false;
-let globalStyles:any = new CSSStyleSheet();
-let style_registry:any = {};
+let globalStyles: any = new CSSStyleSheet();
+let style_registry: any = {};
 
-const getComputedCss = (csspath: string = '') => {
-	let sheet:any = new CSSStyleSheet();
-	if(csspath) {
-		let styles = style_registry[csspath] ? style_registry[csspath] : require('src/' + csspath);
+const getComputedCss = (csspath: string = "") => {
+	let sheet: any = new CSSStyleSheet();
+	if (csspath) {
+		let styles = style_registry[csspath]
+			? style_registry[csspath]
+			: require("src/" + csspath);
 		style_registry[csspath] = styles;
 		sheet.replace(styles);
 	}
 	return [globalStyles, sheet];
-}
+};
 
 const registerElement = (
 	options: DecoratorOptions,
@@ -30,15 +32,19 @@ const registerElement = (
 	isRoot: boolean,
 	addModelToNode: boolean = false
 ) => {
-	if(isRoot && !isRootNodeSet && options.styleUrl) {
+	if (isRoot && !isRootNodeSet && options.styleUrl) {
 		isRootNodeSet = true;
-		const styletag = document.createElement('style');
-		let styles = require('src/' + options.styleUrl);
-		styletag.innerText = (styles || '').toString();
-		globalStyles.replace((styles || '').toString());
-		document.getElementsByTagName('head')[0].appendChild(styletag);
-	} else if(isRoot && isRootNodeSet) {
-		throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
+		const styletag = document.createElement("style");
+		let styles = require("src/" + options.styleUrl);
+		styletag.innerText = (styles || "").toString();
+		globalStyles.replace((styles || "").toString());
+		document.getElementsByTagName("head")[0].appendChild(styletag);
+	} else if (isRoot && isRootNodeSet) {
+		throw Error(
+			"Cannot register duplicate root component in " +
+				options.selector +
+				" component"
+		);
 	}
 
 	window.customElements.define(
@@ -61,7 +67,10 @@ const registerElement = (
 						(prop: any, action: any, newvalue: any, oldvalue: any) => {
 							if (oldvalue !== newvalue) {
 								if (this[klass] && this[klass][this._inputprop]) {
-									this[klass][this._inputprop] =  getValue(this, this._inputprop);
+									this[klass][this._inputprop] = getValue(
+										this,
+										this._inputprop
+									);
 									this.update();
 								}
 							}
@@ -80,15 +89,19 @@ const registerElement = (
 			}
 
 			connectedCallback() {
+				let _this = this;
+				target.prototype.update = function() {
+					_this[klass] = this;
+					_this.update();
+				};
 				this[klass] = instantiate(
 					target,
 					providers,
 					getValue(this, this._inputprop) || {}
 				);
-				this[klass]["element"] = this.shadow;				
+				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.update();
-				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
 			}
 
@@ -96,7 +109,7 @@ const registerElement = (
 				this.init();
 			}
 
-			getModel(){
+			getModel() {
 				return addModelToNode ? this[klass] : null;
 			}
 
