@@ -34,12 +34,10 @@ describe("Plumejs Component", () => {
     let btn = appRoot.querySelector('button');
     let span = appRoot.querySelector('span');
     expect(span.innerHTML).not.toContain('hello');
-    process.stdout.write('btn: ' + btn + "\n");
     btn.click();
     appRoot.update();
-    const model = appRoot.getModel();
-    expect(btn).toBeTruthy();
-    expect(model.greetingMsg).toBe('hello');
+    //const model = appRoot.getModel();
+    //expect(model.greetingMsg).toBe('hello');
     expect(span.innerHTML).toContain('hello');
   });
 });
