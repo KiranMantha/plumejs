@@ -30,13 +30,14 @@ describe("Plumejs Component", () => {
     expect(h1.innerHTML).toBe("Hello World");
   });
 
-  it('should return "hello" on button click', () => {
-    const model = appRoot.getModel();
+  it('should return "hello" on button click', () => {    
     let btn = appRoot.querySelector('#test');
     let span = appRoot.querySelector('span');
     expect(span.innerHTML).not.toContain('hello');
+    console.log('btn',btn);
     btn.click();
     appRoot.update();
+    const model = appRoot.getModel();
     expect(model.greetingMsg).toBe('hello');
     expect(span.innerHTML).toContain('hello');
   });
