@@ -1,8 +1,12 @@
+const getValue = (obj: any, key: string) => {
+	return obj[key] || null;
+};
+
 const mo = (() => {
   'use strict';
   let listeners:any = [],
     doc = window.document,
-    MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
+    MutationObserver:any = getValue(window, "MutationObserver") ||  getValue(window, "WebKitMutationObserver"),
     listenersObj:any = {};
 
   const _ready = (selector:string, callback:any) => {

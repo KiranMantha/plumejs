@@ -3,7 +3,7 @@ import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml-plus";
 import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
 import { instantiate } from "./instance";
-import augmentor from 'augmentor';
+import augmentor from "augmentor";
 var getValue = function (obj, key) {
     return obj[key] || null;
 };
@@ -11,10 +11,12 @@ var isRootNodeSet = false;
 var globalStyles = new CSSStyleSheet();
 var style_registry = {};
 var getComputedCss = function (csspath) {
-    if (csspath === void 0) { csspath = ''; }
+    if (csspath === void 0) { csspath = ""; }
     var sheet = new CSSStyleSheet();
     if (csspath) {
-        var styles = style_registry[csspath] ? style_registry[csspath] : require('src/' + csspath);
+        var styles = style_registry[csspath]
+            ? style_registry[csspath]
+            : require("src/" + csspath);
         style_registry[csspath] = styles;
         sheet.replace(styles);
     }
@@ -24,20 +26,22 @@ var registerElement = function (options, target, providers, isRoot, addModelToNo
     if (addModelToNode === void 0) { addModelToNode = false; }
     if (isRoot && !isRootNodeSet && options.styleUrl) {
         isRootNodeSet = true;
-        var styletag = document.createElement('style');
-        var styles = require('src/' + options.styleUrl);
-        styletag.innerText = (styles || '').toString();
-        globalStyles.replace((styles || '').toString());
-        document.getElementsByTagName('head')[0].appendChild(styletag);
+        var styletag = document.createElement("style");
+        var styles = require("src/" + options.styleUrl);
+        styletag.innerText = (styles || "").toString();
+        globalStyles.replace((styles || "").toString());
+        document.getElementsByTagName("head")[0].appendChild(styletag);
     }
     else if (isRoot && isRootNodeSet) {
-        throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
+        throw Error("Cannot register duplicate root component in " +
+            options.selector +
+            " component");
     }
     window.customElements.define(options.selector, (function (_super) {
         tslib_1.__extends(class_1, _super);
         function class_1() {
             var _this = _super.call(this) || this;
-            _this.shadow = _this;
+            _this.shadow = addModelToNode ? _this : _this.attachShadow({ mode: "open" });
             _this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
             _this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
             if (_this._inputprop) {
@@ -62,11 +66,9 @@ var registerElement = function (options, target, providers, isRoot, addModelToNo
             this[klass] = instantiate(target, providers, getValue(this, this._inputprop) || {});
             this[klass]["element"] = this.shadow;
             this[klass].beforeMount && this[klass].beforeMount();
-            this.update();
+            this.init();
             this[klass]["update"] = this.update.bind(this);
             this[klass].mount && this[klass].mount();
-            Object.seal(this);
-            Object.seal(this[klass]);
         };
         class_1.prototype.update = function () {
             this.init();

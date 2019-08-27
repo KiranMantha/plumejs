@@ -7,7 +7,7 @@ var TestBed = (function () {
         var appRoot;
         MockComponent({
             selector: options.selector
-        })(options.target);
+        }, options.target);
         appRoot = document.createElement(options.selector);
         document.body.appendChild(appRoot);
         mo.ready(options.selector, function (ele) {

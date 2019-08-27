@@ -1,4 +1,3 @@
-/// <reference lib="dom"/>
 interface HTMLElement {
   trigger: (eventName:string, isBubbling?:boolean) => void;
 }

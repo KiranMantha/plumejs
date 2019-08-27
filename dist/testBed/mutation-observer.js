@@ -1,6 +1,9 @@
+var getValue = function (obj, key) {
+    return obj[key] || null;
+};
 var mo = (function () {
     'use strict';
-    var listeners = [], doc = window.document, MutationObserver = window.MutationObserver || window.WebKitMutationObserver, listenersObj = {};
+    var listeners = [], doc = window.document, MutationObserver = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"), listenersObj = {};
     var _ready = function (selector, callback) {
         listeners.push({
             selector: selector,

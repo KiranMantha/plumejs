@@ -5,7 +5,7 @@ interface IInjector {
 	getService(name: string): void | {};
 	registerService(
 		name: string,
-		fn: Function,
+		fn: Function | Object,
 		deps?: Array<string>
 	): void;
 }

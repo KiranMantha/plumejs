@@ -1,40 +1,44 @@
 import { instantiate } from "./instance";
-import { isString, isFunction } from "./utils";
+import { isFunction } from "./utils";
 var Injector = (function () {
-    var _services = {};
-    var _getService = function (name) {
-        if (isString(name)) {
-            if (_services[name]) {
-                return _services[name];
+    var InternalInjector = (function () {
+        function InternalInjector() {
+            var _map = new Map();
+            this.get = _map.get.bind(_map);
+            this.set = _map.set.bind(_map);
+        }
+        InternalInjector.prototype.getService = function (name) {
+            var instance = this.get(name);
+            if (instance) {
+                return instance;
             }
             else {
                 throw Error(name + " is not a registered provider.");
             }
-        }
-        else {
-            return {};
-        }
-    };
-    function _service(name, fn, deps) {
-        if (deps === void 0) { deps = []; }
-        if (name && fn) {
-            if (!_services[name]) {
-                if (isFunction(fn)) {
-                    _services[name] = instantiate(fn, deps);
-                }
-                else {
-                    _services[name] = fn;
+        };
+        InternalInjector.prototype.registerService = function (name, fn, deps) {
+            if (deps === void 0) { deps = []; }
+            if (name && fn) {
+                if (!this.get(name)) {
+                    if (isFunction(fn)) {
+                        var instance = instantiate(fn, deps);
+                        this.set(name, instance);
+                    }
+                    else {
+                        this.set(name, fn);
+                    }
                 }
             }
-        }
-        else {
-            throw "error: Requires name and constructor to define service";
-        }
-    }
-    ;
+            else {
+                throw "error: Requires name and constructor to define service";
+            }
+        };
+        return InternalInjector;
+    }());
+    var injectorInstance = new InternalInjector();
     return {
-        get: _getService,
-        register: _service
+        register: injectorInstance.registerService.bind(injectorInstance),
+        get: injectorInstance.getService.bind(injectorInstance)
     };
 })();
 export { Injector };

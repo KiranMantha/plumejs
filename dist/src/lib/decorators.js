@@ -34,10 +34,10 @@ var Component = function (options) { return function (target) {
     var obj = depsResolver(options, target);
     registerElement(options, target, obj.deps, obj.isRoot);
 }; };
-var MockComponent = function (options) { return function (target) {
+var MockComponent = function (options, target) {
     var obj = depsResolver(options, target);
     registerElement(options, target, obj.deps, obj.isRoot, true);
-}; };
+};
 var Injectable = function () { return function (target) {
     var s = getDeps(target);
     Injector.register(target.name, target, s);
