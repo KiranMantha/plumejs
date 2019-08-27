@@ -1,6 +1,7 @@
 import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route } from "./types";
+import registerRouterComponent from './router';
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;
@@ -147,9 +148,10 @@ export class Router {
 		_navigateTo: Function,
 		_onNavigationStart: Function
 	) {
+		registerRouterComponent();
 		this.getCurrentRoute = _getCurrentRoute;
 		this.navigateTo = _navigateTo;
-		this.onNavigationStart = _onNavigationStart;
+		this.onNavigationStart = _onNavigationStart;		
   }
 }
 

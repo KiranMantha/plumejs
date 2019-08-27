@@ -1,5 +1,5 @@
 declare const Injector: {
-    register: (name: string, fn: Object | Function, deps?: string[] | undefined) => void;
-    get: (name: string) => void | {};
+    register: any;
+    get: any;
 };
 export { Injector };

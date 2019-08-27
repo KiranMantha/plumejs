@@ -1,10 +1,12 @@
-import { registerElement } from "./registerElement";
-import { Injector } from "./service_resolver";
-import "reflect-metadata";
-import { INPUT_METADATA_KEY } from "./utils";
-var getDeps = function (target) {
-    var types = Reflect.getMetadata("design:paramtypes", target) || [];
-    var deps = types.map(function (a) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const registerElement_1 = require("./registerElement");
+const service_resolver_1 = require("./service_resolver");
+require("reflect-metadata");
+const utils_1 = require("./utils");
+const getDeps = (target) => {
+    let types = Reflect.getMetadata("design:paramtypes", target) || [];
+    let deps = types.map((a) => {
         if (a) {
             if (a.name !== "Object") {
                 return a.name;
@@ -19,31 +21,34 @@ var getDeps = function (target) {
     });
     return deps;
 };
-var depsResolver = function (options, target) {
+const depsResolver = (options, target) => {
     if (options.selector.indexOf("-") <= 0) {
         throw new Error("You need at least 1 dash in the custom element name!");
     }
-    var s = getDeps(target);
-    var isRoot = options.root ? options.root : false;
+    let s = getDeps(target);
+    let isRoot = options.root ? options.root : false;
     return {
         deps: s,
         isRoot: isRoot
     };
 };
-var Component = function (options) { return function (target) {
-    var obj = depsResolver(options, target);
-    registerElement(options, target, obj.deps, obj.isRoot);
-}; };
-var MockComponent = function (options, target) {
-    var obj = depsResolver(options, target);
-    registerElement(options, target, obj.deps, obj.isRoot, true);
+const Component = (options) => (target) => {
+    let obj = depsResolver(options, target);
+    registerElement_1.registerElement(options, target, obj.deps, obj.isRoot);
 };
-var Injectable = function () { return function (target) {
-    var s = getDeps(target);
-    Injector.register(target.name, target, s);
-}; };
-var Input = function () { return function (target, key) {
-    Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
-}; };
-export { Component, Injectable, Input, MockComponent };
+exports.Component = Component;
+const MockComponent = (options, target) => {
+    let obj = depsResolver(options, target);
+    registerElement_1.registerElement(options, target, obj.deps, obj.isRoot, true);
+};
+exports.MockComponent = MockComponent;
+const Injectable = () => (target) => {
+    let s = getDeps(target);
+    service_resolver_1.Injector.register(target.name, target, s);
+};
+exports.Injectable = Injectable;
+const Input = () => (target, key) => {
+    Reflect.defineMetadata(utils_1.INPUT_METADATA_KEY, key, target.constructor);
+};
+exports.Input = Input;
 //# sourceMappingURL=decorators.js.map

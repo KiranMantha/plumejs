@@ -1,15 +1,17 @@
-var getValue = function (obj, key) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const getValue = (obj, key) => {
     return obj[key] || null;
 };
-var mo = (function () {
+const mo = (() => {
     'use strict';
-    var listeners = [], doc = window.document, MutationObserver = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"), listenersObj = {};
-    var _ready = function (selector, callback) {
+    let listeners = [], doc = window.document, MutationObserver = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"), listenersObj = {};
+    const _ready = (selector, callback) => {
         listeners.push({
             selector: selector,
             fn: callback
         });
-        var observer = new MutationObserver(check);
+        let observer = new MutationObserver(check);
         observer.observe(doc.documentElement, {
             childList: true,
             subtree: true
@@ -17,16 +19,16 @@ var mo = (function () {
         listenersObj[selector] = observer;
         check();
     };
-    var _destroy = function (selector) {
+    const _destroy = (selector) => {
         listenersObj[selector] && listenersObj[selector].disconnect();
     };
-    var check = function () {
-        for (var i = 0, len = listeners.length, listener = void 0, elements = void 0; i < len; i++) {
+    const check = () => {
+        for (let i = 0, len = listeners.length, listener, elements; i < len; i++) {
             listener = listeners[i];
             elements = doc.querySelectorAll(listener.selector);
-            for (var j = 0, jLen = elements.length, element = void 0; j < jLen; j++) {
+            for (let j = 0, jLen = elements.length, element; j < jLen; j++) {
                 element = elements[j];
-                var k = element.constructor();
+                let k = element.constructor();
                 element.connectedCallback.call(k);
                 listener.fn(k);
             }
@@ -37,5 +39,5 @@ var mo = (function () {
         destroy: _destroy
     };
 })();
-export default mo;
+exports.default = mo;
 //# sourceMappingURL=mutation-observer.js.map

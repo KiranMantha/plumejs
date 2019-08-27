@@ -1,20 +1,21 @@
-import * as tslib_1 from "tslib";
-import { klass, INPUT_METADATA_KEY } from "./utils";
-import { render } from "lighterhtml-plus";
-import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
-import { instantiate } from "./instance";
-import augmentor from "augmentor";
-var getValue = function (obj, key) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
+const utils_1 = require("./utils");
+const lighterhtml_plus_1 = require("lighterhtml-plus");
+const watch_min_js_1 = require("melanke-watchjs/src/watch.min.js");
+const instance_1 = require("./instance");
+const augmentor_1 = tslib_1.__importDefault(require("augmentor"));
+const getValue = (obj, key) => {
     return obj[key] || null;
 };
-var isRootNodeSet = false;
-var globalStyles = new CSSStyleSheet();
-var style_registry = {};
-var getComputedCss = function (csspath) {
-    if (csspath === void 0) { csspath = ""; }
-    var sheet = new CSSStyleSheet();
+let isRootNodeSet = false;
+let globalStyles = new CSSStyleSheet();
+let style_registry = {};
+const getComputedCss = (csspath = "") => {
+    let sheet = new CSSStyleSheet();
     if (csspath) {
-        var styles = style_registry[csspath]
+        let styles = style_registry[csspath]
             ? style_registry[csspath]
             : require("src/" + csspath);
         style_registry[csspath] = styles;
@@ -22,12 +23,11 @@ var getComputedCss = function (csspath) {
     }
     return [globalStyles, sheet];
 };
-var registerElement = function (options, target, providers, isRoot, addModelToNode) {
-    if (addModelToNode === void 0) { addModelToNode = false; }
+const registerElement = (options, target, providers, isRoot, addModelToNode = false) => {
     if (isRoot && !isRootNodeSet && options.styleUrl) {
         isRootNodeSet = true;
-        var styletag = document.createElement("style");
-        var styles = require("src/" + options.styleUrl);
+        const styletag = document.createElement("style");
+        let styles = require("src/" + options.styleUrl);
         styletag.innerText = (styles || "").toString();
         globalStyles.replace((styles || "").toString());
         document.getElementsByTagName("head")[0].appendChild(styletag);
@@ -37,51 +37,49 @@ var registerElement = function (options, target, providers, isRoot, addModelToNo
             options.selector +
             " component");
     }
-    window.customElements.define(options.selector, (function (_super) {
-        tslib_1.__extends(class_1, _super);
-        function class_1() {
-            var _this = _super.call(this) || this;
-            _this.shadow = addModelToNode ? _this : _this.attachShadow({ mode: "open" });
-            _this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
-            _this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
-            if (_this._inputprop) {
-                watch(_this, _this._inputprop, function (prop, action, newvalue, oldvalue) {
+    window.customElements.define(options.selector, class extends HTMLElement {
+        constructor() {
+            super();
+            this.shadow = addModelToNode ? this : this.attachShadow({ mode: "open" });
+            this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
+            this._inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
+            if (this._inputprop) {
+                watch_min_js_1.watch(this, this._inputprop, (prop, action, newvalue, oldvalue) => {
                     if (oldvalue !== newvalue) {
-                        if (_this[klass] && _this[klass][_this._inputprop]) {
-                            _this[klass][_this._inputprop] = getValue(_this, _this._inputprop);
-                            _this.update();
+                        if (this[utils_1.klass] && this[utils_1.klass][this._inputprop]) {
+                            this[utils_1.klass][this._inputprop] = getValue(this, this._inputprop);
+                            this.update();
                         }
                     }
                 });
             }
-            return _this;
+            return this;
         }
-        class_1.prototype.renderTemplate = function () {
-            return augmentor(this.render.bind(this))();
-        };
-        class_1.prototype.init = function () {
-            return render.bind(this[klass], this.shadow, this.renderTemplate)();
-        };
-        class_1.prototype.connectedCallback = function () {
-            this[klass] = instantiate(target, providers, getValue(this, this._inputprop) || {});
-            this[klass]["element"] = this.shadow;
-            this[klass].beforeMount && this[klass].beforeMount();
+        renderTemplate() {
+            return augmentor_1.default(this.render.bind(this))();
+        }
+        init() {
+            return lighterhtml_plus_1.render.bind(this[utils_1.klass], this.shadow, this.renderTemplate)();
+        }
+        connectedCallback() {
+            this[utils_1.klass] = instance_1.instantiate(target, providers, getValue(this, this._inputprop) || {});
+            this[utils_1.klass]["element"] = this.shadow;
+            this[utils_1.klass].beforeMount && this[utils_1.klass].beforeMount();
             this.init();
-            this[klass]["update"] = this.update.bind(this);
-            this[klass].mount && this[klass].mount();
-        };
-        class_1.prototype.update = function () {
+            this[utils_1.klass]["update"] = this.update.bind(this);
+            this[utils_1.klass].mount && this[utils_1.klass].mount();
+        }
+        update() {
             this.init();
-        };
-        class_1.prototype.getModel = function () {
-            return addModelToNode ? this[klass] : null;
-        };
-        class_1.prototype.disconnectedCallback = function () {
-            this._inputprop && unwatch(this, this._inputprop);
-            this[klass].unmount && this[klass].unmount();
-        };
-        return class_1;
-    }(HTMLElement)));
+        }
+        getModel() {
+            return this[utils_1.klass];
+        }
+        disconnectedCallback() {
+            this._inputprop && watch_min_js_1.unwatch(this, this._inputprop);
+            this[utils_1.klass].unmount && this[utils_1.klass].unmount();
+        }
+    });
 };
-export { registerElement };
+exports.registerElement = registerElement;
 //# sourceMappingURL=registerElement.js.map

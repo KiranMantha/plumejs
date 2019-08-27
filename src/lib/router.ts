@@ -3,49 +3,51 @@ import { html } from "lighterhtml-plus";
 import { InternalRouter } from "./routerService";
 import { Route } from "./types";
 
-@Component({
-	selector: "router-outlet"
-})
-class RouterOutlet {
-	template = "";
-  update: any;
-  
-	@Input()
-	routes: Array<Route> = [];
+const registerRouterComponent = () => {
+	@Component({
+		selector: "router-outlet"
+	})
+	class RouterOutlet {
+		template = "";
+		update: any;
 
-	isRoutesAdded = false;
+		@Input()
+		routes: Array<Route> = [];
 
-	constructor(private router: InternalRouter) {}
+		isRoutesAdded = false;
 
-	beforeMount() {
-		this.router.setOutletFn((tmpl: string) => {
-			this.template = tmpl;
-			this.update();
-		});
-	}
+		constructor(private router: InternalRouter) {}
 
-	mount() {
-		let self = this;
-		window.onpopstate = function() {
-			self.router.navigateTo(window.location.pathname);
-		};
-	}
-
-	render() {
-		if (this.routes.length > 0 && !this.isRoutesAdded) {
-			this.router.addRoutes(this.routes);
-			this.isRoutesAdded = true;
+		beforeMount() {
+			this.router.setOutletFn((tmpl: string) => {
+				this.template = tmpl;
+				this.update();
+			});
 		}
-		if (!this.template) {
-			return html`
-				<div></div>
-			`;
-		} else {
-			const stringArray = [`${this.template}`] as any;
-			stringArray.raw = [`${this.template}`];
-			return html(stringArray);
+
+		mount() {
+			let self = this;
+			window.onpopstate = function() {
+				self.router.navigateTo(window.location.pathname);
+			};
+		}
+
+		render() {
+			if (this.routes.length > 0 && !this.isRoutesAdded) {
+				this.router.addRoutes(this.routes);
+				this.isRoutesAdded = true;
+			}
+			if (!this.template) {
+				return html`
+					<div></div>
+				`;
+			} else {
+				const stringArray = [`${this.template}`] as any;
+				stringArray.raw = [`${this.template}`];
+				return html(stringArray);
+			}
 		}
 	}
-}
+};
 
-
+export default registerRouterComponent;

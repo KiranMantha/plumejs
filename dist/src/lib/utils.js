@@ -1,6 +1,7 @@
-var $object = 'object', $string = 'string', $function = 'function', $undefined = 'undefined', $number = 'number';
-var foreach = function (collection, callback, scope) {
-    if (scope === void 0) { scope = {}; }
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+let $object = 'object', $string = 'string', $function = 'function', $undefined = 'undefined', $number = 'number';
+const foreach = (collection, callback, scope = {}) => {
     if (Object.prototype.toString.call(collection) === "[object Object]") {
         for (var prop in collection) {
             if (Object.prototype.hasOwnProperty.call(collection, prop)) {
@@ -14,7 +15,8 @@ var foreach = function (collection, callback, scope) {
         }
     }
 };
-var lookup = function (obj, path, defaultValue) {
+exports.foreach = foreach;
+const lookup = (obj, path, defaultValue) => {
     var value, patharr, k;
     if (path) {
         if (!isNaN(parseInt(path))) {
@@ -34,14 +36,23 @@ var lookup = function (obj, path, defaultValue) {
     }
     return value || defaultValue;
 };
-var klass = Symbol('klass');
-var isNumber = function (value) { return typeof value === $number; };
-var isArray = function (value) { return value instanceof Array; };
-var isObject = function (value) { return value !== null && typeof value === $object; };
-var isString = function (value) { return typeof value === $string; };
-var isFunction = function (value) { return typeof value === $function; };
-var isUndefined = function (value) { return typeof value == $undefined; };
-var isDefined = function (value) { return typeof value != $undefined; };
-var INPUT_METADATA_KEY = Symbol("design:inputTypes");
-export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, klass, INPUT_METADATA_KEY };
+exports.lookup = lookup;
+const klass = Symbol('klass');
+exports.klass = klass;
+const isNumber = (value) => typeof value === $number;
+exports.isNumber = isNumber;
+const isArray = (value) => value instanceof Array;
+exports.isArray = isArray;
+const isObject = (value) => value !== null && typeof value === $object;
+exports.isObject = isObject;
+const isString = (value) => typeof value === $string;
+exports.isString = isString;
+const isFunction = (value) => typeof value === $function;
+exports.isFunction = isFunction;
+const isUndefined = (value) => typeof value == $undefined;
+exports.isUndefined = isUndefined;
+const isDefined = (value) => typeof value != $undefined;
+exports.isDefined = isDefined;
+const INPUT_METADATA_KEY = Symbol("design:inputTypes");
+exports.INPUT_METADATA_KEY = INPUT_METADATA_KEY;
 //# sourceMappingURL=utils.js.map

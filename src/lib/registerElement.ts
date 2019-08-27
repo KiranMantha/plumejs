@@ -105,7 +105,7 @@ const registerElement = (
 			}
 
 			getModel() {
-				return addModelToNode ? this[klass] : null;
+				return this[klass];
 			}
 
 			disconnectedCallback() {
