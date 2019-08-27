@@ -1,3 +1,5 @@
+//https://medium.com/@OlegVaraksin/minimalistic-dependency-injection-di-container-in-typescript-2ce93d1c303b
+//https://jsfiddle.net/r5umxasz/
 import { registerElement } from "./registerElement";
 import { Injector } from "./service_resolver";
 import "reflect-metadata";

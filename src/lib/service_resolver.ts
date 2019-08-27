@@ -1,48 +1,58 @@
 import { instantiate } from "./instance";
-import { isString, isFunction } from "./utils";
+import { isFunction } from "./utils";
+
+interface IInjector {
+	getService(name: string): void | {};
+	registerService(
+		name: string,
+		fn: Function,
+		deps?: Array<string>
+	): void;
+}
 
 const Injector = (() => {
-	interface IService {
-		[key: string]: any;
-	}
-	let _services: IService = {};
-	const _getService = (name: string) => {
-		if (isString(name)) {
-			if (_services[name]) {
-				return _services[name];
+	
+	class InternalInjector implements IInjector {
+		private get: (key:any) => any;
+		private set: (key:any, value:any) => Map<any, any>;
+		constructor() {
+			let _map = new Map();
+			this.get = _map.get.bind(_map);
+			this.set = _map.set.bind(_map);
+		}
+
+		public getService(name: string) {
+			let instance = this.get(name);
+			if(instance) {
+				return instance;
 			} else {
 				throw Error(`${name} is not a registered provider.`);
 			}
-		} else {
-			return {};
 		}
-	};
 
-	function _service(name: string, fn:Function, deps: Array<string>): void;
-	function _service(name:string, fn:Object):void;
-
-	function _service(
-		name: any,
-		fn: any,
-		deps: any = []
-	) {
-		if (name && fn) {
-			if (!_services[name]) {
-				if (isFunction(fn)) {
-					_services[name] = instantiate(fn, deps);
-				} else {
-					_services[name] = fn;
+		public registerService(name: any, fn: any, deps: Array<string> = []) {
+			if (name && fn) {
+				if (!this.get(name)) {
+					if (isFunction(fn)) {
+						let instance = instantiate(fn, deps);
+						this.set(name, instance);
+					} else {
+						this.set(name, fn);
+					}
 				}
+			} else {
+				throw "error: Requires name and constructor to define service";
 			}
-		} else {
-			throw "error: Requires name and constructor to define service";
 		}
-	};
+	}
+
+	const injectorInstance:IInjector = new InternalInjector();
 
 	return {
-		get: _getService,
-		register: _service
-	};
+		register: injectorInstance.registerService.bind(injectorInstance),
+		get: injectorInstance.getService.bind(injectorInstance)
+	}
 })();
+
 
 export { Injector };

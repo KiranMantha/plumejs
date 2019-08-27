@@ -9,3 +9,7 @@ interface Window {
   MutationObserver: any;
   WebKitMutationObserver: any;
 }
+
+interface Type<T> {
+  new(...args: any[]): T;
+}
