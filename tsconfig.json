@@ -16,8 +16,7 @@
     "declarationDir": "dist",                /* Output directory for generated declaration files. */
     "importHelpers": true,
     "typeRoots": [
-      "@types",
-      "node_modules/@types"
+      "@types"
     ]
   },
   "include": ["src", "testBed", "index.ts"]

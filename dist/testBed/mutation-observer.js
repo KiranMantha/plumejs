@@ -30,6 +30,7 @@ const mo = (() => {
                 element = elements[j];
                 let k = element.constructor();
                 element.connectedCallback.call(k);
+                console.log('element:', element);
                 listener.fn(k);
             }
         }

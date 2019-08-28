@@ -1,25 +1,24 @@
-require('./mo.mock.js');
-const { JSDOM } = require('jsdom');
+const { JSDOM } = require('jsdom-wc');
 
-const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
-const { window } = jsdom;
+const { window } = new JSDOM('<!doctype html><html><body></body></html>');
 
-function copyProps(src, target) {
-  Object.defineProperties(target, {
-    ...Object.getOwnPropertyDescriptors(src),
-    ...Object.getOwnPropertyDescriptors(target),
-  });
-}
+// function copyProps(src, target) {
+//   Object.defineProperties(target, {
+//     ...Object.getOwnPropertyDescriptors(src),
+//     ...Object.getOwnPropertyDescriptors(target),
+//   });
+// }
 
-global.window = window;
+// Object.assign(global, {
+//   document: window.document,
+//   HTMLElement: window.HTMLElement,
+//   customElements: window.customElements,
+//   window: window
+// });
+
 global.document = window.document;
-global.navigator = {
-  userAgent: 'node.js',
-};
-global.requestAnimationFrame = function (callback) {
-  return setTimeout(callback, 0);
-};
-global.cancelAnimationFrame = function (id) {
-  clearTimeout(id);
-};
-copyProps(window, global);
+global.HTMLElement = window.HTMLElement;
+global.customElements = window.customElements;
+global.window = window;
+
+//copyProps(window, global);
