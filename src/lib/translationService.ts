@@ -13,7 +13,7 @@ export class TranslationService {
 		setDefaultLanguage(language);
 		let components = InternalTranslationService.translationComponents;
 		if (components.length > 0) {
-			components.forEach((ele: any) => {
+			components.forEach((ele: HTMLElement) => {
 				if(ele.nodeName !== 'ROUTER-OUTLET') {
 					ele.update();
 				}

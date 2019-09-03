@@ -1,5 +1,6 @@
 interface HTMLElement {
   trigger: (eventName:string, isBubbling?:boolean) => void;
+  update: ()=>void;
 }
 
 interface Window {
@@ -11,4 +12,8 @@ interface Window {
 
 interface Type<T> {
   new(...args: any[]): T;
+}
+
+interface String {
+	translate: (...args:any) => string;
 }
