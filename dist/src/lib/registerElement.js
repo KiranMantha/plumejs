@@ -41,6 +41,9 @@ const registerElement = (options, target, providers, isRoot, addModelToNode = fa
     window.customElements.define(options.selector, class extends HTMLElement {
         constructor() {
             super();
+            this.update = () => {
+                this.init();
+            };
             this.shadow = addModelToNode ? this : this.attachShadow({ mode: "open" });
             this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
             this._inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
@@ -70,9 +73,6 @@ const registerElement = (options, target, providers, isRoot, addModelToNode = fa
             this[utils_1.klass]["update"] = this.update.bind(this);
             this[utils_1.klass].mount && this[utils_1.klass].mount();
             translationService_1.InternalTranslationService.translationComponents.push(this);
-        }
-        update() {
-            this.init();
         }
         getModel() {
             return this[utils_1.klass];

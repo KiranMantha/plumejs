@@ -102,7 +102,7 @@ const registerElement = (
 				InternalTranslationService.translationComponents.push(this);
 			}
 
-			update() {
+			update = () => {
 				this.init();
 			}
 
