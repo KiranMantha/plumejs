@@ -4,3 +4,6 @@ export declare class TranslationService {
     setDefaultLanguage(language: string): void;
     getCurrentLanguage(): string;
 }
+export declare class InternalTranslationService {
+    static translationComponents: Array<HTMLElement>;
+}

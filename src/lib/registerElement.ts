@@ -4,6 +4,7 @@ import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
 import augmentor from "augmentor";
+import { InternalTranslationService } from './translationService';
 
 const getValue = (obj: any, key: string) => {
 	return obj[key] || null;
@@ -75,7 +76,7 @@ const registerElement = (
 							}
 						}
 					);
-				}
+				}				
 				return this;
 			}
 
@@ -98,6 +99,7 @@ const registerElement = (
 				this.init();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
+				InternalTranslationService.translationComponents.push(this);
 			}
 
 			update() {

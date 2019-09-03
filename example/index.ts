@@ -8,7 +8,7 @@ import fr from './i18n/fr';
 	styleUrl: 'main.scss'
 })
 class AppRoot {
-	constructor(private router:Router, translations:TranslationService) {
+	constructor(private router:Router, private translations:TranslationService) {
 		translations.setTranslate(en, 'en');
 		translations.setTranslate(fr, 'fr');
 		translations.setDefaultLanguage('en');
@@ -52,7 +52,12 @@ class AppRoot {
 				<li>
 					<a onclick=${() => { this.navigate('/persons/123') }}>persons</a>
 				</li>
-			</ul>	
+			</ul>
+			<select onchange=${(e:any)=>{ this.translations.setDefaultLanguage(e.target.value); }}>
+				<option value='en'>EN</option>
+				<option value='fr'>FR</option>
+			</select>	
+			<div>${ 'name'.translate() }</div>
 			<router-outlet routes=${ this.routes }></router-outlet>
 			<input type='text' ref=${this.inputField} /><button onclick=${()=>{ this.getRef() }}>click</button>
     </div>

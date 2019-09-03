@@ -12,11 +12,23 @@ class TranslationService {
     setDefaultLanguage(language) {
         this.defaultLanguage = language;
         vanilla_i18n_1.setDefaultLanguage(language);
+        let components = InternalTranslationService.translationComponents;
+        if (components.length > 0) {
+            components.forEach((ele) => {
+                if (ele.nodeName !== 'ROUTER-OUTLET') {
+                    ele.update();
+                }
+            });
+        }
     }
     getCurrentLanguage() {
         return this.defaultLanguage;
     }
 }
 exports.TranslationService = TranslationService;
+class InternalTranslationService {
+}
+InternalTranslationService.translationComponents = [];
+exports.InternalTranslationService = InternalTranslationService;
 service_resolver_1.Injector.register("TranslationService", new TranslationService());
 //# sourceMappingURL=translationService.js.map

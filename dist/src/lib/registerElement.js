@@ -6,6 +6,7 @@ const lighterhtml_plus_1 = require("lighterhtml-plus");
 const watch_min_js_1 = require("melanke-watchjs/src/watch.min.js");
 const instance_1 = require("./instance");
 const augmentor_1 = tslib_1.__importDefault(require("augmentor"));
+const translationService_1 = require("./translationService");
 const getValue = (obj, key) => {
     return obj[key] || null;
 };
@@ -68,6 +69,7 @@ const registerElement = (options, target, providers, isRoot, addModelToNode = fa
             this.init();
             this[utils_1.klass]["update"] = this.update.bind(this);
             this[utils_1.klass].mount && this[utils_1.klass].mount();
+            translationService_1.InternalTranslationService.translationComponents.push(this);
         }
         update() {
             this.init();
