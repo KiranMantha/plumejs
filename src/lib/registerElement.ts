@@ -57,7 +57,7 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = addModelToNode ? this : this.attachShadow({ mode: "open" });
+				this.shadow = (addModelToNode || options.useShadow === false) ? this : this.attachShadow({ mode: "open" });
 				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {

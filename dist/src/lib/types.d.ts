@@ -2,6 +2,7 @@ export interface DecoratorOptions {
     selector: string;
     styleUrl?: string;
     root?: boolean;
+    useShadow?: boolean;
 }
 export interface RouteItem {
     Params: any;
