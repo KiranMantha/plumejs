@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const service_resolver_1 = require("./lib/service_resolver");
 exports.Injector = service_resolver_1.Injector;
@@ -14,4 +14,6 @@ const lighterhtml_plus_1 = require("lighterhtml-plus");
 exports.html = lighterhtml_plus_1.html;
 const augmentor_1 = require("augmentor");
 exports.useRef = augmentor_1.useRef;
+const domTransition_service_1 = require("./lib/domTransition.service");
+exports.DomTransition = domTransition_service_1.DomTransition;
 //# sourceMappingURL=plume.js.map
