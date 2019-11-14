@@ -47,7 +47,7 @@
 		"@webcomponents/webcomponentsjs": "^2.2.10",
 		"augmentor": "^0.2.6",
 		"bootstrap": "^4.3.1",
-		"lighterhtml-plus": "^0.15.2",
+		"lighterhtml-plus": "^0.15.5",
 		"melanke-watchjs": "^1.5.0",
 		"vanilla-i18n": "^1.0.6"
 	},
