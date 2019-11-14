@@ -22,7 +22,7 @@
 		"build:cjs": "tsc --module commonjs --target es5 --outDir dist/cjs",
 		"build:umd": "webpack dist/esm/index.js --format umd --name plumejs --sourceMap --output dist/umd/plumejs.js",
 		"webpack": "webpack --config webpack/webpack.build.config.js",
-		"patch-update": "npm version patch",
+		"patch-update": "npm version patch --verbose",
 		"tag": "git push --follow-tags",
 		"tag-release": "npm run patch-update && npm run tag",
 		"ts-jest": "ts-jest config:init"
