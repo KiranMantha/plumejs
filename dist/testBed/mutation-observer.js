@@ -1,17 +1,15 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const getValue = (obj, key) => {
+var getValue = function (obj, key) {
     return obj[key] || null;
 };
-const mo = (() => {
+var mo = (function () {
     'use strict';
-    let listeners = [], doc = window.document, MutationObserver = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"), listenersObj = {};
-    const _ready = (selector, callback) => {
+    var listeners = [], doc = window.document, MutationObserver = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"), listenersObj = {};
+    var _ready = function (selector, callback) {
         listeners.push({
             selector: selector,
             fn: callback
         });
-        let observer = new MutationObserver(check);
+        var observer = new MutationObserver(check);
         observer.observe(doc.documentElement, {
             childList: true,
             subtree: true
@@ -19,16 +17,16 @@ const mo = (() => {
         listenersObj[selector] = observer;
         check();
     };
-    const _destroy = (selector) => {
+    var _destroy = function (selector) {
         listenersObj[selector] && listenersObj[selector].disconnect();
     };
-    const check = () => {
-        for (let i = 0, len = listeners.length, listener, elements; i < len; i++) {
+    var check = function () {
+        for (var i = 0, len = listeners.length, listener = void 0, elements = void 0; i < len; i++) {
             listener = listeners[i];
             elements = doc.querySelectorAll(listener.selector);
-            for (let j = 0, jLen = elements.length, element; j < jLen; j++) {
+            for (var j = 0, jLen = elements.length, element = void 0; j < jLen; j++) {
                 element = elements[j];
-                let k = element.constructor();
+                var k = element.constructor();
                 element.connectedCallback.call(k);
                 console.log('element:', element);
                 listener.fn(k);
@@ -40,5 +38,5 @@ const mo = (() => {
         destroy: _destroy
     };
 })();
-exports.default = mo;
+export default mo;
 //# sourceMappingURL=mutation-observer.js.map

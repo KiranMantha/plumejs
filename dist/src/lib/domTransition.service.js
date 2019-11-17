@@ -1,47 +1,47 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
-const decorators_1 = require("./decorators");
-let DomTransition = class DomTransition {
-    constructor() {
+import { __decorate, __metadata } from "tslib";
+import { Injectable } from './decorators';
+var DomTransition = (function () {
+    function DomTransition() {
         this.transition = "";
         this.whichTransitionEnd();
     }
-    removeTransition(element) {
-        element.removeEventListener(this.transition, () => { }, false);
-    }
-    whichTransitionEnd() {
-        let element = document.createElement("div");
-        let styleobj = element.style;
-        let transitions = {
+    DomTransition.prototype.removeTransition = function (element) {
+        element.removeEventListener(this.transition, function () { }, false);
+    };
+    DomTransition.prototype.whichTransitionEnd = function () {
+        var element = document.createElement("div");
+        var styleobj = element.style;
+        var transitions = {
             "transition": "transitionend",
             "WebkitTransition": "webkitTransitionEnd",
             "MozTransition": "transitionend",
             "OTransition": "otransitionend"
         };
-        for (let t in transitions) {
+        for (var t in transitions) {
             if (typeof styleobj[t] !== "undefined") {
                 this.transition = transitions[t];
                 break;
             }
         }
-    }
-    onTransitionEnd(element, cb, duration) {
-        let called = false;
-        element.addEventListener(this.transition, () => {
+    };
+    DomTransition.prototype.onTransitionEnd = function (element, cb, duration) {
+        var _this = this;
+        var called = false;
+        element.addEventListener(this.transition, function () {
             called = true;
-            this.removeTransition(element);
+            _this.removeTransition(element);
         }, false);
-        let callback = () => {
+        var callback = function () {
             if (!called)
                 cb && cb();
         };
         setTimeout(callback, duration);
-    }
-};
-DomTransition = tslib_1.__decorate([
-    decorators_1.Injectable(),
-    tslib_1.__metadata("design:paramtypes", [])
-], DomTransition);
-exports.DomTransition = DomTransition;
+    };
+    DomTransition = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [])
+    ], DomTransition);
+    return DomTransition;
+}());
+export { DomTransition };
 //# sourceMappingURL=domTransition.service.js.map

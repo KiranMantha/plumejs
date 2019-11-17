@@ -1,15 +1,17 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const di_1 = require("./di");
-function instantiate(fn, deps = [], props = {}) {
-    let $deps = di_1.setDI(fn, deps, props), instance;
+import { __spreadArrays } from "tslib";
+import { setDI } from './di';
+function instantiate(fn, deps, props) {
+    var _a;
+    if (deps === void 0) { deps = []; }
+    if (props === void 0) { props = {}; }
+    var $deps = setDI(fn, deps, props), instance;
     if ($deps[1].length > 0) {
-        instance = new $deps[0](...$deps[1]);
+        instance = new ((_a = $deps[0]).bind.apply(_a, __spreadArrays([void 0], $deps[1])))();
     }
     else {
         instance = new $deps[0]();
     }
     return instance;
 }
-exports.instantiate = instantiate;
+export { instantiate };
 //# sourceMappingURL=instance.js.map

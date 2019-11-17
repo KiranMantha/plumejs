@@ -1,23 +1,24 @@
 {
   "presets": [
     ["@babel/preset-env", {
-      "modules": false,
-      "loose": true,
       "targets": {
-        "browsers": ["last 2 versions", "ie >= 10"]
+        "ie": "9"
       }
     }],
-    "@babel/preset-typescript"
+    "@babel/typescript"
   ],
   "plugins": [
     "babel-plugin-transform-typescript-metadata",
     ["@babel/plugin-proposal-decorators", {
-      "legacy": true,
-      "loose": true
+      "legacy": true
     }],
     ["@babel/proposal-class-properties", {
       "loose": true
     }],
-    "@babel/proposal-object-rest-spread"
+    "@babel/proposal-object-rest-spread",
+    "@babel/plugin-transform-arrow-functions",
+    "@babel/plugin-transform-block-scoping",
+    "@babel/plugin-transform-function-name",
+    "@babel/plugin-transform-runtime"
   ]
 }

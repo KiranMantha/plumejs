@@ -16,14 +16,25 @@ let config = {
     },
     module: {
         rules: [{
-            test: /\.ts$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/
+            test: /.ts$/,
+            exclude: /node_modules/,
+            use: [{
+                loader: 'babel-loader',
+                options: {
+                    babelrc: true
+                }
+            }, {
+                loader: 'ts-loader',
+                options: {
+                    transpileOnly: true,
+                    configFile: 'tsconfig.json',
+                }
+            }]
         }, {
             test: /\.(s*)css$/,
             exclude: /node_modules/,
             use: ["css-loader", "sass-loader"]
-        },{
+        }, {
             test: /\.html$/,
             use: ["html-loader"]
         }]

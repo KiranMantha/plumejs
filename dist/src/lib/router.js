@@ -1,56 +1,55 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = require("tslib");
-const decorators_1 = require("./decorators");
-const lighterhtml_plus_1 = require("lighterhtml-plus");
-const routerService_1 = require("./routerService");
-const registerRouterComponent = () => {
-    let RouterOutlet = class RouterOutlet {
-        constructor(router) {
+import { __decorate, __makeTemplateObject, __metadata } from "tslib";
+import { Component, Input } from "./decorators";
+import { html } from "lighterhtml-plus";
+import { InternalRouter } from "./routerService";
+var registerRouterComponent = function () {
+    var RouterOutlet = (function () {
+        function RouterOutlet(router) {
             this.router = router;
             this.template = "";
             this.routes = [];
             this.isRoutesAdded = false;
         }
-        beforeMount() {
-            this.router.setOutletFn((tmpl) => {
-                this.template = tmpl;
-                this.update();
+        RouterOutlet.prototype.beforeMount = function () {
+            var _this = this;
+            this.router.setOutletFn(function (tmpl) {
+                _this.template = tmpl;
+                _this.update();
             });
-        }
-        mount() {
-            let self = this;
+        };
+        RouterOutlet.prototype.mount = function () {
+            var self = this;
             window.onpopstate = function () {
                 self.router.navigateTo(window.location.pathname);
             };
-        }
-        render() {
+        };
+        RouterOutlet.prototype.render = function () {
             if (this.routes.length > 0 && !this.isRoutesAdded) {
                 this.router.addRoutes(this.routes);
                 this.isRoutesAdded = true;
             }
             if (!this.template) {
-                return lighterhtml_plus_1.html `
-					<div></div>
-				`;
+                return html(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n\t\t\t\t\t<div></div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div></div>\n\t\t\t\t"])));
             }
             else {
-                const stringArray = [`${this.template}`];
-                stringArray.raw = [`${this.template}`];
-                return lighterhtml_plus_1.html(stringArray);
+                var stringArray = ["" + this.template];
+                stringArray.raw = ["" + this.template];
+                return html(stringArray);
             }
-        }
-    };
-    tslib_1.__decorate([
-        decorators_1.Input(),
-        tslib_1.__metadata("design:type", Array)
-    ], RouterOutlet.prototype, "routes", void 0);
-    RouterOutlet = tslib_1.__decorate([
-        decorators_1.Component({
-            selector: "router-outlet"
-        }),
-        tslib_1.__metadata("design:paramtypes", [routerService_1.InternalRouter])
-    ], RouterOutlet);
+        };
+        __decorate([
+            Input(),
+            __metadata("design:type", Array)
+        ], RouterOutlet.prototype, "routes", void 0);
+        RouterOutlet = __decorate([
+            Component({
+                selector: "router-outlet"
+            }),
+            __metadata("design:paramtypes", [InternalRouter])
+        ], RouterOutlet);
+        return RouterOutlet;
+    }());
 };
-exports.default = registerRouterComponent;
+export default registerRouterComponent;
+var templateObject_1;
 //# sourceMappingURL=router.js.map
