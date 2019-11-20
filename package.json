@@ -15,7 +15,7 @@
 		"test-local": "jest",
 		"test-debug": "node --inspect-brk ./node_modules/jest/bin/jest --runInBand --no-cache --no-watchman",
 		"build": "npm run tsc && npm run build:es2015 && npm run build:esm && npm run build:cjs",
-		"tsc": "tsc && npm run cpx",
+		"tsc": "tsc",
 		"cpx": "cpx \"testBed/mocks/**/*.js\" dist/testBed/mocks -C -v",
 		"build:es2015": "tsc --module es2015 --target es2015 --outDir dist/es2015",
 		"build:esm": "tsc --module es2015 --target es5 --outDir dist/esm",

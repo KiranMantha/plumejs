@@ -23,12 +23,6 @@ let config = {
                 options: {
                     babelrc: true
                 }
-            }, {
-                loader: 'ts-loader',
-                options: {
-                    transpileOnly: true,
-                    configFile: 'tsconfig.json',
-                }
             }]
         }, {
             test: /\.(s*)css$/,

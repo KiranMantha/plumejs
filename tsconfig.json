@@ -2,10 +2,9 @@
   "compilerOptions": {
     "baseUrl": "./",
     "target": "ES5",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
-    "module": "es2015",
-    "lib": ["es2015", "dom"],                     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+    "module": "commonjs",
     "declaration": true,                      /* Generates corresponding '.d.ts' file. */
-    "sourceMap": true,                     /* Generates corresponding '.map' file. */
+    "inlineSourceMap": true,
     "outDir": "dist",                          /* Redirect output structure to the directory. */
     "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     "removeComments": true,                /* Do not emit comments to output. */
