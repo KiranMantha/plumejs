@@ -1,5 +1,5 @@
 import { Component, Input } from "./decorators";
-import { html } from "lighterhtml-plus";
+import { html } from "lighterhtml";
 import { InternalRouter } from "./routerService";
 import { Route } from "./types";
 

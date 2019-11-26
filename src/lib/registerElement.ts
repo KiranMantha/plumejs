@@ -1,5 +1,5 @@
 import { klass, INPUT_METADATA_KEY } from "./utils";
-import { render } from "lighterhtml-plus";
+import { render } from "lighterhtml";
 import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
@@ -81,11 +81,12 @@ const registerElement = (
 			}
 
 			renderTemplate() {
-				return augmentor(this.render.bind(this))();
+				return augmentor(this[klass].render.bind(this[klass]))();
 			}
 
 			private init() {
-				return render.bind(this[klass], this.shadow, this.renderTemplate)();
+				let _returnfn = this.renderTemplate();
+				return render.bind(this[klass], this.shadow, _returnfn)();
 			}
 
 			connectedCallback() {
