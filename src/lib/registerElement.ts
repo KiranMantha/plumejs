@@ -31,7 +31,7 @@ const registerElement = (
 	target: Function,
 	providers: Array<string>,
 	isRoot: boolean,
-	addModelToNode: boolean = false
+	isUnitTestEnv: boolean = false
 ) => {
 	if (isRoot && !isRootNodeSet && options.styleUrl) {
 		isRootNodeSet = true;
@@ -57,7 +57,7 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = (addModelToNode || options.useShadow === false) ? this : this.attachShadow({ mode: "open" });
+				this.shadow = (isUnitTestEnv || options.useShadow === false) ? this : this.attachShadow({ mode: "open" });
 				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
@@ -76,7 +76,7 @@ const registerElement = (
 							}
 						}
 					);
-				}				
+				}
 				return this;
 			}
 
@@ -98,12 +98,12 @@ const registerElement = (
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
-				this[klass]["update"] = this.update.bind(this);
+				this[klass]["update"] = this.updateCtx.bind(this);
 				this[klass].mount && this[klass].mount();
 				InternalTranslationService.translationComponents.push(this);
 			}
 
-			update = () => {
+			updateCtx() {
 				this.init();
 			}
 

@@ -1,12 +1,26 @@
 //https://github.com/unrealprogrammer/how-to-test-web-component
+const { Window } = require('happy-dom');
+const window = new Window();
 
-require('document-register-element/build/document-register-element.node');
-require('./mo.mock');
-require('@ungap/custom-elements-builtin');
-
-console.log = s => {
-  process.stdout.write(s + "\n");
+window.document.createElementNS = function() {
+  if(arguments.length === 1) {
+    return window.document.createElement(arguments[0]);
+  } else {
+    return window.document.createElement(arguments[1]);
+  }
 };
+
+const _CSSStyleSheet = jest.fn();
+window.CSSStyleSheet = _CSSStyleSheet;
+
+
+Object.assign(global, {
+  document: window.document,
+  HTMLElement: window.HTMLElement,
+  customElements: window.customElements,
+  window: window,
+  CSSStyleSheet: _CSSStyleSheet
+});
 
 Element.prototype.trigger = function(eventName, isBubbleing) {
   let event = new Event(eventName, { bubbles: isBubbleing !== undefined ? isBubbleing : false, cancelable: false });

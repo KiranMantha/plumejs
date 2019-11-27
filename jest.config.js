@@ -1,5 +1,6 @@
 module.exports = {
-  verbose: true,
+  verbose: true,  
+  testEnvironment: "jest-environment-happy-dom",
   setupFilesAfterEnv: [
     '<rootDir>/testBed/mocks/jestSetup.js'
   ],

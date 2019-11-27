@@ -22,8 +22,8 @@ class MockComponent {
 
 describe("Plumejs Component", () => {
   let appRoot:any;
-	beforeAll(() => {
-    appRoot = TestBed.createComponent({selector: 'app-root', target: MockComponent});
+	beforeAll(async () => {
+    appRoot = await TestBed.MockComponent({selector: 'app-root', target: MockComponent});
   });
   
   it('should render h1 element', () => {
