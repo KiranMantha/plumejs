@@ -1,6 +1,7 @@
 import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml";
-import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
+//import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
+import { watch, unwatch } from './watchObject';
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
 import augmentor from "augmentor";
@@ -64,7 +65,7 @@ const registerElement = (
 					watch(
 						this,
 						this._inputprop,
-						(prop: any, action: any, newvalue: any, oldvalue: any) => {
+						(newvalue: any, oldvalue: any) => {
 							if (oldvalue !== newvalue) {
 								if (this[klass] && this[klass][this._inputprop]) {
 									this[klass][this._inputprop] = getValue(
@@ -112,7 +113,7 @@ const registerElement = (
 			}
 
 			disconnectedCallback() {
-				this._inputprop && unwatch(this, this._inputprop);
+				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
 		}
