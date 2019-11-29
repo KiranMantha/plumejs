@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Jest Test",
             "program": "${workspaceFolder}\\node_modules\\jest\\bin\\jest",
-            "args": ["--runInBand", "--config=${workspaceFolder}\\jest.config.js"],
+            "args": ["--runInBand", "--detectOpenHandles", "--config=${workspaceFolder}\\jest.config.js"],
             "env": {
                 "NODE_ENV": "test"
             },

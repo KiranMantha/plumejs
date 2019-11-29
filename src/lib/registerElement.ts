@@ -71,7 +71,7 @@ const registerElement = (
 										this,
 										this._inputprop
 									);
-									this.update();
+									this.updateCtx();
 								}
 							}
 						}

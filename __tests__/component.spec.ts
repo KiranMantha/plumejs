@@ -38,4 +38,7 @@ describe("Plumejs Component", () => {
     model.greet();
     expect(span.innerHTML).toContain('hello');
   });
+  afterAll(()=>{
+    TestBed.RemoveComponent(appRoot);
+  });
 });
