@@ -1,6 +1,5 @@
 import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml";
-//import { watch, unwatch } from "melanke-watchjs/src/watch.min.js";
 import { watch, unwatch } from './watchObject';
 import { instantiate } from "./instance";
 import { DecoratorOptions } from "./types";
@@ -60,7 +59,7 @@ const registerElement = (
 				super();
 				this.shadow = (isUnitTestEnv || options.useShadow === false) ? this : this.attachShadow({ mode: "open" });
 				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
-				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);				
 				if (this._inputprop) {
 					watch(
 						this,
@@ -72,12 +71,12 @@ const registerElement = (
 										this,
 										this._inputprop
 									);
-									this.updateCtx();
+									this.update();
 								}
 							}
 						}
 					);
-				}
+				}				
 				return this;
 			}
 
@@ -99,12 +98,12 @@ const registerElement = (
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
-				this[klass]["update"] = this.updateCtx.bind(this);
+				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
 				InternalTranslationService.translationComponents.push(this);
 			}
 
-			updateCtx() {
+			update = () => {
 				this.init();
 			}
 

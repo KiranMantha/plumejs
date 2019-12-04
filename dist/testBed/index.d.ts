@@ -1,6 +1,8 @@
 export default class TestBed {
-    static createComponent(options: {
+    static MockComponent(options: {
         selector: string;
         target: Function;
-    }): any;
+    }): Promise<any>;
+    static MockService(name: string, target: any): void;
+    static RemoveComponent(node: HTMLElement): void;
 }
