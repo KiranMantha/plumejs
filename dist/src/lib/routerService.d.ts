@@ -12,7 +12,7 @@ export declare class InternalRouter {
     getCurrentRoute(): {
         params: {};
     };
-    navigateTo(path?: string): void;
+    navigateTo(path?: string): Promise<void>;
     setOutletFn(fn: Function): void;
     onNavigationStart(cb: any): void;
 }

@@ -1,7 +1,7 @@
 import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route } from "./types";
-import registerRouterComponent from './router';
+import registerRouterComponent from "./router";
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;
@@ -42,17 +42,20 @@ class StaticRouter {
 			Params: {},
 			Url: "",
 			Template: "",
-			TemplatePath: '',
+			TemplatePath: "",
 			ParamCount: 0,
 			IsRegistered: false
 		};
-		obj.Params = r.path.split("/").filter((h:string) => {
+		obj.Params = r.path.split("/").filter((h: string) => {
 			return h.length > 0;
 		});
 		obj.Url = r.path;
 		obj.Template = "";
 		if (r.template) {
-			if(!r.templatePath) throw Error('templatePath is required in route if template is mentioned.')
+			if (!r.templatePath)
+				throw Error(
+					"templatePath is required in route if template is mentioned."
+				);
 			obj.Template = r.template;
 			obj.TemplatePath = r.templatePath;
 		}
@@ -70,7 +73,7 @@ export class InternalRouter {
 	private previousPage = "";
 	private outletFn: Function = () => {};
 
-	private _navigateTo(path: string): void {
+	private async _navigateTo(path: string) {
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
@@ -89,9 +92,10 @@ export class InternalRouter {
 						) {
 							isRouteFound += 1;
 							this.currentRoute.params = _params;
-							if(!routeItem.IsRegistered) {
-								routeItem.TemplatePath && require('src/'+ routeItem.TemplatePath);
-								routeItem.IsRegistered = true;								
+							if (!routeItem.IsRegistered) {
+								routeItem.TemplatePath &&
+									(await import("src/" + routeItem.TemplatePath));
+								routeItem.IsRegistered = true;
 							}
 							this.outletFn && this.outletFn(routeItem.Template);
 							break;
@@ -117,15 +121,15 @@ export class InternalRouter {
 		} else {
 			throw Error("router.addRoutes: the parameter must be an array");
 		}
-  }
-  
-  getCurrentRoute(){
-    return this.currentRoute;
-  }
+	}
 
-	navigateTo(path: string = "") {
-		window.history.pushState(null, '', path);
-		this._navigateTo(path);
+	getCurrentRoute() {
+		return this.currentRoute;
+	}
+
+	async navigateTo(path: string = "") {
+		window.history.pushState(null, "", path);
+		await this._navigateTo(path);
 	}
 
 	setOutletFn(fn: Function) {
@@ -140,7 +144,7 @@ export class InternalRouter {
 }
 
 export class Router {
-	getCurrentRoute:Function = () => {};
+	getCurrentRoute: Function = () => {};
 	navigateTo: Function = () => {};
 	onNavigationStart: Function = () => {};
 	constructor(
@@ -151,8 +155,8 @@ export class Router {
 		registerRouterComponent();
 		this.getCurrentRoute = _getCurrentRoute;
 		this.navigateTo = _navigateTo;
-		this.onNavigationStart = _onNavigationStart;		
-  }
+		this.onNavigationStart = _onNavigationStart;
+	}
 }
 
 const _internalRouter = new InternalRouter();

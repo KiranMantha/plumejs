@@ -1,7 +1,7 @@
 {
   "presets": [
     ["@babel/env", {
-      "useBuiltIns": "entry",
+      "useBuiltIns": "usage",
       "corejs": "3.0.0",
       "targets": {
         "browsers": "> 0.25%, not dead"
@@ -20,6 +20,7 @@
     "@babel/proposal-object-rest-spread",
     "@babel/plugin-transform-arrow-functions",
     "@babel/plugin-transform-block-scoping",
-    "@babel/plugin-transform-function-name"
+    "@babel/plugin-transform-function-name",
+    "@babel/plugin-syntax-dynamic-import"
   ]
 }

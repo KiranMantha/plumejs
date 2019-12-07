@@ -19,7 +19,7 @@ const getComputedCss = (csspath: string = "") => {
 	if (csspath) {
 		let styles = style_registry[csspath]
 			? style_registry[csspath]
-			: require("src/" + csspath);
+			: import("src/" + csspath);
 		style_registry[csspath] = styles;
 		sheet.replace(styles);
 	}
