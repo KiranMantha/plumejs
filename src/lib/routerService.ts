@@ -1,6 +1,6 @@
 import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
-import { RouteItem, Route } from "./types";
+import { RouteItem, Route, jsonObject } from "./types";
 import registerRouterComponent from "./router";
 
 interface InternalRouteItem extends RouteItem {
@@ -11,7 +11,7 @@ interface InternalRouteItem extends RouteItem {
 class StaticRouter {
 	static checkParams(up: Array<string>, r: RouteItem) {
 		let pmc = 0,
-			po: any = {},
+			po: jsonObject = {},
 			pc = r.ParamCount;
 
 		for (let i = 0; i < up.length; i++) {
@@ -27,7 +27,7 @@ class StaticRouter {
 		return false;
 	}
 
-	static getParamCount(p: any) {
+	static getParamCount(p: string[]) {
 		let pc = 0;
 		p.forEach((k: string) => {
 			if (k.indexOf(":") >= 0) {

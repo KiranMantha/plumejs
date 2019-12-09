@@ -2,17 +2,17 @@ import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml";
 import { watch, unwatch } from './watchObject';
 import { instantiate } from "./instance";
-import { DecoratorOptions } from "./types";
+import { DecoratorOptions, jsonObject } from "./types";
 import augmentor from "augmentor";
 import { InternalTranslationService } from './translationService';
 
-const getValue = (obj: any, key: string) => {
+const getValue = (obj: jsonObject, key: string) => {
 	return obj[key] || null;
 };
 
 let isRootNodeSet = false;
 let globalStyles: any = new CSSStyleSheet();
-let style_registry: any = {};
+let style_registry: jsonObject = {};
 
 const getComputedCss = (csspath: string = "") => {
 	let sheet: any = new CSSStyleSheet();
@@ -51,8 +51,8 @@ const registerElement = (
 	window.customElements.define(
 		options.selector,
 		class extends HTMLElement {
-			render: any;
-			[klass]: any;
+			render: Function;
+			[klass]: jsonObject;
 			private shadow: any;
 			_inputprop: string;
 			constructor() {

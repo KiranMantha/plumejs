@@ -1,3 +1,3 @@
-declare const watch: (obj: Object, prop: string, handler: Function) => void;
-declare const unwatch: (obj: any) => void;
+declare const watch: (obj: object, prop: string, handler: Function) => void;
+declare const unwatch: (obj: object) => void;
 export { watch, unwatch };

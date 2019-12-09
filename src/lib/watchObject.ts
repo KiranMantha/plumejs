@@ -1,6 +1,8 @@
+import { jsonObject } from "./types";
+
 let mapObj = new WeakMap();
 
-const clone = (obj: any) => {
+const clone = (obj: jsonObject) => {
 	if (null == obj || "object" != typeof obj) {
 		return obj;
 	}
@@ -11,12 +13,12 @@ const clone = (obj: any) => {
 	return copy;
 };
 
-const getExistingSetter = (obj: Object, prop: string) => {
+const getExistingSetter = (obj: object, prop: string) => {
 	let existingSetter = Object.getOwnPropertyDescriptor(obj, prop);
 	return existingSetter ? existingSetter.set : undefined;
 };
 
-const getDiff = (a: any, b: any) => {
+const getDiff = (a: jsonObject, b: jsonObject) => {
   if(!b) b = {};
 	let changedProps = [];
 	for (let prop in a) {
@@ -42,7 +44,7 @@ class CreateWatch {
 	_watchableProp: string;
 	_handler: Function = null;
 
-	constructor(obj: any, prop: string, handler: Function) {
+	constructor(obj: jsonObject, prop: string, handler: Function) {
     this.defineProp(obj, prop, handler);
     obj['objVal'] = null;
 		this._obj = obj;
@@ -63,7 +65,7 @@ class CreateWatch {
     }, 50);
 	}
 
-	defineProp(obj: any, prop: string, handler: Function) {
+	defineProp(obj: jsonObject, prop: string, handler: Function) {
 		let _this = this;
 		const getter = () => {
 			return obj['objVal'];
@@ -98,7 +100,7 @@ class CreateWatch {
 	}
 }
 
-const watch = (obj: Object, prop: string, handler: Function) => {
+const watch = (obj: object, prop: string, handler: Function) => {
 	if (!mapObj.has(obj)) {
 		let watcher = new CreateWatch(obj, prop, handler);
 		mapObj.set(obj, watcher);
@@ -106,7 +108,7 @@ const watch = (obj: Object, prop: string, handler: Function) => {
 	}
 };
 
-const unwatch = (obj: any) => {
+const unwatch = (obj: object) => {
 	if (mapObj.has(obj)) {
 		let watcher = mapObj.get(obj);
 		watcher.unwatch();

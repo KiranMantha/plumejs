@@ -1,5 +1,6 @@
+import { jsonObject } from "./types";
 declare const foreach: (collection: any[], callback: (o: any, i: any, c: any[]) => void, scope?: any) => void;
-declare const lookup: (obj: any, path: string, defaultValue: any) => any;
+declare const lookup: (obj: jsonObject, path: string, defaultValue: any) => any;
 declare const klass: unique symbol;
 declare const isNumber: (value: any) => boolean;
 declare const isArray: (value: any) => boolean;

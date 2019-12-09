@@ -19,3 +19,6 @@ export interface Route {
 export declare type Ref<T> = {
     current: T;
 };
+export declare type jsonObject = {
+    [index: string]: any;
+};

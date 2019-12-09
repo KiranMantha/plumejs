@@ -9,7 +9,7 @@ const registerRouterComponent = () => {
 	})
 	class RouterOutlet {
 		template = "";
-		update: any;
+		update: Function;
 
 		@Input()
 		routes: Array<Route> = [];

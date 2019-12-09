@@ -11,10 +11,9 @@ interface IInjector {
 }
 
 const Injector = (() => {
-	
 	class InternalInjector implements IInjector {
-		private get: (key:any) => any;
-		private set: (key:any, value:any) => Map<any, any>;
+		private get: (key: string) => any;
+		private set: (key: string, value: object) => Map<any, any>;
 		constructor() {
 			let _map = new Map();
 			this.get = _map.get.bind(_map);
@@ -23,14 +22,14 @@ const Injector = (() => {
 
 		public getService(name: string) {
 			let instance = this.get(name);
-			if(instance) {
+			if (instance) {
 				return instance;
 			} else {
 				throw Error(`${name} is not a registered provider.`);
 			}
 		}
 
-		public registerService(name: any, fn: any, deps: Array<string> = []) {
+		public registerService(name: string, fn: any, deps: Array<string> = []) {
 			if (name && fn) {
 				if (!this.get(name)) {
 					if (isFunction(fn)) {
@@ -46,13 +45,12 @@ const Injector = (() => {
 		}
 	}
 
-	const injectorInstance:IInjector = new InternalInjector();
+	const injectorInstance: IInjector = new InternalInjector();
 
 	return {
 		register: injectorInstance.registerService.bind(injectorInstance),
 		get: injectorInstance.getService.bind(injectorInstance)
-	}
+	};
 })();
-
 
 export { Injector };

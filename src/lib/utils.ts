@@ -1,3 +1,5 @@
+import { jsonObject } from "./types";
+
 let $object = 'object',
   $string = 'string',
   $function = 'function',
@@ -18,7 +20,7 @@ const foreach = (collection:Array<any>, callback:(o:any, i:any, c:Array<any>) =>
   }
 }
 
-const lookup = (obj:any, path:string, defaultValue:any) => {
+const lookup = (obj: jsonObject, path: string, defaultValue: any) => {
   var value, patharr, k;
   if (path) {
     if (!isNaN(parseInt(path))) {

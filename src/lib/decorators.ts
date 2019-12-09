@@ -6,9 +6,9 @@ import "reflect-metadata";
 import { INPUT_METADATA_KEY } from "./utils";
 import { DecoratorOptions } from "./types";
 
-const getDeps = (target: any):Array<string> => {
+const getDeps = (target: Function): Array<string> => {
 	let types = Reflect.getMetadata("design:paramtypes", target) || [];
-	let deps = types.map((a: any) => {
+	let deps = types.map((a: Function) => {
 		if (a) {
 			if (a.name !== "Object") {
 				return a.name;
@@ -22,7 +22,10 @@ const getDeps = (target: any):Array<string> => {
 	return deps;
 };
 
-const depsResolver = (options: DecoratorOptions, target:any):{deps: Array<string>, isRoot: boolean} => {
+const depsResolver = (
+	options: DecoratorOptions,
+	target: Function
+): { deps: Array<string>; isRoot: boolean } => {
 	if (options.selector.indexOf("-") <= 0) {
 		throw new Error("You need at least 1 dash in the custom element name!");
 	}
@@ -31,15 +34,15 @@ const depsResolver = (options: DecoratorOptions, target:any):{deps: Array<string
 	return {
 		deps: s,
 		isRoot: isRoot
-	}
-}
+	};
+};
 
-const Component = (options: DecoratorOptions) => (target: any) => {
+const Component = (options: DecoratorOptions) => (target: Function) => {
 	let obj = depsResolver(options, target);
 	registerElement(options, target, obj.deps, obj.isRoot);
 };
 
-const MockComponent = (options: DecoratorOptions, target:any) => {
+const MockComponent = (options: DecoratorOptions, target: Function) => {
 	let obj = depsResolver(options, target);
 	registerElement(options, target, obj.deps, obj.isRoot, true);
 };
