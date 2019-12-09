@@ -107,7 +107,7 @@ const registerElement = (
 				this.init();
 			}
 
-			getModel() {
+			getModel = () => {
 				return this[klass];
 			}
 
