@@ -13,6 +13,7 @@ export default class TestBed {
 
   static MockService(name:string, target:any) {
     Injector.register(name, target);
+    return Injector.get(name);
   }
 
   static RemoveComponent(node: HTMLElement) {

@@ -18,3 +18,8 @@ interface Type<T> {
 interface String {
 	translate: (...args: any) => string;
 }
+
+interface fetch {
+	resetMocks: () => void;
+	mockResponseOnce: (mockResponse:string) => void;
+}

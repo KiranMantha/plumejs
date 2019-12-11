@@ -1,6 +1,7 @@
 //https://github.com/unrealprogrammer/how-to-test-web-component
 const { Window } = require('happy-dom');
 const window = new Window();
+const _fetch = require('jest-fetch-mock');
 
 window.document.createElementNS = function() {
   if(arguments.length === 1) {
@@ -12,14 +13,15 @@ window.document.createElementNS = function() {
 
 const _CSSStyleSheet = jest.fn();
 window.CSSStyleSheet = _CSSStyleSheet;
-
+window.fetch = _fetch;
 
 Object.assign(global, {
   document: window.document,
   HTMLElement: window.HTMLElement,
   customElements: window.customElements,
   window: window,
-  CSSStyleSheet: _CSSStyleSheet
+  CSSStyleSheet: _CSSStyleSheet,
+  fetch: _fetch
 });
 
 Element.prototype.trigger = function(eventName, isBubbleing) {

@@ -20,5 +20,5 @@
       "node_modules/@types"
     ]
   },
-  "exclude": ["__tests__", "dist", "node_modules", "example"]
+  "exclude": ["dist", "node_modules", "example"]
 }
