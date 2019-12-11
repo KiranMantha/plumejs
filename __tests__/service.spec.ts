@@ -1,3 +1,4 @@
+//https://stackoverflow.com/questions/28584773/xhr-testing-in-jest
 class SampleService {
 	data: any = {};
 	callApi() {
