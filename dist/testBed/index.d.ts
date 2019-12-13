@@ -3,6 +3,6 @@ export default class TestBed {
         selector: string;
         target: Function;
     }): Promise<any>;
-    static MockService(name: string, target: any): void;
+    static MockService(name: string, target: any): any;
     static RemoveComponent(node: HTMLElement): void;
 }
