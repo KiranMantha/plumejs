@@ -32,16 +32,22 @@ export class DomTransition {
 
 	onTransitionEnd(element: HTMLElement, cb: Function, duration: number) {
 		let called = false;
+		let _fn = () => {
+			called = true;
+			cb && cb();
+			this.removeTransition(element);
+		}
 		element.addEventListener(
 			this.transition,
 			() => {
-        called = true;
-        this.removeTransition(element);
+				_fn();
 			},
 			false
 		);
 		let callback = () => {
-			if (!called) cb && cb();
+			if (!called) {
+				_fn();
+			}
 		};
 		setTimeout(callback, duration);
 	}
