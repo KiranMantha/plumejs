@@ -2,7 +2,8 @@ const merge = require('webpack-merge');
 const baseConfig = require('./webpack.base.config.js');
 const path = require('path');
 
-module.exports = merge(baseConfig, {
+module.exports = merge(baseConfig, {    
+    mode: 'development',
     devServer: {
         contentBase: path.join(__dirname, "../docs"),
         compress: true,
