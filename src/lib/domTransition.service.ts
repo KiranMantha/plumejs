@@ -1,4 +1,4 @@
-import { Injectable } from './decorators';
+import { Injectable } from "./decorators";
 
 @Injectable()
 export class DomTransition {
@@ -13,13 +13,13 @@ export class DomTransition {
 	}
 
 	private whichTransitionEnd() {
-    let element = document.createElement("div");
-    let styleobj:any = element.style;
-		let transitions:{ [key: string]: string; } = {
-			"transition": "transitionend",
-			"WebkitTransition": "webkitTransitionEnd",
-			"MozTransition": "transitionend",
-			"OTransition": "otransitionend"
+		let element = document.createElement("div");
+		let styleobj: any = element.style;
+		let transitions: { [key: string]: string } = {
+			transition: "transitionend",
+			WebkitTransition: "webkitTransitionEnd",
+			MozTransition: "transitionend",
+			OTransition: "otransitionend"
 		};
 
 		for (let t in transitions) {
@@ -36,7 +36,7 @@ export class DomTransition {
 			called = true;
 			cb && cb();
 			this.removeTransition(element);
-		}
+		};
 		element.addEventListener(
 			this.transition,
 			() => {
