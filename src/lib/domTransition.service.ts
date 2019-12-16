@@ -33,9 +33,11 @@ export class DomTransition {
 	onTransitionEnd(element: HTMLElement, cb: Function, duration: number) {
 		let called = false;
 		let _fn = () => {
-			called = true;
-			cb && cb();
-			this.removeTransition(element);
+			if (!called) {
+				called = true;
+				cb && cb();
+				this.removeTransition(element);
+			}
 		};
 		element.addEventListener(
 			this.transition,
@@ -45,9 +47,7 @@ export class DomTransition {
 			false
 		);
 		let callback = () => {
-			if (!called) {
-				_fn();
-			}
+			_fn();
 		};
 		setTimeout(callback, duration);
 	}
