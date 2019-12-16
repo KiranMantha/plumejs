@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { DecoratorOptions } from "./types";
 declare const Component: (options: DecoratorOptions) => (target: Function) => void;
 declare const MockComponent: (options: DecoratorOptions, target: Function) => void;

@@ -2,12 +2,12 @@
 //https://jsfiddle.net/r5umxasz/
 import { registerElement } from "./registerElement";
 import { Injector } from "./service_resolver";
-import "reflect-metadata";
+import { Reflection as Reflect } from '@abraham/reflection';
 import { INPUT_METADATA_KEY } from "./utils";
 import { DecoratorOptions } from "./types";
 
 const getDeps = (target: Function): Array<string> => {
-	let types = Reflect.getMetadata("design:paramtypes", target) || [];
+	let types:Array<any> = Reflect.getMetadata("design:paramtypes", target) || [];
 	let deps = types.map((a: Function) => {
 		if (a) {
 			if (a.name !== "Object") {
