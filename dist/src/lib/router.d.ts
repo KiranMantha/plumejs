@@ -1,2 +1,2 @@
 declare const registerRouterComponent: () => void;
-export default registerRouterComponent;
+export { registerRouterComponent };
