@@ -115,8 +115,10 @@ export class InternalRouter {
 					redirectRoute = route;
 				}
 			}
-			if (redirectRoute) {
+			if (redirectRoute && window.location.pathname === '/') {
 				this.navigateTo(redirectRoute.redirectTo);
+			} else {
+				this.navigateTo(window.location.pathname);
 			}
 		} else {
 			throw Error("router.addRoutes: the parameter must be an array");

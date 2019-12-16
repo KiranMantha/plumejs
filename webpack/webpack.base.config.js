@@ -12,6 +12,7 @@ let config = {
     },
     output: {
         path: path.resolve(__dirname, '../docs'),
+        publicPath: '/',
         filename: `[name].[hash].js`,
     },
     module: {

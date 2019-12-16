@@ -35,7 +35,10 @@ const registerRouterComponent = () => {
 		render() {
 			if (this.routes.length > 0 && !this.isRoutesAdded) {
 				this.router.addRoutes(this.routes);
-				this.isRoutesAdded = true;
+				this.isRoutesAdded = true;                            
+				if(window.location.pathname) {
+						this.router.navigateTo(window.location.pathname);
+				}
 			}
 			if (!this.template) {
 				return html`
