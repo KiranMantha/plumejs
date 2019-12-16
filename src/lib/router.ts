@@ -53,4 +53,4 @@ const registerRouterComponent = () => {
 	}
 };
 
-export default registerRouterComponent;
+export { registerRouterComponent };

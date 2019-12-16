@@ -1,7 +1,7 @@
 import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route, jsonObject } from "./types";
-import registerRouterComponent from "./router";
+import { registerRouterComponent } from "./router";
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;

@@ -3,7 +3,7 @@ import { render } from "lighterhtml";
 import { watch, unwatch } from './watchObject';
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
-import augmentor from "augmentor";
+import { augmentor } from "augmentor";
 import { InternalTranslationService } from './translationService';
 
 const getValue = (obj: jsonObject, key: string) => {

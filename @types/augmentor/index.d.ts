@@ -13,6 +13,6 @@ declare module 'augmentor' {
   function useRef <T> (initialValue: T | null): RefObject<T>;
   function useRef <T = undefined> (): MutableRefObject<T | undefined>;
   function render(node: HTMLElement, renderer: () => any): any;
-  export const html: Tag<HTMLElement>;
-  export default function fn(args:any):any;
+  function augmentor(args:any):any;
+  export const html: Tag<HTMLElement>;  
 }

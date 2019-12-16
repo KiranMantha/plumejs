@@ -44,7 +44,7 @@
   "license": "ISC",
   "dependencies": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "augmentor": "^0.2.6",
+    "augmentor": "^2.1.4",
     "bootstrap": "^4.3.1",
     "lighterhtml": "^2.0.4",
     "vanilla-i18n": "^1.0.6"
