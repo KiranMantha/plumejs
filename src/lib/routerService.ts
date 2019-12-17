@@ -8,6 +8,10 @@ interface InternalRouteItem extends RouteItem {
 	TemplatePath?: string;
 }
 
+interface ICurrentRoute {
+	params: { [key:string]: string | number | boolean }
+}
+
 class StaticRouter {
 	static checkParams(up: Array<string>, r: RouteItem) {
 		let pmc = 0,
@@ -65,7 +69,7 @@ class StaticRouter {
 }
 
 export class InternalRouter {
-	currentRoute = {
+	currentRoute:ICurrentRoute = {
 		params: {}
 	};
 	private routeList: Array<InternalRouteItem> = [];
@@ -73,7 +77,7 @@ export class InternalRouter {
 	private previousPage = "";
 	private outletFn: Function = () => {};
 
-	private async _navigateTo(path: string) {
+	private _navigateTo(path: string) {
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
@@ -93,11 +97,15 @@ export class InternalRouter {
 							isRouteFound += 1;
 							this.currentRoute.params = _params;
 							if (!routeItem.IsRegistered) {
-								routeItem.TemplatePath &&
-									(await import("src/" + routeItem.TemplatePath));
+								if(routeItem.TemplatePath) {
+									import("src/" + routeItem.TemplatePath).then(()=>{
+										this.outletFn && this.outletFn(routeItem.Template);			
+									});
+								}
 								routeItem.IsRegistered = true;
+							} else {
+								this.outletFn && this.outletFn(routeItem.Template);
 							}
-							this.outletFn && this.outletFn(routeItem.Template);
 							break;
 						}
 					}
@@ -106,7 +114,7 @@ export class InternalRouter {
 		}
 	}
 
-	addRoutes(routes: Array<Route>) {
+	async addRoutes(routes: Array<Route>) {
 		if (isArray(routes)) {
 			let redirectRoute = null;
 			for (let route of routes) {
@@ -125,13 +133,13 @@ export class InternalRouter {
 		}
 	}
 
-	getCurrentRoute() {
+	getCurrentRoute():ICurrentRoute {
 		return this.currentRoute;
 	}
 
-	async navigateTo(path: string = "") {
+	navigateTo(path: string = "") {
 		window.history.pushState(null, "", path);
-		await this._navigateTo(path);
+		this._navigateTo(path);
 	}
 
 	setOutletFn(fn: Function) {
@@ -146,13 +154,13 @@ export class InternalRouter {
 }
 
 export class Router {
-	getCurrentRoute: Function = () => {};
-	navigateTo: Function = () => {};
-	onNavigationStart: Function = () => {};
+	getCurrentRoute: () => ICurrentRoute;
+	navigateTo: () => void;
+	onNavigationStart: () => void;
 	constructor(
-		_getCurrentRoute: Function,
-		_navigateTo: Function,
-		_onNavigationStart: Function
+		_getCurrentRoute: () => ICurrentRoute,
+		_navigateTo: () => void,
+		_onNavigationStart: () => void
 	) {
 		registerRouterComponent();
 		this.getCurrentRoute = _getCurrentRoute;

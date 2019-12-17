@@ -1,24 +1,26 @@
 import { Route } from "./types";
-export declare class InternalRouter {
-    currentRoute: {
-        params: {};
+interface ICurrentRoute {
+    params: {
+        [key: string]: string | number | boolean;
     };
+}
+export declare class InternalRouter {
+    currentRoute: ICurrentRoute;
     private routeList;
     private currentPage;
     private previousPage;
     private outletFn;
     private _navigateTo;
-    addRoutes(routes: Array<Route>): void;
-    getCurrentRoute(): {
-        params: {};
-    };
-    navigateTo(path?: string): Promise<void>;
+    addRoutes(routes: Array<Route>): Promise<void>;
+    getCurrentRoute(): ICurrentRoute;
+    navigateTo(path?: string): void;
     setOutletFn(fn: Function): void;
     onNavigationStart(cb: any): void;
 }
 export declare class Router {
-    getCurrentRoute: Function;
-    navigateTo: Function;
-    onNavigationStart: Function;
-    constructor(_getCurrentRoute: Function, _navigateTo: Function, _onNavigationStart: Function);
+    getCurrentRoute: () => ICurrentRoute;
+    navigateTo: () => void;
+    onNavigationStart: () => void;
+    constructor(_getCurrentRoute: () => ICurrentRoute, _navigateTo: () => void, _onNavigationStart: () => void);
 }
+export {};
