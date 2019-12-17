@@ -60,13 +60,11 @@ let config = {
             })
         ],
         splitChunks: {
-            chunks: 'all',
-            automaticNameDelimiter: '-',
-            name: false,
             cacheGroups: {
+                default: false,
+                vendor: false,
                 vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor',
+                    test: /node_modules/,
                     chunks: 'all'
                 }
             }

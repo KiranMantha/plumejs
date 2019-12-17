@@ -98,7 +98,10 @@ export class InternalRouter {
 							this.currentRoute.params = _params;
 							if (!routeItem.IsRegistered) {
 								if(routeItem.TemplatePath) {
-									import("src/" + routeItem.TemplatePath).then(()=>{
+									import(
+										/* webpackMode: "lazy-once" */
+										`src/${ routeItem.TemplatePath }`
+									).then(()=>{
 										this.outletFn && this.outletFn(routeItem.Template);			
 									});
 								}
