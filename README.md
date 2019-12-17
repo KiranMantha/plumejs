@@ -12,6 +12,17 @@ For most asked questions, please check [QA.md](https://github.com/KiranMantha/pl
 
 To start with PlumeJs
 
+# Yo Plumejs
+
+Plumejs has yeoman generator which provides the entire scaffolding for your project. To start with:
+
+1. Run `npm install -g yeoman generator-plumejs`
+2. After completing installation run `yo plumejs` in your destination folder. This will ask you about your project name and description and will install all your required dependencies.
+3. After all the dependencies were installed, you can run application using command `npm start`.
+
+
+Here is a sneak peak into bultins:
+
 # Creating Components
 
 Creating component is a non-hectic task.
