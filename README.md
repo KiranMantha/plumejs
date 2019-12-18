@@ -243,14 +243,13 @@ import {Component, Ref, useRef}
   selector: 'sample-comp'
 })
 class SampleComp {
-	inputField:Ref<null> | undefined;
+	inputField:Ref<null> | undefined = useRef(null);
 	
 	getRef(){
 		console.log(this.inputField);
 	}
 
   render() {
-		this.inputField = useRef(null);
     return html`
      <div>
 			<input type='text' ref=${this.inputField} />
