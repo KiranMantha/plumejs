@@ -80,21 +80,21 @@ const registerElement = (
 				return this;
 			}
 
-			renderTemplate() {
-				return augmentor(this[klass].render.bind(this[klass]))();
-			}
-
 			private init() {
-				let _returnfn = this.renderTemplate();
+				let _returnfn = this[klass].render.bind(this[klass]);
 				return render.bind(this[klass], this.shadow, _returnfn)();
 			}
 
-			connectedCallback() {
-				this[klass] = instantiate(
+			private wrapper() {
+				return instantiate(
 					target,
 					providers,
 					getValue(this, this._inputprop) || {}
 				);
+			}
+
+			connectedCallback() {
+				this[klass] = augmentor(this.wrapper.bind(this))();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();

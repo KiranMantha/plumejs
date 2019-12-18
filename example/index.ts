@@ -14,7 +14,7 @@ class AppRoot {
 		translations.setDefaultLanguage('en');
 	}
 
-	inputField:Ref<null> | undefined;
+	inputField:Ref<null> | undefined= useRef(null);
 	
   routes:Array<Route> = [
 		{
@@ -42,7 +42,6 @@ class AppRoot {
 	}
 
   render() {
-		this.inputField = useRef(null);
     return html`
 		 <div>
 			<ul>
