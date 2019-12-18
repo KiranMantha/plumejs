@@ -158,11 +158,11 @@ export class InternalRouter {
 
 export class Router {
 	getCurrentRoute: () => ICurrentRoute;
-	navigateTo: () => void;
+	navigateTo: (path: string) => void;
 	onNavigationStart: () => void;
 	constructor(
 		_getCurrentRoute: () => ICurrentRoute,
-		_navigateTo: () => void,
+		_navigateTo: (path: string) => void,
 		_onNavigationStart: () => void
 	) {
 		registerRouterComponent();

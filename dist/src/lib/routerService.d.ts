@@ -19,8 +19,8 @@ export declare class InternalRouter {
 }
 export declare class Router {
     getCurrentRoute: () => ICurrentRoute;
-    navigateTo: () => void;
+    navigateTo: (path: string) => void;
     onNavigationStart: () => void;
-    constructor(_getCurrentRoute: () => ICurrentRoute, _navigateTo: () => void, _onNavigationStart: () => void);
+    constructor(_getCurrentRoute: () => ICurrentRoute, _navigateTo: (path: string) => void, _onNavigationStart: () => void);
 }
 export {};

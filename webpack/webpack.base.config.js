@@ -54,6 +54,9 @@ let config = {
         minimizer: [
             new TerserPlugin({
                 terserOptions: {
+                    output: {
+                        comments: true
+                    },
                     keep_classnames: true,
                     keep_fnames: true
                 }
