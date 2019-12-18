@@ -14,7 +14,7 @@ class AppRoot {
 		translations.setDefaultLanguage('en');
 	}
 
-	inputField:Ref<null> | undefined= useRef(null);
+	inputField:Ref<HTMLInputElement> = useRef(null);
 	
   routes:Array<Route> = [
 		{
