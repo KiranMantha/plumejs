@@ -19,7 +19,7 @@ const registerRouterComponent = () => {
 		constructor(private router: InternalRouter) {}
 
 		beforeMount() {
-			this.router.setOutletFn((tmpl: string) => {
+			this.router.$templateSubscriber.subscribe((tmpl: string) => {
 				this.template = tmpl;
 				this.update();
 			});
@@ -32,13 +32,16 @@ const registerRouterComponent = () => {
 			};
 		}
 
+		unmount(){
+			this.router.$templateSubscriber.unsubscribe();
+		}
+
 		render() {
 			if (this.routes.length > 0 && !this.isRoutesAdded) {
 				this.router.addRoutes(this.routes);
-				this.isRoutesAdded = true;                            
-				if(window.location.pathname) {
-						this.router.navigateTo(window.location.pathname);
-				}
+				this.isRoutesAdded = true;
+				let path = window.location.pathname;
+				this.router.navigateTo(path !== "/" ? path : "");
 			}
 			if (!this.template) {
 				return html`

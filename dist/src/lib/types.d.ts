@@ -15,6 +15,7 @@ export interface Route {
     template?: string;
     templatePath?: string;
     redirectTo?: string;
+    canActivate?: () => boolean;
 }
 export declare type Ref<T> = {
     current: T;

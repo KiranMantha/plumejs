@@ -1,10 +1,10 @@
 import { klass, INPUT_METADATA_KEY } from "./utils";
 import { render } from "lighterhtml";
-import { watch, unwatch } from './watchObject';
+import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
 import { augmentor } from "augmentor";
-import { InternalTranslationService } from './translationService';
+import { InternalTranslationService } from "./translationService";
 
 const getValue = (obj: jsonObject, key: string) => {
 	return obj[key] || null;
@@ -24,6 +24,10 @@ const getComputedCss = (csspath: string = "") => {
 		sheet.replace(styles);
 	}
 	return [globalStyles, sheet];
+};
+
+const wrapper = (t: Function, p: Array<string>, c: any) => {
+	return () => instantiate(t, p, getValue(c, c._inputprop) || {});
 };
 
 const registerElement = (
@@ -57,44 +61,31 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = (isUnitTestEnv || options.useShadow === false) ? this : this.attachShadow({ mode: "open" });
+				this.shadow =
+					isUnitTestEnv || options.useShadow === false
+						? this
+						: this.attachShadow({ mode: "open" });
 				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
-				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);				
+				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
-					watch(
-						this,
-						this._inputprop,
-						(newvalue: any, oldvalue: any) => {
-							if (oldvalue !== newvalue) {
-								if (this[klass] && this[klass][this._inputprop]) {
-									this[klass][this._inputprop] = getValue(
-										this,
-										this._inputprop
-									);
-									this.update();
-								}
+					watch(this, this._inputprop, (newvalue: any, oldvalue: any) => {
+						if (oldvalue !== newvalue) {
+							if (this[klass] && this[klass][this._inputprop]) {
+								this[klass][this._inputprop] = getValue(this, this._inputprop);
+								this.update();
 							}
 						}
-					);
-				}				
-				return this;
+					});
+				}
 			}
 
 			private init() {
 				let _returnfn = this[klass].render.bind(this[klass]);
-				return render.bind(this[klass], this.shadow, _returnfn)();
-			}
-
-			private wrapper() {
-				return instantiate(
-					target,
-					providers,
-					getValue(this, this._inputprop) || {}
-				);
+				render.bind(this[klass], this.shadow, _returnfn)();
 			}
 
 			connectedCallback() {
-				this[klass] = augmentor(this.wrapper.bind(this))();
+				this[klass] = augmentor(wrapper(target, providers, this))();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
@@ -105,11 +96,11 @@ const registerElement = (
 
 			update = () => {
 				this.init();
-			}
+			};
 
 			getModel = () => {
 				return this[klass];
-			}
+			};
 
 			disconnectedCallback() {
 				this._inputprop && unwatch(this);
