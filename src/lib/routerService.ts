@@ -2,14 +2,16 @@ import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route, jsonObject } from "./types";
 import { registerRouterComponent } from "./router";
+import { Subject } from 'rxjs';
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;
 	TemplatePath?: string;
+	redirectTo?: string;
 }
 
 interface ICurrentRoute {
-	params: { [key:string]: string | number | boolean }
+	params: { [key: string]: string | number | boolean };
 }
 
 class StaticRouter {
@@ -48,13 +50,15 @@ class StaticRouter {
 			Template: "",
 			TemplatePath: "",
 			ParamCount: 0,
-			IsRegistered: false
+			IsRegistered: false,
+			redirectTo: ""
 		};
 		obj.Params = r.path.split("/").filter((h: string) => {
 			return h.length > 0;
 		});
 		obj.Url = r.path;
 		obj.Template = "";
+		obj.redirectTo = r.redirectTo;
 		if (r.template) {
 			if (!r.templatePath)
 				throw Error(
@@ -69,13 +73,13 @@ class StaticRouter {
 }
 
 export class InternalRouter {
-	currentRoute:ICurrentRoute = {
+	currentRoute: ICurrentRoute = {
 		params: {}
 	};
 	private routeList: Array<InternalRouteItem> = [];
-	private currentPage = "";
+	private currentPage:string = null;
 	private previousPage = "";
-	private outletFn: Function = () => {};
+	$templateSubscriber = new Subject();
 
 	private _navigateTo(path: string) {
 		if (this.currentPage !== path) {
@@ -84,69 +88,56 @@ export class InternalRouter {
 			let uParams = path.split("/").filter(h => {
 				return h.length > 0;
 			});
-			let isRouteFound = 0;
-			for (let i = 0; i < this.routeList.length; i++) {
-				if (isRouteFound === 0) {
-					let routeItem = this.routeList[i];
-					if (routeItem.Params.length === uParams.length) {
-						var _params = StaticRouter.checkParams(uParams, routeItem);
-						if (
-							_params &&
-							(Object.keys(_params).length > 0 || path === routeItem.Url)
-						) {
-							isRouteFound += 1;
-							this.currentRoute.params = _params;
-							if (!routeItem.IsRegistered) {
-								if(routeItem.TemplatePath) {
-									import(
-										/* webpackMode: "lazy-once" */
-										`src/${ routeItem.TemplatePath }`
-									).then(()=>{
-										this.outletFn && this.outletFn(routeItem.Template);			
-									});
-								}
-								routeItem.IsRegistered = true;
-							} else {
-								this.outletFn && this.outletFn(routeItem.Template);
-							}
-							break;
+			let routeArr = this.routeList.filter(route => {
+				if (route.Params.length === uParams.length) {
+					return route;
+				} else if(route.Url === path) {
+					return route;
+				}
+			});
+			let routeItem = routeArr.length > 0 ? routeArr[0] : null;
+			if (routeItem) {
+				let _params = StaticRouter.checkParams(uParams, routeItem);
+				if (
+					_params &&
+					(Object.keys(_params).length > 0 || path)
+				) {
+					this.currentRoute.params = _params;
+					if (!routeItem.IsRegistered) {
+						if (routeItem.TemplatePath) {
+							import(/* webpackMode: "lazy-once" */`src/${routeItem.TemplatePath}`).then(() => {
+								window.history.pushState(null, "", path);
+								this.$templateSubscriber.next(routeItem.Template);
+							});
 						}
+						routeItem.IsRegistered = true;
+					} else {
+						window.history.pushState(null, "", path);
+						this.$templateSubscriber.next(routeItem.Template);
 					}
+				} else {
+					this._navigateTo(routeItem.redirectTo);
 				}
 			}
 		}
 	}
 
-	async addRoutes(routes: Array<Route>) {
+	addRoutes(routes: Array<Route>) {
 		if (isArray(routes)) {
-			let redirectRoute = null;
 			for (let route of routes) {
 				this.routeList.push(StaticRouter.formatRoute(route));
-				if (route.redirectTo) {
-					redirectRoute = route;
-				}
-			}
-			if (redirectRoute && window.location.pathname === '/') {
-				this.navigateTo(redirectRoute.redirectTo);
-			} else {
-				this.navigateTo(window.location.pathname);
 			}
 		} else {
 			throw Error("router.addRoutes: the parameter must be an array");
 		}
 	}
 
-	getCurrentRoute():ICurrentRoute {
+	getCurrentRoute(): ICurrentRoute {
 		return this.currentRoute;
 	}
 
-	navigateTo(path: string = "") {
-		window.history.pushState(null, "", path);
+	navigateTo(path: string = "") {		
 		this._navigateTo(path);
-	}
-
-	setOutletFn(fn: Function) {
-		this.outletFn = fn;
 	}
 
 	onNavigationStart(cb: any) {
