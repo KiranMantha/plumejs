@@ -1,5 +1,5 @@
 import { html } from "../index";
-import TestBed from '../testBed';
+import { TestBed } from '../testBed';
 
 class MockComponent {
   element:any;

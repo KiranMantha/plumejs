@@ -1,7 +1,7 @@
 import { MockComponent } from '../src/lib/decorators';
 import { Injector } from '../src/lib/service_resolver';
 
-export default class TestBed {
+export class TestBed {
   static async MockComponent(options: {selector:string, target:Function}) {
     let appRoot:any;
     MockComponent({

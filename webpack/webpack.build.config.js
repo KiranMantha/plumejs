@@ -5,5 +5,5 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 baseConfig.plugins.push(new BundleAnalyzerPlugin());
 
 module.exports = merge(baseConfig, {
-    
+    mode: 'production'
 });
