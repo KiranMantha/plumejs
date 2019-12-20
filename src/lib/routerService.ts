@@ -81,7 +81,7 @@ export class InternalRouter {
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
-	private _navigateTo(path: string) {
+	private async _navigateTo(path: string) {
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
@@ -105,10 +105,9 @@ export class InternalRouter {
 					this.currentRoute.params = _params;
 					if (!routeItem.IsRegistered) {
 						if (routeItem.TemplatePath) {
-							import(/* webpackMode: "lazy-once" */`src/${routeItem.TemplatePath}`).then(() => {
-								window.history.pushState(null, "", path);
-								this.$templateSubscriber.next(routeItem.Template);
-							});
+							await import(`src/${routeItem.TemplatePath}`)
+							window.history.pushState(null, "", path);
+							this.$templateSubscriber.next(routeItem.Template);
 						}
 						routeItem.IsRegistered = true;
 					} else {
