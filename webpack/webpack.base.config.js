@@ -5,7 +5,6 @@ const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
 
 let config = {
-    mode: 'production',
     devtool: 'cheap-module-source-map',
     entry: {
         main: './example/index'
