@@ -1,4 +1,3 @@
-import { Injector } from "./service_resolver";
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route, jsonObject } from "./types";
 import { registerRouterComponent } from "./router";
@@ -161,15 +160,3 @@ export class Router {
 		this.onNavigationStart = _onNavigationStart;
 	}
 }
-
-const _internalRouter = new InternalRouter();
-
-Injector.register("InternalRouter", _internalRouter);
-Injector.register(
-	"Router",
-	new Router(
-		_internalRouter.getCurrentRoute.bind(_internalRouter),
-		_internalRouter.navigateTo.bind(_internalRouter),
-		_internalRouter.onNavigationStart.bind(_internalRouter)
-	)
-);

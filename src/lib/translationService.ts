@@ -1,4 +1,3 @@
-import { Injector } from "./service_resolver";
 import { setDefaultLanguage, setTranslate } from "vanilla-i18n";
 
 export class TranslationService {
@@ -29,5 +28,3 @@ export class TranslationService {
 export class InternalTranslationService {
 	static translationComponents: Array<HTMLElement> = [];
 }
-
-Injector.register("TranslationService", new TranslationService());
