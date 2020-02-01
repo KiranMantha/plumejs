@@ -10,13 +10,15 @@ export class TranslationService {
 	setDefaultLanguage(language: string) {
 		this.defaultLanguage = language;
 		setDefaultLanguage(language);
-		let components = InternalTranslationService.translationComponents;
-		if (components.length > 0) {
-			components.forEach((ele: HTMLElement) => {
-				if(ele.nodeName !== 'ROUTER-OUTLET') {
-					ele.update();
-				}
-			});
+		let iterator = InternalTranslationService.translationComponents.entries();
+		let result = iterator.next();
+		while (!result.done) {
+			let component: HTMLElement = result.value[0];
+			let tagname: string = result.value[1];
+			if (tagname !== "router-outlet") {
+				component.update();
+			}
+			result = iterator.next();
 		}
 	}
 
@@ -26,5 +28,5 @@ export class TranslationService {
 }
 
 export class InternalTranslationService {
-	static translationComponents: Array<HTMLElement> = [];
+	static translationComponents = new Map();
 }

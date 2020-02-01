@@ -10,9 +10,7 @@ let isRootNodeSet = false;
 let globalStyles: any = new CSSStyleSheet();
 let style_registry: jsonObject = {};
 
-const wrapper = (fn: Function, deps: Array<string>, props: any) => {
-	return () => instantiate(fn, deps, props)
-};
+const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
 
 const getComputedCss = (csspath: string = "") => {
 	let sheet: any = new CSSStyleSheet();
@@ -80,15 +78,13 @@ const registerElement = (
 			}
 
 			connectedCallback() {
-				this[klass] = augmentor(wrapper(target,
-					providers,
-					(this as any)[this._inputprop]))();
+				this[klass] = augmentor(wrapper(target, providers, (this as any)[this._inputprop]))();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
-				InternalTranslationService.translationComponents.push(this);
+				InternalTranslationService.translationComponents.set(this, options.selector);
 			}
 
 			update = () => {
@@ -100,6 +96,7 @@ const registerElement = (
 			};
 
 			disconnectedCallback() {
+				InternalTranslationService.translationComponents.delete(this);
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
