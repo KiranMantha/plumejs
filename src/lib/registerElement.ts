@@ -3,16 +3,14 @@ import { render } from "lighterhtml";
 import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
-import { augmentor } from "augmentor";
 import { InternalTranslationService } from "./translationService";
-
-const getValue = (obj: jsonObject, key: string) => {
-	return obj[key] || null;
-};
+import { augmentor } from "augmentor";
 
 let isRootNodeSet = false;
 let globalStyles: any = new CSSStyleSheet();
 let style_registry: jsonObject = {};
+
+const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
 
 const getComputedCss = (csspath: string = "") => {
 	let sheet: any = new CSSStyleSheet();
@@ -26,30 +24,28 @@ const getComputedCss = (csspath: string = "") => {
 	return [globalStyles, sheet];
 };
 
-const wrapper = (t: Function, p: Array<string>, c: any) => {
-	return () => instantiate(t, p, getValue(c, c._inputprop) || {});
-};
-
 const registerElement = (
 	options: DecoratorOptions,
 	target: Function,
 	providers: Array<string>,
 	isRoot: boolean,
-	isUnitTestEnv: boolean = false
+	isTestEnv: boolean
 ) => {
-	if (isRoot && !isRootNodeSet && options.styleUrl) {
-		isRootNodeSet = true;
-		const styletag = document.createElement("style");
-		let styles = require("src/" + options.styleUrl);
-		styletag.innerText = (styles || "").toString();
-		globalStyles.replace((styles || "").toString());
-		document.getElementsByTagName("head")[0].appendChild(styletag);
-	} else if (isRoot && isRootNodeSet) {
-		throw Error(
-			"Cannot register duplicate root component in " +
-				options.selector +
-				" component"
-		);
+	if (!isTestEnv) {
+		if (isRoot && !isRootNodeSet && options.styleUrl) {
+			isRootNodeSet = true;
+			const styletag = document.createElement("style");
+			let styles = require("src/" + options.styleUrl);
+			styletag.innerText = (styles || "").toString();
+			globalStyles.replace((styles || "").toString());
+			document.getElementsByTagName("head")[0].appendChild(styletag);
+		} else if (isRoot && isRootNodeSet) {
+			throw Error(
+				"Cannot register duplicate root component in " +
+					options.selector +
+					" component"
+			);
+		}
 	}
 
 	window.customElements.define(
@@ -61,17 +57,14 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow =
-					isUnitTestEnv || options.useShadow === false
-						? this
-						: this.attachShadow({ mode: "open" });
-				this.shadow.adoptedStyleSheets = getComputedCss(options.styleUrl);
+				this.shadow = isTestEnv ? this : this.attachShadow({ mode: "open" });
+				this.shadow.adoptedStyleSheets = !isTestEnv ? getComputedCss(options.styleUrl) : [];
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (newvalue: any, oldvalue: any) => {
 						if (oldvalue !== newvalue) {
 							if (this[klass] && this[klass][this._inputprop]) {
-								this[klass][this._inputprop] = getValue(this, this._inputprop);
+								this[klass][this._inputprop] = (this as any)[this._inputprop];
 								this.update();
 							}
 						}
@@ -85,13 +78,13 @@ const registerElement = (
 			}
 
 			connectedCallback() {
-				this[klass] = augmentor(wrapper(target, providers, this))();
+				this[klass] = augmentor(wrapper(target, providers, (this as any)[this._inputprop]))();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
-				InternalTranslationService.translationComponents.push(this);
+				InternalTranslationService.translationComponents.set(this, options.selector);
 			}
 
 			update = () => {
@@ -103,6 +96,7 @@ const registerElement = (
 			};
 
 			disconnectedCallback() {
+				InternalTranslationService.translationComponents.delete(this);
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}

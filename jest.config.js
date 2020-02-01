@@ -1,21 +1,14 @@
 module.exports = {
-  verbose: true,  
-  testEnvironment: "jest-environment-happy-dom",
-  setupFilesAfterEnv: [
-    '<rootDir>/testBed/mocks/jestSetup.js'
+  testEnvironment: "node",
+  setupFiles: [
+    '<rootDir>/config/jest.setup.js'
   ],
   displayName: 'PLUMEJS',
   preset: 'ts-jest',
-  transform: {
-    "\\.(ts|js)x?$": "ts-jest",
-  },
   collectCoverage: true,
   coverageDirectory: '<rootDir>/coverage',
   collectCoverageFrom: [
-    "**/src/**",
-    "!**/dist/**",
-    "!**/node_modules/**",
-    "!**/testBed/**"
+    "**/src/**/*.ts"
   ],
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[t]sx?$',
   moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],

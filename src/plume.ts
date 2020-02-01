@@ -3,12 +3,12 @@
 "use strict";
 import { Injector } from "./lib/service_resolver";
 import { Component, Injectable, Input } from "./lib/decorators";
-import { Router } from "./lib/routerService";
-import { TranslationService } from "./lib/translationService";
 import { DecoratorOptions, Route, Ref } from "./lib/types";
 import { html } from "lighterhtml";
 import { useRef } from "augmentor";
+import { Router } from "./lib/routerService";
 import { DomTransition } from "./lib/domTransition.service";
+import { TranslationService } from "./lib/translationService";
 export {
   Component,
   Injectable,

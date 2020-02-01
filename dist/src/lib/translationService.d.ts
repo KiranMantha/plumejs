@@ -5,5 +5,5 @@ export declare class TranslationService {
     getCurrentLanguage(): string;
 }
 export declare class InternalTranslationService {
-    static translationComponents: Array<HTMLElement>;
+    static translationComponents: Map<any, any>;
 }

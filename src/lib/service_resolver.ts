@@ -1,5 +1,7 @@
 import { instantiate } from "./instance";
 import { isFunction } from "./utils";
+import { TranslationService } from "./translationService";
+import { InternalRouter, Router } from "./routerService";
 
 interface IInjector {
 	getService(name: string): void | {};
@@ -8,16 +10,32 @@ interface IInjector {
 		fn: Function | Object,
 		deps?: Array<string>
 	): void;
+	clear():void;
 }
 
 const Injector = (() => {
 	class InternalInjector implements IInjector {
+		private _map: Map<string, any> = new Map();
 		private get: (key: string) => any;
 		private set: (key: string, value: object) => Map<any, any>;
 		constructor() {
-			let _map = new Map();
-			this.get = _map.get.bind(_map);
-			this.set = _map.set.bind(_map);
+			this.get = this._map.get.bind(this._map);
+			this.set = this._map.set.bind(this._map);
+			this._defaultServices();
+		}
+
+		private _defaultServices() {
+			this.registerService("TranslationService", new TranslationService());
+			const _internalRouter = new InternalRouter();
+			this.registerService("InternalRouter", _internalRouter);
+			this.registerService(
+				"Router",
+				new Router(
+					_internalRouter.getCurrentRoute.bind(_internalRouter),
+					_internalRouter.navigateTo.bind(_internalRouter),
+					_internalRouter.onNavigationStart.bind(_internalRouter)
+				)
+			);
 		}
 
 		public getService(name: string) {
@@ -27,6 +45,10 @@ const Injector = (() => {
 			} else {
 				throw Error(`${name} is not a registered provider.`);
 			}
+		}
+
+		public clear():void {
+			this._map = new Map();
 		}
 
 		public registerService(name: string, fn: any, deps: Array<string> = []) {
@@ -49,7 +71,8 @@ const Injector = (() => {
 
 	return {
 		register: injectorInstance.registerService.bind(injectorInstance),
-		get: injectorInstance.getService.bind(injectorInstance)
+		get: injectorInstance.getService.bind(injectorInstance),
+		clear: injectorInstance.clear.bind(injectorInstance)
 	};
 })();
 
