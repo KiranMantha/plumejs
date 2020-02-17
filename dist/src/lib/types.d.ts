@@ -1,25 +1,26 @@
-export interface DecoratorOptions {
+interface DecoratorOptions {
     selector: string;
     styleUrl?: string;
     root?: boolean;
     useShadow?: boolean;
 }
-export interface RouteItem {
+interface RouteItem {
     Params: any;
     Url: string;
     Template: string;
     ParamCount: number;
 }
-export interface Route {
+interface Route {
     path: string;
     template?: string;
     templatePath?: string;
     redirectTo?: string;
     canActivate?: () => boolean;
 }
-export declare type Ref<T> = {
+declare type Ref<T> = {
     current: T;
 };
-export declare type jsonObject = {
+declare type jsonObject = {
     [index: string]: any;
 };
+export { DecoratorOptions, RouteItem, Route, Ref, jsonObject };

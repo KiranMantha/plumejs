@@ -2,7 +2,7 @@ import { Component, Input, html, Injectable, Router } from "../index";
 
 
 @Injectable()
-export class PersonService {
+class PersonService {
 	getPersons() {
 		return fetch("https://jsonplaceholder.typicode.com/users").then(res =>
 			res.json()
@@ -65,7 +65,7 @@ class PersonsList {
 @Component({
 	selector: "person-details"
 })
-export class PersonDetails {
+class PersonDetails {
 	@Input()
 	userDetails: any = {};
 

@@ -1,18 +1,18 @@
-export interface DecoratorOptions {
+interface DecoratorOptions {
 	selector: string;
 	styleUrl?: string;
 	root?: boolean;
 	useShadow?: boolean;
 }
 
-export interface RouteItem {
+interface RouteItem {
 	Params: any;
 	Url: string;
 	Template: string;
 	ParamCount: number;
 }
 
-export interface Route {
+interface Route {
 	path: string;
 	template?: string;
 	templatePath?: string;
@@ -20,6 +20,7 @@ export interface Route {
 	canActivate?: () => boolean;
 }
 
-export type Ref<T> = { current: T };
+type Ref<T> = { current: T };
+type jsonObject = { [index: string]: any };
 
-export type jsonObject = { [index: string]: any };
+export { DecoratorOptions, RouteItem, Route, Ref, jsonObject };

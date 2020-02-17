@@ -1,3 +1,4 @@
+//https://krasimirtsonev.com/blog/article/A-modern-JavaScript-router-in-100-lines-history-api-pushState-hash-url
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route, jsonObject } from "./types";
 import { registerRouterComponent } from "./router";
@@ -29,7 +30,7 @@ class StaticRouter {
 		if (pmc === pc) {
 			return po;
 		}
-		return false;
+		return {};
 	}
 
 	static getParamCount(p: string[]) {
@@ -80,7 +81,7 @@ export class InternalRouter {
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
-	private async _navigateTo(path: string) {
+	private async _navigateTo(path: string) {		
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
@@ -97,14 +98,11 @@ export class InternalRouter {
 			let routeItem = routeArr.length > 0 ? routeArr[0] : null;
 			if (routeItem) {
 				let _params = StaticRouter.checkParams(uParams, routeItem);
-				if (
-					_params &&
-					(Object.keys(_params).length > 0 || path)
-				) {
+				if (Object.keys(_params).length > 0 || path) {
 					this.currentRoute.params = _params;
 					if (!routeItem.IsRegistered) {
 						if (routeItem.TemplatePath) {
-							await import(`src/${routeItem.TemplatePath}`)
+							await import(`src/${routeItem.TemplatePath}`);
 							window.history.pushState(null, "", path);
 							this.$templateSubscriber.next(routeItem.Template);
 						}

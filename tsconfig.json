@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "target": "es2015",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
-    "module": "commonjs",
-    "lib": ["es2017","dom"],
+    "target": "esnext",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
     "declaration": true,                      /* Generates corresponding '.d.ts' file. */
     "inlineSourceMap": true,
     "outDir": "dist",                          /* Redirect output structure to the directory. */
@@ -15,6 +15,7 @@
     "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "declarationDir": "dist",                /* Output directory for generated declaration files. */
+    "importHelpers": true,
     "typeRoots": [
       "@types",
       "node_modules/@types"

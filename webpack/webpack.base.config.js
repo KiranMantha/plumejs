@@ -12,26 +12,40 @@ let config = {
     output: {
         path: path.resolve(__dirname, '../docs'),
         publicPath: '/',
-        filename: `[name].[hash].js`,
+        filename: '[name].bundle.[hash].js',
+        chunkFilename: '[name].chunk.[hash].js'
     },
     module: {
         rules: [{
-            test: /.ts$/,
-            exclude: /node_modules/,
-            use: [{
-                loader: 'babel-loader',
-                options: {
-                    babelrc: true
-                }
-            }]
-        }, {
-            test: /\.(s*)css$/,
-            exclude: /node_modules/,
-            use: ["css-loader", "sass-loader"]
-        }, {
-            test: /\.html$/,
-            use: ["html-loader"]
-        }]
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: [{
+                    loader: 'babel-loader',
+                    options: {
+                        babelrc: true
+                    }
+                }]
+            }, {
+                test: /\.(s*)css$/,
+                exclude: /node_modules/,
+                use: ["css-loader", "sass-loader"]
+            }, {
+                test: /\.html$/,
+                use: ["html-loader"]
+            },
+            // {
+            //     test: /\.(woff2?|ttf|eot|svg)$/,
+            //     use: [
+            //         {
+            //             loader: 'url-loader',
+            //             options: {
+            //                 limit: 10000,
+            //                 name: 'fonts/[name].[ext]'
+            //             }
+            //         }
+            //     ]
+            // }
+        ]
     },
     resolve: {
         alias: {
@@ -62,14 +76,32 @@ let config = {
             })
         ],
         splitChunks: {
+            chunks: 'all',
+            maxSize: 20000,
+            minSize: 15000,
+            automaticNameDelimiter: '-',
             cacheGroups: {
-                default: false,
-                vendor: false,
+                // Split vendor code to its own chunk(s)
                 vendors: {
-                    test: /node_modules/,
+                    test: /[\\/]node_modules[\\/]/i,
                     chunks: 'all'
+                },
+                //Split code common to all chunks to its own chunk
+                commons: {
+                    name: "commons", // The name of the chunk containing all common code
+                    chunks: "all", // TODO: Document
+                    minChunks: 2 // This is the number of modules
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
                 }
             }
+        },
+        // The runtime should be in its own chunk
+        runtimeChunk: {
+            name: "runtime"
         }
     }
 }
