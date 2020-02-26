@@ -27,7 +27,6 @@ function privatefromDir(startPath, filter) {
     if (stat.isDirectory()) {
       fromDir(filename, filter); //recurse
     } else if (filename.indexOf(filter) >= 0) {
-      console.log('found: ' + filename);
       let compiledCss = sass.renderSync({
         file: filename,
         importer: nodeSassImporter(nodeSassOptions),
