@@ -5,21 +5,22 @@ import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
 import { InternalTranslationService } from "./translationService";
 import { augmentor } from "augmentor";
+import { Injector } from './service_resolver';
 
 let isRootNodeSet = false;
 let globalStyles: any = new CSSStyleSheet();
-let style_registry: jsonObject = {};
+let style_registry: Map<string, string> = new Map();
 
 const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
+
+const getCss = (csspath:string) => {
+	return style_registry.has(csspath) ? style_registry.get(csspath) : '';
+}
 
 const getComputedCss = (csspath: string = "") => {
 	let sheet: any = new CSSStyleSheet();
 	if (csspath) {
-		let styles = style_registry[csspath]
-			? style_registry[csspath]
-			: require("src/" + csspath);
-		style_registry[csspath] = styles;
-		sheet.replace(styles);
+		sheet.replace(getCss(csspath));
 	}
 	return [globalStyles, sheet];
 };
@@ -33,9 +34,10 @@ const registerElement = (
 ) => {
 	if (!isTestEnv) {
 		if (isRoot && !isRootNodeSet && options.styleUrl) {
+			style_registry = Injector.get('COMPILEDCSS');
 			isRootNodeSet = true;
 			const styletag = document.createElement("style");
-			let styles = require("src/" + options.styleUrl);
+			let styles = getCss(options.styleUrl);
 			styletag.innerText = (styles || "").toString();
 			globalStyles.replace((styles || "").toString());
 			document.getElementsByTagName("head")[0].appendChild(styletag);
@@ -58,6 +60,7 @@ const registerElement = (
 			constructor() {
 				super();
 				this.shadow = isTestEnv ? this : this.attachShadow({ mode: "open" });
+				getComputedCss(options.styleUrl);
 				this.shadow.adoptedStyleSheets = !isTestEnv ? getComputedCss(options.styleUrl) : [];
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {

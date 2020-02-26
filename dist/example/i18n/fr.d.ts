@@ -1,4 +1,4 @@
 declare const fr: {
-    'name': string;
+    name: string;
 };
 export default fr;

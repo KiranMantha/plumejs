@@ -7,12 +7,10 @@ interface ICurrentRoute {
 }
 export declare class InternalRouter {
     currentRoute: ICurrentRoute;
-    private routeList;
     private currentPage;
     private previousPage;
     $templateSubscriber: Subject<unknown>;
     private _navigateTo;
-    addRoutes(routes: Array<Route>): void;
     getCurrentRoute(): ICurrentRoute;
     navigateTo(path?: string): void;
     onNavigationStart(cb: any): void;
@@ -22,5 +20,6 @@ export declare class Router {
     navigateTo: (path: string) => void;
     onNavigationStart: () => void;
     constructor(_getCurrentRoute: () => ICurrentRoute, _navigateTo: (path: string) => void, _onNavigationStart: () => void);
+    static registerRoutes(routes: Array<Route>): void;
 }
 export {};

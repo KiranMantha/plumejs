@@ -11,9 +11,6 @@ const registerRouterComponent = () => {
 		template = "";
 		update: Function;
 
-		@Input()
-		routes: Array<Route> = [];
-
 		isRoutesAdded = false;
 
 		constructor(private router: InternalRouter) {}
@@ -29,7 +26,9 @@ const registerRouterComponent = () => {
 			let self = this;
 			window.onpopstate = function() {
 				self.router.navigateTo(window.location.pathname);
-			};
+			};			
+			let path = window.location.pathname;
+			this.router.navigateTo(path !== "/" ? path : "");
 		}
 
 		unmount(){
@@ -37,12 +36,6 @@ const registerRouterComponent = () => {
 		}
 
 		render() {
-			if (this.routes.length > 0 && !this.isRoutesAdded) {
-				this.router.addRoutes(this.routes);
-				this.isRoutesAdded = true;
-				let path = window.location.pathname;
-				this.router.navigateTo(path !== "/" ? path : "");
-			}
 			if (!this.template) {
 				return html`
 					<div></div>

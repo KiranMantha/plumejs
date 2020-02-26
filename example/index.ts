@@ -2,6 +2,25 @@ import { Component, html, Router, Route, useRef, Ref, TranslationService } from 
 import en from './i18n/en';
 import fr from './i18n/fr';
 
+const routes:Array<Route> = [
+	{
+		path: '',
+		redirectTo: '/home'
+	},
+	{
+		path: '/home',
+		template: `<sample-ele></sample-ele>`,
+		templatePath: () => import(/* webpackChunkName: "sample" */'./sample-ele').then(t=>t.default)
+	},
+	{
+		path: '/persons/:id',
+		template: `<persons-list></persons-list>`,
+		templatePath: () => import(/* webpackChunkName: "persons" */'./persons/persons-list').then(t=>t.default)
+	}
+];
+
+Router.registerRoutes(routes);
+
 @Component({
 	selector: 'app-root',
 	root: true,
@@ -15,23 +34,6 @@ class AppRoot {
 	}
 
 	inputField:Ref<HTMLInputElement> = useRef(null);
-	
-  routes:Array<Route> = [
-		{
-			path: '',
-			redirectTo: '/home'
-		},
-		{
-			path: '/home',
-			template: `<sample-ele></sample-ele>`,
-			templatePath: 'sample-ele.ts'
-		},
-		{
-			path: '/persons/:id',
-			template: `<persons-list></persons-list>`,
-			templatePath: 'persons-list.ts'
-		}
-	]
 	
 	navigate = (path:string) => {
     this.router.navigateTo(path);
@@ -57,7 +59,7 @@ class AppRoot {
 				<option value='fr'>FR</option>
 			</select>	
 			<div>${ 'name'.translate() }</div>
-			<router-outlet routes=${ this.routes }></router-outlet>
+			<router-outlet></router-outlet>
 			<input type='text' ref=${this.inputField} /><button onclick=${()=>{ this.getRef() }}>click</button>
     </div>
     `

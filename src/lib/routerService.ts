@@ -2,11 +2,12 @@
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route, jsonObject } from "./types";
 import { registerRouterComponent } from "./router";
-import { Subject } from 'rxjs';
+import { Subject, Observable, from, of } from 'rxjs';
+import {mergeMap} from 'rxjs/operators'
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;
-	TemplatePath?: string;
+	TemplatePath?: Observable<any>;
 	redirectTo?: string;
 }
 
@@ -14,7 +15,14 @@ interface ICurrentRoute {
 	params: { [key: string]: string | number | boolean };
 }
 
+function wrapIntoObservable(value:Promise<any>):Observable<any> {
+	return from(Promise.resolve(value)).pipe(mergeMap((t:any) => {
+		return of(t);
+	}));
+}
+
 class StaticRouter {
+	static routList:Array<InternalRouteItem> = [];
 	static checkParams(up: Array<string>, r: RouteItem) {
 		let pmc = 0,
 			po: jsonObject = {},
@@ -43,12 +51,11 @@ class StaticRouter {
 		return pc;
 	}
 
-	static formatRoute(r: Route): InternalRouteItem {
+	static formatRoute(r: Route) {
 		let obj: InternalRouteItem = {
 			Params: {},
 			Url: "",
 			Template: "",
-			TemplatePath: "",
 			ParamCount: 0,
 			IsRegistered: false,
 			redirectTo: ""
@@ -65,10 +72,11 @@ class StaticRouter {
 					"templatePath is required in route if template is mentioned."
 				);
 			obj.Template = r.template;
-			obj.TemplatePath = r.templatePath;
+			obj.TemplatePath = wrapIntoObservable(r.templatePath());
 		}
 		obj.ParamCount = StaticRouter.getParamCount(obj.Params);
-		return obj;
+		//return obj;
+		StaticRouter.routList.push(obj);
 	}
 }
 
@@ -76,19 +84,19 @@ export class InternalRouter {
 	currentRoute: ICurrentRoute = {
 		params: {}
 	};
-	private routeList: Array<InternalRouteItem> = [];
-	private currentPage:string = null;
+	//private routeList: Array<InternalRouteItem> = [];
+	private currentPage:string = '';
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
-	private async _navigateTo(path: string) {		
+	private _navigateTo(path: string) {		
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
 			let uParams = path.split("/").filter(h => {
 				return h.length > 0;
 			});
-			let routeArr = this.routeList.filter(route => {
+			let routeArr = StaticRouter.routList.filter(route => {
 				if (route.Params.length === uParams.length) {
 					return route;
 				} else if(route.Url === path) {
@@ -102,11 +110,13 @@ export class InternalRouter {
 					this.currentRoute.params = _params;
 					if (!routeItem.IsRegistered) {
 						if (routeItem.TemplatePath) {
-							await import(`src/${routeItem.TemplatePath}`);
-							window.history.pushState(null, "", path);
-							this.$templateSubscriber.next(routeItem.Template);
+							//await import(`src/${routeItem.TemplatePath}`);
+							routeItem.TemplatePath.subscribe((res:any)=>{
+								routeItem.IsRegistered = true;
+								window.history.pushState(null, "", path);
+								this.$templateSubscriber.next(routeItem.Template);
+							});
 						}
-						routeItem.IsRegistered = true;
 					} else {
 						window.history.pushState(null, "", path);
 						this.$templateSubscriber.next(routeItem.Template);
@@ -118,15 +128,15 @@ export class InternalRouter {
 		}
 	}
 
-	addRoutes(routes: Array<Route>) {
-		if (isArray(routes)) {
-			for (let route of routes) {
-				this.routeList.push(StaticRouter.formatRoute(route));
-			}
-		} else {
-			throw Error("router.addRoutes: the parameter must be an array");
-		}
-	}
+	// addRoutes(routes: Array<Route>) {
+	// 	if (isArray(routes)) {
+	// 		for (let route of routes) {
+	// 			this.routeList.push(StaticRouter.formatRoute(route));
+	// 		}
+	// 	} else {
+	// 		throw Error("router.addRoutes: the parameter must be an array");
+	// 	}
+	// }
 
 	getCurrentRoute(): ICurrentRoute {
 		return this.currentRoute;
@@ -156,5 +166,14 @@ export class Router {
 		this.getCurrentRoute = _getCurrentRoute;
 		this.navigateTo = _navigateTo;
 		this.onNavigationStart = _onNavigationStart;
+	}
+	static registerRoutes(routes: Array<Route>) {
+		if (isArray(routes)) {
+			for (let route of routes) {
+				StaticRouter.formatRoute(route);
+			}
+		} else {
+			throw Error("router.addRoutes: the parameter must be an array");
+		}
 	}
 }

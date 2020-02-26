@@ -15,7 +15,7 @@ interface RouteItem {
 interface Route {
 	path: string;
 	template?: string;
-	templatePath?: string;
+	templatePath?: () => Promise<any>;
 	redirectTo?: string;
 	canActivate?: () => boolean;
 }

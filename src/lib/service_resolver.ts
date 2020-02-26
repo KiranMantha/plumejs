@@ -25,6 +25,8 @@ const Injector = (() => {
 		}
 
 		private _defaultServices() {
+			let compiledCSSObj = JSON.parse(JSON.stringify(process.env.COMPILEDCSSOBJ));
+			this.registerService("COMPILEDCSS", new Map(Object.entries(compiledCSSObj)));
 			this.registerService("TranslationService", new TranslationService());
 			const _internalRouter = new InternalRouter();
 			this.registerService("InternalRouter", _internalRouter);

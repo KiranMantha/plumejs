@@ -1,108 +1,87 @@
-const TerserPlugin = require('terser-webpack-plugin');
-const path = require('path');
+var path = require("path");
+const appFolders = {
+    src: path.resolve(__dirname, '../example'),
+    entry: './example/index.ts',
+    build: path.resolve(__dirname, '../docs'),
+    tsconfig: path.resolve(__dirname, "../tsconfig.json"),
+    index_html: './example/index.html'
+}
+const webpack = require('webpack');
 const WebpackPrebuild = require('pre-build-webpack');
 const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
+const fromDir = require('./custom-scss-loader');
+const scssObj = fromDir(appFolders.src, '.scss');
 
 let config = {
     devtool: 'cheap-module-source-map',
-    entry: {
-        main: './example/index'
-    },
+    entry: appFolders.entry,
     output: {
-        path: path.resolve(__dirname, '../docs'),
+        path: appFolders.build,
         publicPath: '/',
-        filename: '[name].bundle.[hash].js',
-        chunkFilename: '[name].chunk.[hash].js'
+        filename: 'js/[name].bundle.js',
+        chunkFilename: 'js/[name].chunk.js'
     },
     module: {
         rules: [{
                 test: /\.ts$/,
                 exclude: /node_modules/,
                 use: [{
-                    loader: 'babel-loader',
+                    loader: 'ts-loader',
                     options: {
-                        babelrc: true
+                        configFile: appFolders.tsconfig
                     }
                 }]
             }, {
-                test: /\.(s*)css$/,
-                exclude: /node_modules/,
-                use: ["css-loader", "sass-loader"]
-            }, {
                 test: /\.html$/,
                 use: ["html-loader"]
-            },
-            // {
-            //     test: /\.(woff2?|ttf|eot|svg)$/,
-            //     use: [
-            //         {
-            //             loader: 'url-loader',
-            //             options: {
-            //                 limit: 10000,
-            //                 name: 'fonts/[name].[ext]'
-            //             }
-            //         }
-            //     ]
-            // }
+            }, {
+                test: /\.(woff2?|ttf|eot|svg)$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        limit: 10000,
+                        name: 'fonts/[name].[ext]'
+                    }
+                }]
+            }
         ]
-    },
-    resolve: {
-        alias: {
-            src: path.resolve(__dirname, '../example')
-        },
-        extensions: ['.ts', '.js', '.css', '.scss']
     },
     plugins: [
         new WebpackPrebuild(() => {
-            del([path.resolve(__dirname, '../docs')])
+            del([appFolders.build])
         }),
         new HtmlWebpack({
             filename: 'index.html',
-            template: './example/index.html',
+            template: appFolders.index_html,
             inject: 'head'
+        }),
+        new webpack.DefinePlugin({
+          "process.env.COMPILEDCSSOBJ": JSON.stringify(scssObj)
         })
     ],
+    resolve: {
+        extensions: ['.ts', '.js', '.css', '.scss']
+    },
     optimization: {
-        minimizer: [
-            new TerserPlugin({
-                terserOptions: {
-                    output: {
-                        comments: true
-                    },
-                    keep_classnames: true,
-                    keep_fnames: true
-                }
-            })
-        ],
-        splitChunks: {
-            chunks: 'all',
-            maxSize: 20000,
-            minSize: 15000,
-            automaticNameDelimiter: '-',
-            cacheGroups: {
-                // Split vendor code to its own chunk(s)
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/i,
-                    chunks: 'all'
-                },
-                //Split code common to all chunks to its own chunk
-                commons: {
-                    name: "commons", // The name of the chunk containing all common code
-                    chunks: "all", // TODO: Document
-                    minChunks: 2 // This is the number of modules
-                },
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
-                }
-            }
-        },
-        // The runtime should be in its own chunk
-        runtimeChunk: {
-            name: "runtime"
+      splitChunks: {
+        chunks: 'all',
+        automaticNameDelimiter: '-',
+        cacheGroups: {
+          vendors: {
+            test: /[\\/]node_modules[\\/]/i,
+            chunks: 'all'
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true
+          }
         }
+      },
+      runtimeChunk: {
+        name: "runtime"
+      }
     }
 }
 

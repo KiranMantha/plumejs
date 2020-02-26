@@ -62,7 +62,7 @@ class TestEle {
 @Component({
 	selector: "sample-ele"
 })
-class SampleEle {
+export default class SampleEle {
 	test: string;
 	outCount: Function;
 	update: any;

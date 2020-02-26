@@ -6,7 +6,6 @@ import { registerElement } from "./registerElement";
 import { Injector } from "./service_resolver";
 import { INPUT_METADATA_KEY } from "./utils";
 import { DecoratorOptions } from "./types";
-import { instantiate } from './instance';
 
 const getDeps = (target: Function): Array<string> => {
 	let types:Array<any> = Reflect.getMetadata("design:paramtypes", target) || [];

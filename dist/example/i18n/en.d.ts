@@ -1,4 +1,4 @@
 declare const en: {
-    'name': string;
+    name: string;
 };
 export default en;

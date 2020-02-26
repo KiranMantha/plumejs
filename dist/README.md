@@ -35,7 +35,7 @@ Creating component is a non-hectic task.
 
   @Component({
     selector: 'test-ele',
-    styles: 'test-ele.scss', => the path is relative to src folder. no need to add './' as prefix.
+    styleUrl: 'test-ele.scss', => no need to add './' as prefix.
     root: true
   })
   class TestEle {
@@ -136,6 +136,32 @@ We can even share data between two components as below:
 
 ```
 
+Just like react, PlumeJs provides `useRef` as references. example:
+
+```
+import {Component, Ref, useRef}
+@Component({
+  selector: 'sample-comp'
+})
+class SampleComp {
+	inputField:Ref<HTMLElement> = useRef(null);
+	
+	getRef(){
+		console.log(this.inputField);
+	}
+
+  render() {
+    return html`
+     <div>
+			<input type='text' ref=${this.inputField} />
+      <button onclick=${()=>{ this.getRef() }}>click</button>
+    </div>
+    `
+  }
+}
+```
+
+
 # Creating Services
 
 Creating service is as simple as creating a component
@@ -179,30 +205,36 @@ Note: The constructor arguments are strictly typed and should not be native type
 
 # Routing
 
-Routing can be implemented in 2 simple steps
+By default Plumejs Routing uses dynamic imports to chunk out route specific logic which reduces main bundle size significantly. Routing can be implemented in 2 simple steps:
 
 1. Declare routes array as below
 
 ```
+  import { Router } from 'plumejs';
+
   const routes = [{
     path: '',
     redirectto: '/home',
   },{
     path: '/home',
     template: '<app-home></app-home>',
-    templatePath: '<path-to-ts-file-of-home-component>' => the path is relative to src folder. no need to add './' as prefix.
+    templatePath: () => import('<path-to-ts-file-of-home-component>').then(t=>t.default) 
   },{
     path: '/contactus',
     template: '<app-contactus></app-contactus>',
-    templatePath: '<path-to-ts-file-of-contactus-component>' => the path is relative to src folder. no need to add './' as prefix.
+    templatePath: () => import('<path-to-ts-file-of-contactus-component>').then(t=>t.default) 
   },{
     path: '/details/:id',
     template: '<app-details></app-details>',
-    templatePath: '<path-to-ts-file-of-details-component>' => the path is relative to src folder. no need to add './' as prefix.
+    templatePath: () => import('<path-to-ts-file-of-details-component>').then(t=>t.default) 
   }]
+
+  Router.registerRoutes(routes); => Routes must be registered with Router service outside of app-root component. In previous version(< 2.0.8), routes are passed as input to router-outlet.
+
+  @Component...
 ```
 
-2. add `<router-outlet routes=${ this.routes }></router-outlet>` in your component
+2. add `<router-outlet></router-outlet>` in your component
 
 That's it. Now we have the routing in our application.
 
@@ -211,7 +243,7 @@ To navigate from one route to other from a component:
 ```
   import {Router} from './plumejs'
   @Component({
-    selecotr: '<your-selector></your-selector>'
+    selector: '<your-selector></your-selector>'
   })
   class YourClass {
     constructor(private router: Router){}
@@ -234,31 +266,6 @@ To Access current route parameters
   if window.url is /details/123
   const currentRoute = this.router.getCurrentRoute();
   const id = currentRoute.params.id; /// returns 123
-```
-
-Just like react, PlumeJs provides `useRef` as references. example:
-
-```
-import {Component, Ref, useRef}
-@Component({
-  selector: 'sample-comp'
-})
-class SampleComp {
-	inputField:Ref<HTMLElement> = useRef(null);
-	
-	getRef(){
-		console.log(this.inputField);
-	}
-
-  render() {
-    return html`
-     <div>
-			<input type='text' ref=${this.inputField} />
-      <button onclick=${()=>{ this.getRef() }}>click</button>
-    </div>
-    `
-  }
-}
 ```
 
 # Setting up Internationalization
@@ -331,10 +338,12 @@ For normal text translations:
 1. sample component unit test:
 ```
 import { TestBed } from '../testBed';
-import { AppCOmponent } from 'src'
+import { AppComponent } from 'src';
 
 describe("Plumejs Component", () => {
+
   let appRoot:any;
+
 	beforeAll(async () => {
     appRoot = await TestBed.MockComponent(AppComponent);
   });
@@ -346,11 +355,12 @@ describe("Plumejs Component", () => {
 
   it('should return "hello" on button click', () => { 
     let span = appRoot.querySelector('span');
-    const model = appRoot.getModel();
+    const model:AppComponent = appRoot.getModel();
     expect(span.innerHTML).not.toContain('hello');
     model.greet();
     expect(span.innerHTML).toContain('hello');
   });
+
   afterAll(()=>{
     TestBed.RemoveComponent(appRoot);
   });
@@ -360,7 +370,9 @@ describe("Plumejs Component", () => {
 2. sample service unit test:
 ```
 class SampleService {
+
 	data: any = {};
+
 	callApi() {
 		return fetch("https://jsonplaceholder.typicode.com/users").then((res:any) => res.json()).then((res: any) => {
 			this.data = res;
@@ -369,14 +381,18 @@ class SampleService {
 }
 
 describe("Plumejs Service", () => {
+
 	let servc: SampleService;
 	let _fetch: any = fetch;
+
 	beforeAll(() => {
 		servc = new SampleService();
 	});
+
 	beforeEach(() => {
 		_fetch.resetMocks();
 	});
+
 	it("should work",async () => {
     _fetch.mockResponseOnce(JSON.stringify({
       animals: ["cow", "goat", "lion"]
