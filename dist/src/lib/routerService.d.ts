@@ -1,5 +1,5 @@
 import { Route } from "./types";
-import { Subject } from 'rxjs';
+import { Subject } from "rxjs";
 interface ICurrentRoute {
     params: {
         [key: string]: string | number | boolean;

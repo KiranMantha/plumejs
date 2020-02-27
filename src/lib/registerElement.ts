@@ -6,6 +6,7 @@ import { DecoratorOptions, jsonObject } from "./types";
 import { InternalTranslationService } from "./translationService";
 import { augmentor } from "augmentor";
 import { Injector } from './service_resolver';
+import { isNode } from 'browser-or-node';
 
 let isRootNodeSet = false;
 let globalStyles: any = new CSSStyleSheet();
@@ -29,10 +30,9 @@ const registerElement = (
 	options: DecoratorOptions,
 	target: Function,
 	providers: Array<string>,
-	isRoot: boolean,
-	isTestEnv: boolean
+	isRoot: boolean
 ) => {
-	if (!isTestEnv) {
+	if (!isNode) {
 		if (isRoot && !isRootNodeSet && options.styleUrl) {
 			style_registry = Injector.get('COMPILEDCSS');
 			isRootNodeSet = true;
@@ -59,9 +59,8 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = isTestEnv ? this : this.attachShadow({ mode: "open" });
-				getComputedCss(options.styleUrl);
-				this.shadow.adoptedStyleSheets = !isTestEnv ? getComputedCss(options.styleUrl) : [];
+				this.shadow = isNode ? this : this.attachShadow({ mode: "open" });
+				this.shadow.adoptedStyleSheets = isNode ? [] : getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (newvalue: any, oldvalue: any) => {

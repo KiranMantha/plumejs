@@ -1,7 +1,6 @@
 //https://medium.com/@OlegVaraksin/minimalistic-dependency-injection-di-container-in-typescript-2ce93d1c303b
 //https://jsfiddle.net/r5umxasz/
 import { Reflection as Reflect } from '@abraham/reflection';
-import { isNode } from 'browser-or-node';
 import { registerElement } from "./registerElement";
 import { Injector } from "./service_resolver";
 import { INPUT_METADATA_KEY } from "./utils";
@@ -40,9 +39,8 @@ const depsResolver = (
 
 let Component = (options: DecoratorOptions) => (target: Function) => {	
 	let obj = depsResolver(options, target);
-	let isTestEnv = isNode;
 	target.prototype.selector = options.selector;
-	registerElement(options, target, obj.deps, obj.isRoot, isTestEnv);
+	registerElement(options, target, obj.deps, obj.isRoot);
 };
 
 const Injectable = () => (target: Function) => {

@@ -2,8 +2,9 @@
 import { isFunction, isArray } from "./utils";
 import { RouteItem, Route, jsonObject } from "./types";
 import { registerRouterComponent } from "./router";
-import { Subject, Observable, from, of } from 'rxjs';
-import {mergeMap} from 'rxjs/operators'
+import { Subject, Observable, from, of } from "rxjs";
+import { mergeMap } from "rxjs/operators";
+import { isNode } from "browser-or-node";
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;
@@ -15,14 +16,16 @@ interface ICurrentRoute {
 	params: { [key: string]: string | number | boolean };
 }
 
-function wrapIntoObservable(value:Promise<any>):Observable<any> {
-	return from(Promise.resolve(value)).pipe(mergeMap((t:any) => {
-		return of(t);
-	}));
+function wrapIntoObservable(value: Promise<any>): Observable<any> {
+	return from(Promise.resolve(value)).pipe(
+		mergeMap((t: any) => {
+			return of(t);
+		})
+	);
 }
 
 class StaticRouter {
-	static routList:Array<InternalRouteItem> = [];
+	static routList: Array<InternalRouteItem> = [];
 	static checkParams(up: Array<string>, r: RouteItem) {
 		let pmc = 0,
 			po: jsonObject = {},
@@ -75,7 +78,6 @@ class StaticRouter {
 			obj.TemplatePath = wrapIntoObservable(r.templatePath());
 		}
 		obj.ParamCount = StaticRouter.getParamCount(obj.Params);
-		//return obj;
 		StaticRouter.routList.push(obj);
 	}
 }
@@ -84,12 +86,11 @@ export class InternalRouter {
 	currentRoute: ICurrentRoute = {
 		params: {}
 	};
-	//private routeList: Array<InternalRouteItem> = [];
-	private currentPage:string = '';
+	private currentPage: string = "";
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
-	private _navigateTo(path: string) {		
+	private _navigateTo(path: string) {
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
@@ -99,7 +100,7 @@ export class InternalRouter {
 			let routeArr = StaticRouter.routList.filter(route => {
 				if (route.Params.length === uParams.length) {
 					return route;
-				} else if(route.Url === path) {
+				} else if (route.Url === path) {
 					return route;
 				}
 			});
@@ -110,8 +111,7 @@ export class InternalRouter {
 					this.currentRoute.params = _params;
 					if (!routeItem.IsRegistered) {
 						if (routeItem.TemplatePath) {
-							//await import(`src/${routeItem.TemplatePath}`);
-							routeItem.TemplatePath.subscribe((res:any)=>{
+							routeItem.TemplatePath.subscribe((res: any) => {
 								routeItem.IsRegistered = true;
 								window.history.pushState(null, "", path);
 								this.$templateSubscriber.next(routeItem.Template);
@@ -128,21 +128,11 @@ export class InternalRouter {
 		}
 	}
 
-	// addRoutes(routes: Array<Route>) {
-	// 	if (isArray(routes)) {
-	// 		for (let route of routes) {
-	// 			this.routeList.push(StaticRouter.formatRoute(route));
-	// 		}
-	// 	} else {
-	// 		throw Error("router.addRoutes: the parameter must be an array");
-	// 	}
-	// }
-
 	getCurrentRoute(): ICurrentRoute {
 		return this.currentRoute;
 	}
 
-	navigateTo(path: string = "") {		
+	navigateTo(path: string = "") {
 		this._navigateTo(path);
 	}
 
@@ -168,12 +158,14 @@ export class Router {
 		this.onNavigationStart = _onNavigationStart;
 	}
 	static registerRoutes(routes: Array<Route>) {
-		if (isArray(routes)) {
-			for (let route of routes) {
-				StaticRouter.formatRoute(route);
+		if (!isNode) {
+			if (isArray(routes)) {
+				for (let route of routes) {
+					StaticRouter.formatRoute(route);
+				}
+			} else {
+				throw Error("router.addRoutes: the parameter must be an array");
 			}
-		} else {
-			throw Error("router.addRoutes: the parameter must be an array");
 		}
 	}
 }
