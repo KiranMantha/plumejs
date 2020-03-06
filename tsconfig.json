@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2015",                       /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */
+    "target": "es2015",
     "module": "esnext",
     "lib": ["dom", "es2015", "es2015.promise"],
-    "declaration": true,                      /* Generates corresponding '.d.ts' file. */
+    "moduleResolution": "node",
+    "declaration": true,
     "inlineSourceMap": true,
-    "outDir": "dist",                          /* Redirect output structure to the directory. */
-    "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
-    "removeComments": false,                /* Do not emit comments to output. */
-    "moduleResolution": "node",            /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-    "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
-    "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
-    "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
-    "declarationDir": "dist",                /* Output directory for generated declaration files. */
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "rootDir": "./",
+    "removeComments": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "importHelpers": true,
     "typeRoots": [
       "@types",
