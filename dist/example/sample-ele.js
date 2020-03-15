@@ -1,69 +1,71 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = require("tslib");
-var index_1 = require("../index");
-var SampleService = /** @class */ (function () {
-    function SampleService() {
-    }
-    SampleService.prototype.testMeth = function () {
+import { __decorate, __metadata } from "tslib";
+import { Component, Input, html, Injectable } from "../index";
+let SampleService = class SampleService {
+    constructor() { }
+    testMeth() {
         console.log("testmethod in sample service");
-    };
-    SampleService = tslib_1.__decorate([
-        index_1.Injectable(),
-        tslib_1.__metadata("design:paramtypes", [])
-    ], SampleService);
-    return SampleService;
-}());
-var TestService = /** @class */ (function () {
-    function TestService(sampleSrvc) {
+    }
+};
+SampleService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [])
+], SampleService);
+let TestService = class TestService {
+    constructor(sampleSrvc) {
         this.sampleSrvc = sampleSrvc;
     }
-    TestService.prototype.testMeth = function () {
+    testMeth() {
         this.sampleSrvc.testMeth();
-    };
-    TestService.prototype.getUsers = function () {
+    }
+    getUsers() {
         return fetch("https://api.github.com/users?since=135");
-    };
-    TestService = tslib_1.__decorate([
-        index_1.Injectable(),
-        tslib_1.__metadata("design:paramtypes", [SampleService])
-    ], TestService);
-    return TestService;
-}());
-var TestEle = /** @class */ (function () {
-    function TestEle() {
+    }
+};
+TestService = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [SampleService])
+], TestService);
+let TestEle = class TestEle {
+    constructor() {
         this.testprops = {};
     }
-    TestEle.prototype.render = function () {
-        var _this = this;
-        return index_1.html(templateObject_1 || (templateObject_1 = tslib_1.__makeTemplateObject(["\n\t\t\t<div>\n\t\t\t\ttesting web component2 ", "\n\t\t\t\t<button onclick=", ">hi</button>\n\t\t\t\t<input\n\t\t\t\t\tvalue=", "\n\t\t\t\t\toninput=", "\n\t\t\t\t/>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div>\n\t\t\t\ttesting web component2 ", "\n\t\t\t\t<button onclick=", ">hi</button>\n\t\t\t\t<input\n\t\t\t\t\tvalue=", "\n\t\t\t\t\toninput=", "\n\t\t\t\t/>\n\t\t\t</div>\n\t\t"])), this.testprops.name, function (e) { return _this.counts(e); }, this.testprops.name, function (e) { return _this.change(e.target.value); });
-    };
-    TestEle.prototype.counts = function (e) {
+    render() {
+        return html `
+			<div>
+				testing web component2 ${this.testprops.name}
+				<button onclick=${(e) => this.counts(e)}>hi</button>
+				<input
+					value=${this.testprops.name}
+					oninput=${(e) => this.change(e.target.value)}
+				/>
+			</div>
+		`;
+    }
+    counts(e) {
         this.testprops.oncount("testing from click");
-    };
-    TestEle.prototype.change = function (val) {
+    }
+    change(val) {
         this.testprops.oncount(val);
-    };
-    TestEle.prototype.mount = function () {
+    }
+    mount() {
         console.log("component loaded");
         console.log("props: ", this.testprops);
-    };
-    TestEle.prototype.unmount = function () {
+    }
+    unmount() {
         console.log("component unloaded");
-    };
-    tslib_1.__decorate([
-        index_1.Input(),
-        tslib_1.__metadata("design:type", Object)
-    ], TestEle.prototype, "testprops", void 0);
-    TestEle = tslib_1.__decorate([
-        index_1.Component({
-            selector: "test-ele"
-        })
-    ], TestEle);
-    return TestEle;
-}());
-var SampleEle = /** @class */ (function () {
-    function SampleEle(testSrvc) {
+    }
+};
+__decorate([
+    Input(),
+    __metadata("design:type", Object)
+], TestEle.prototype, "testprops", void 0);
+TestEle = __decorate([
+    Component({
+        selector: "test-ele"
+    })
+], TestEle);
+let SampleEle = class SampleEle {
+    constructor(testSrvc) {
         this.testSrvc = testSrvc;
         this.test = "sample 123";
         this.outCount = this.count.bind(this);
@@ -72,32 +74,36 @@ var SampleEle = /** @class */ (function () {
             name: this.test
         };
     }
-    SampleEle.prototype.render = function () {
-        return index_1.html(templateObject_2 || (templateObject_2 = tslib_1.__makeTemplateObject(["\n\t\t\t<div>\n\t\t\t\t<h1>Sample two way data binding</h1>\n\t\t\t\ttesting web component1 ", "\n\t\t\t\t<test-ele testprops=", "></test-ele>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div>\n\t\t\t\t<h1>Sample two way data binding</h1>\n\t\t\t\ttesting web component1 ", "\n\t\t\t\t<test-ele testprops=", "></test-ele>\n\t\t\t</div>\n\t\t"])), this.test, this.props);
-    };
-    SampleEle.prototype.count = function (val) {
+    render() {
+        return html `
+			<div>
+				<h1>Sample two way data binding</h1>
+				testing web component1 ${this.test}
+				<test-ele testprops=${this.props}></test-ele>
+			</div>
+		`;
+    }
+    count(val) {
         this.test = val;
         this.props.name = val;
         this.update();
-    };
-    SampleEle.prototype.beforeMount = function () {
+    }
+    beforeMount() {
         console.log("before mounting...");
-    };
-    SampleEle.prototype.mount = function () {
+    }
+    mount() {
         console.log("component loaded");
         this.testSrvc.testMeth();
-    };
-    SampleEle.prototype.unmount = function () {
+    }
+    unmount() {
         console.log("component unloaded");
-    };
-    SampleEle = tslib_1.__decorate([
-        index_1.Component({
-            selector: "sample-ele"
-        }),
-        tslib_1.__metadata("design:paramtypes", [TestService])
-    ], SampleEle);
-    return SampleEle;
-}());
-exports.default = SampleEle;
-var templateObject_1, templateObject_2;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2FtcGxlLWVsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL2V4YW1wbGUvc2FtcGxlLWVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFBQSxrQ0FBc0U7QUFHdEU7SUFDQztJQUFlLENBQUM7SUFDaEIsZ0NBQVEsR0FBUjtRQUNDLE9BQU8sQ0FBQyxHQUFHLENBQUMsOEJBQThCLENBQUMsQ0FBQztJQUM3QyxDQUFDO0lBSkksYUFBYTtRQURsQixrQkFBVSxFQUFFOztPQUNQLGFBQWEsQ0FLbEI7SUFBRCxvQkFBQztDQUFBLEFBTEQsSUFLQztBQUdEO0lBQ0MscUJBQW9CLFVBQXlCO1FBQXpCLGVBQVUsR0FBVixVQUFVLENBQWU7SUFBRyxDQUFDO0lBQ2pELDhCQUFRLEdBQVI7UUFDQyxJQUFJLENBQUMsVUFBVSxDQUFDLFFBQVEsRUFBRSxDQUFDO0lBQzVCLENBQUM7SUFFRCw4QkFBUSxHQUFSO1FBQ0MsT0FBTyxLQUFLLENBQUMsd0NBQXdDLENBQUMsQ0FBQztJQUN4RCxDQUFDO0lBUkksV0FBVztRQURoQixrQkFBVSxFQUFFO2lEQUVvQixhQUFhO09BRHhDLFdBQVcsQ0FTaEI7SUFBRCxrQkFBQztDQUFBLEFBVEQsSUFTQztBQUtEO0lBQUE7UUFHQyxjQUFTLEdBQVEsRUFBRSxDQUFDO0lBK0JyQixDQUFDO0lBN0JBLHdCQUFNLEdBQU47UUFBQSxpQkFXQztRQVZBLE9BQU8sWUFBSSx1UUFBQSxnREFFZ0IsRUFBbUIsNEJBQzFCLEVBQTBCLGdEQUVuQyxFQUFtQixzQkFDakIsRUFBdUMsa0NBR25ELEtBUDBCLElBQUksQ0FBQyxTQUFTLENBQUMsSUFBSSxFQUMxQixVQUFDLENBQU0sSUFBSyxPQUFBLEtBQUksQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDLEVBQWQsQ0FBYyxFQUVuQyxJQUFJLENBQUMsU0FBUyxDQUFDLElBQUksRUFDakIsVUFBQyxDQUFNLElBQUssT0FBQSxLQUFJLENBQUMsTUFBTSxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsS0FBSyxDQUFDLEVBQTNCLENBQTJCLEVBR2xEO0lBQ0gsQ0FBQztJQUVELHdCQUFNLEdBQU4sVUFBTyxDQUFNO1FBQ1osSUFBSSxDQUFDLFNBQVMsQ0FBQyxPQUFPLENBQUMsb0JBQW9CLENBQUMsQ0FBQztJQUM5QyxDQUFDO0lBRUQsd0JBQU0sR0FBTixVQUFPLEdBQVc7UUFDakIsSUFBSSxDQUFDLFNBQVMsQ0FBQyxPQUFPLENBQUMsR0FBRyxDQUFDLENBQUM7SUFDN0IsQ0FBQztJQUVELHVCQUFLLEdBQUw7UUFDQyxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQixDQUFDLENBQUM7UUFDaEMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxTQUFTLEVBQUUsSUFBSSxDQUFDLFNBQVMsQ0FBQyxDQUFDO0lBQ3hDLENBQUM7SUFFRCx5QkFBTyxHQUFQO1FBQ0MsT0FBTyxDQUFDLEdBQUcsQ0FBQyxvQkFBb0IsQ0FBQyxDQUFDO0lBQ25DLENBQUM7SUE5QkQ7UUFEQyxhQUFLLEVBQUU7OzhDQUNZO0lBSGYsT0FBTztRQUhaLGlCQUFTLENBQUM7WUFDVixRQUFRLEVBQUUsVUFBVTtTQUNwQixDQUFDO09BQ0ksT0FBTyxDQWtDWjtJQUFELGNBQUM7Q0FBQSxBQWxDRCxJQWtDQztBQUtEO0lBS0MsbUJBQW9CLFFBQXFCO1FBQXJCLGFBQVEsR0FBUixRQUFRLENBQWE7UUFDeEMsSUFBSSxDQUFDLElBQUksR0FBRyxZQUFZLENBQUM7UUFDekIsSUFBSSxDQUFDLFFBQVEsR0FBRyxJQUFJLENBQUMsS0FBSyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUN0QyxJQUFJLENBQUMsS0FBSyxHQUFHO1lBQ1osT0FBTyxFQUFFLElBQUksQ0FBQyxRQUFRO1lBQ3RCLElBQUksRUFBRSxJQUFJLENBQUMsSUFBSTtTQUNmLENBQUM7SUFDSCxDQUFDO0lBRUQsMEJBQU0sR0FBTjtRQUNDLE9BQU8sWUFBSSwrT0FBQSw4RkFHZ0IsRUFBUyxnQ0FDWixFQUFVLGtDQUVqQyxLQUgwQixJQUFJLENBQUMsSUFBSSxFQUNaLElBQUksQ0FBQyxLQUFLLEVBRWhDO0lBQ0gsQ0FBQztJQUVELHlCQUFLLEdBQUwsVUFBTSxHQUFXO1FBQ2hCLElBQUksQ0FBQyxJQUFJLEdBQUcsR0FBRyxDQUFDO1FBQ2hCLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSSxHQUFHLEdBQUcsQ0FBQztRQUN0QixJQUFJLENBQUMsTUFBTSxFQUFFLENBQUM7SUFDZixDQUFDO0lBRUQsK0JBQVcsR0FBWDtRQUNDLE9BQU8sQ0FBQyxHQUFHLENBQUMsb0JBQW9CLENBQUMsQ0FBQztJQUNuQyxDQUFDO0lBRUQseUJBQUssR0FBTDtRQUNDLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCLENBQUMsQ0FBQztRQUNoQyxJQUFJLENBQUMsUUFBUSxDQUFDLFFBQVEsRUFBRSxDQUFDO0lBQzFCLENBQUM7SUFFRCwyQkFBTyxHQUFQO1FBQ0MsT0FBTyxDQUFDLEdBQUcsQ0FBQyxvQkFBb0IsQ0FBQyxDQUFDO0lBQ25DLENBQUM7SUF6Q21CLFNBQVM7UUFIN0IsaUJBQVMsQ0FBQztZQUNWLFFBQVEsRUFBRSxZQUFZO1NBQ3RCLENBQUM7aURBTTZCLFdBQVc7T0FMckIsU0FBUyxDQTBDN0I7SUFBRCxnQkFBQztDQUFBLEFBMUNELElBMENDO2tCQTFDb0IsU0FBUyJ9
+    }
+};
+SampleEle = __decorate([
+    Component({
+        selector: "sample-ele"
+    }),
+    __metadata("design:paramtypes", [TestService])
+], SampleEle);
+export default SampleEle;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2FtcGxlLWVsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL2V4YW1wbGUvc2FtcGxlLWVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsT0FBTyxFQUFFLFNBQVMsRUFBRSxLQUFLLEVBQUUsSUFBSSxFQUFFLFVBQVUsRUFBVSxNQUFNLFVBQVUsQ0FBQztBQUd0RSxJQUFNLGFBQWEsR0FBbkIsTUFBTSxhQUFhO0lBQ2xCLGdCQUFlLENBQUM7SUFDaEIsUUFBUTtRQUNQLE9BQU8sQ0FBQyxHQUFHLENBQUMsOEJBQThCLENBQUMsQ0FBQztJQUM3QyxDQUFDO0NBQ0QsQ0FBQTtBQUxLLGFBQWE7SUFEbEIsVUFBVSxFQUFFOztHQUNQLGFBQWEsQ0FLbEI7QUFHRCxJQUFNLFdBQVcsR0FBakIsTUFBTSxXQUFXO0lBQ2hCLFlBQW9CLFVBQXlCO1FBQXpCLGVBQVUsR0FBVixVQUFVLENBQWU7SUFBRyxDQUFDO0lBQ2pELFFBQVE7UUFDUCxJQUFJLENBQUMsVUFBVSxDQUFDLFFBQVEsRUFBRSxDQUFDO0lBQzVCLENBQUM7SUFFRCxRQUFRO1FBQ1AsT0FBTyxLQUFLLENBQUMsd0NBQXdDLENBQUMsQ0FBQztJQUN4RCxDQUFDO0NBQ0QsQ0FBQTtBQVRLLFdBQVc7SUFEaEIsVUFBVSxFQUFFO3FDQUVvQixhQUFhO0dBRHhDLFdBQVcsQ0FTaEI7QUFLRCxJQUFNLE9BQU8sR0FBYixNQUFNLE9BQU87SUFBYjtRQUdDLGNBQVMsR0FBUSxFQUFFLENBQUM7SUErQnJCLENBQUM7SUE3QkEsTUFBTTtRQUNMLE9BQU8sSUFBSSxDQUFBOzs2QkFFZ0IsSUFBSSxDQUFDLFNBQVMsQ0FBQyxJQUFJO3NCQUMxQixDQUFDLENBQU0sRUFBRSxFQUFFLENBQUMsSUFBSSxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUM7O2FBRW5DLElBQUksQ0FBQyxTQUFTLENBQUMsSUFBSTtlQUNqQixDQUFDLENBQU0sRUFBRSxFQUFFLENBQUMsSUFBSSxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUMsTUFBTSxDQUFDLEtBQUssQ0FBQzs7O0dBR25ELENBQUM7SUFDSCxDQUFDO0lBRUQsTUFBTSxDQUFDLENBQU07UUFDWixJQUFJLENBQUMsU0FBUyxDQUFDLE9BQU8sQ0FBQyxvQkFBb0IsQ0FBQyxDQUFDO0lBQzlDLENBQUM7SUFFRCxNQUFNLENBQUMsR0FBVztRQUNqQixJQUFJLENBQUMsU0FBUyxDQUFDLE9BQU8sQ0FBQyxHQUFHLENBQUMsQ0FBQztJQUM3QixDQUFDO0lBRUQsS0FBSztRQUNKLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCLENBQUMsQ0FBQztRQUNoQyxPQUFPLENBQUMsR0FBRyxDQUFDLFNBQVMsRUFBRSxJQUFJLENBQUMsU0FBUyxDQUFDLENBQUM7SUFDeEMsQ0FBQztJQUVELE9BQU87UUFDTixPQUFPLENBQUMsR0FBRyxDQUFDLG9CQUFvQixDQUFDLENBQUM7SUFDbkMsQ0FBQztDQUNELENBQUE7QUEvQkE7SUFEQyxLQUFLLEVBQUU7OzBDQUNZO0FBSGYsT0FBTztJQUhaLFNBQVMsQ0FBQztRQUNWLFFBQVEsRUFBRSxVQUFVO0tBQ3BCLENBQUM7R0FDSSxPQUFPLENBa0NaO0FBS0QsSUFBcUIsU0FBUyxHQUE5QixNQUFxQixTQUFTO0lBSzdCLFlBQW9CLFFBQXFCO1FBQXJCLGFBQVEsR0FBUixRQUFRLENBQWE7UUFDeEMsSUFBSSxDQUFDLElBQUksR0FBRyxZQUFZLENBQUM7UUFDekIsSUFBSSxDQUFDLFFBQVEsR0FBRyxJQUFJLENBQUMsS0FBSyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUN0QyxJQUFJLENBQUMsS0FBSyxHQUFHO1lBQ1osT0FBTyxFQUFFLElBQUksQ0FBQyxRQUFRO1lBQ3RCLElBQUksRUFBRSxJQUFJLENBQUMsSUFBSTtTQUNmLENBQUM7SUFDSCxDQUFDO0lBRUQsTUFBTTtRQUNMLE9BQU8sSUFBSSxDQUFBOzs7NkJBR2dCLElBQUksQ0FBQyxJQUFJOzBCQUNaLElBQUksQ0FBQyxLQUFLOztHQUVqQyxDQUFDO0lBQ0gsQ0FBQztJQUVELEtBQUssQ0FBQyxHQUFXO1FBQ2hCLElBQUksQ0FBQyxJQUFJLEdBQUcsR0FBRyxDQUFDO1FBQ2hCLElBQUksQ0FBQyxLQUFLLENBQUMsSUFBSSxHQUFHLEdBQUcsQ0FBQztRQUN0QixJQUFJLENBQUMsTUFBTSxFQUFFLENBQUM7SUFDZixDQUFDO0lBRUQsV0FBVztRQUNWLE9BQU8sQ0FBQyxHQUFHLENBQUMsb0JBQW9CLENBQUMsQ0FBQztJQUNuQyxDQUFDO0lBRUQsS0FBSztRQUNKLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCLENBQUMsQ0FBQztRQUNoQyxJQUFJLENBQUMsUUFBUSxDQUFDLFFBQVEsRUFBRSxDQUFDO0lBQzFCLENBQUM7SUFFRCxPQUFPO1FBQ04sT0FBTyxDQUFDLEdBQUcsQ0FBQyxvQkFBb0IsQ0FBQyxDQUFDO0lBQ25DLENBQUM7Q0FDRCxDQUFBO0FBMUNvQixTQUFTO0lBSDdCLFNBQVMsQ0FBQztRQUNWLFFBQVEsRUFBRSxZQUFZO0tBQ3RCLENBQUM7cUNBTTZCLFdBQVc7R0FMckIsU0FBUyxDQTBDN0I7ZUExQ29CLFNBQVMifQ==

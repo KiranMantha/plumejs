@@ -1,31 +1,46 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = require("tslib");
-var index_1 = require("../../index");
-var PersonDetails = /** @class */ (function () {
-    function PersonDetails() {
+import { __decorate, __metadata } from "tslib";
+import { Component, Input, html } from "../../index";
+let PersonDetails = class PersonDetails {
+    constructor() {
         this.userDetails = {};
     }
-    PersonDetails.prototype.render = function () {
+    render() {
         console.log("selected: user", this.userDetails);
         if (this.userDetails.name) {
-            return index_1.html(templateObject_1 || (templateObject_1 = tslib_1.__makeTemplateObject(["\n\t\t\t\t<div>Name: ", "</div>\n\t\t\t\t<div>Company: ", "</div>\t\t\t\t\t\t\n\t\t\t\t<form>\n\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t<label for=\"exampleInputEmail1\">Email address</label>\n\t\t\t\t\t\t<input type=\"email\" class=\"form-control\" id=\"exampleInputEmail1\" aria-describedby=\"emailHelp\" placeholder=\"Enter email\">\n\t\t\t\t\t\t<small id=\"emailHelp\" class=\"form-text text-muted\">We'll never share your email with anyone else.</small>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t<label for=\"exampleInputPassword1\">Password</label>\n\t\t\t\t\t\t<input type=\"password\" class=\"form-control\" id=\"exampleInputPassword1\" placeholder=\"Password\">\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"form-group form-check\">\n\t\t\t\t\t\t<input type=\"checkbox\" class=\"form-check-input\" id=\"exampleCheck1\">\n\t\t\t\t\t\t<label class=\"form-check-label\" for=\"exampleCheck1\">Check me out</label>\n\t\t\t\t\t</div>\n\t\t\t\t\t<button type=\"submit\" class=\"btn btn-primary\">Submit</button>\n\t\t\t\t</form>\n\t\t\t"], ["\n\t\t\t\t<div>Name: ", "</div>\n\t\t\t\t<div>Company: ", "</div>\t\t\t\t\t\t\n\t\t\t\t<form>\n\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t<label for=\"exampleInputEmail1\">Email address</label>\n\t\t\t\t\t\t<input type=\"email\" class=\"form-control\" id=\"exampleInputEmail1\" aria-describedby=\"emailHelp\" placeholder=\"Enter email\">\n\t\t\t\t\t\t<small id=\"emailHelp\" class=\"form-text text-muted\">We'll never share your email with anyone else.</small>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"form-group\">\n\t\t\t\t\t\t<label for=\"exampleInputPassword1\">Password</label>\n\t\t\t\t\t\t<input type=\"password\" class=\"form-control\" id=\"exampleInputPassword1\" placeholder=\"Password\">\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class=\"form-group form-check\">\n\t\t\t\t\t\t<input type=\"checkbox\" class=\"form-check-input\" id=\"exampleCheck1\">\n\t\t\t\t\t\t<label class=\"form-check-label\" for=\"exampleCheck1\">Check me out</label>\n\t\t\t\t\t</div>\n\t\t\t\t\t<button type=\"submit\" class=\"btn btn-primary\">Submit</button>\n\t\t\t\t</form>\n\t\t\t"])), this.userDetails.name, this.userDetails.company.name);
+            return html `
+				<div>Name: ${this.userDetails.name}</div>
+				<div>Company: ${this.userDetails.company.name}</div>						
+				<form>
+					<div class="form-group">
+						<label for="exampleInputEmail1">Email address</label>
+						<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">Password</label>
+						<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+					</div>
+					<div class="form-group form-check">
+						<input type="checkbox" class="form-check-input" id="exampleCheck1">
+						<label class="form-check-label" for="exampleCheck1">Check me out</label>
+					</div>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			`;
         }
         else {
-            return index_1.html(templateObject_2 || (templateObject_2 = tslib_1.__makeTemplateObject([""], [""])));
+            return html ``;
         }
-    };
-    tslib_1.__decorate([
-        index_1.Input(),
-        tslib_1.__metadata("design:type", Object)
-    ], PersonDetails.prototype, "userDetails", void 0);
-    PersonDetails = tslib_1.__decorate([
-        index_1.Component({
-            selector: "person-details"
-        })
-    ], PersonDetails);
-    return PersonDetails;
-}());
-exports.default = PersonDetails;
-var templateObject_1, templateObject_2;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGVyc29uLWRldGFpbHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9leGFtcGxlL3BlcnNvbnMvcGVyc29uLWRldGFpbHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEscUNBQXFEO0FBS3JEO0lBQUE7UUFFQyxnQkFBVyxHQUFRLEVBQUUsQ0FBQztJQTZCdkIsQ0FBQztJQTNCQSw4QkFBTSxHQUFOO1FBQ0MsT0FBTyxDQUFDLEdBQUcsQ0FBQyxnQkFBZ0IsRUFBRSxJQUFJLENBQUMsV0FBVyxDQUFDLENBQUM7UUFDaEQsSUFBSSxJQUFJLENBQUMsV0FBVyxDQUFDLElBQUksRUFBRTtZQUMxQixPQUFPLFlBQUksMm5DQUFBLHVCQUNHLEVBQXFCLGdDQUNsQixFQUE2QixxL0JBaUI3QyxLQWxCYSxJQUFJLENBQUMsV0FBVyxDQUFDLElBQUksRUFDbEIsSUFBSSxDQUFDLFdBQVcsQ0FBQyxPQUFPLENBQUMsSUFBSSxFQWlCNUM7U0FDRjthQUFNO1lBQ04sT0FBTyxZQUFJLDZFQUFBLEVBQUUsS0FBQztTQUNkO0lBQ0YsQ0FBQztJQTVCRDtRQURDLGFBQUssRUFBRTs7c0RBQ2M7SUFGRixhQUFhO1FBSGpDLGlCQUFTLENBQUM7WUFDVixRQUFRLEVBQUUsZ0JBQWdCO1NBQzFCLENBQUM7T0FDbUIsYUFBYSxDQStCakM7SUFBRCxvQkFBQztDQUFBLEFBL0JELElBK0JDO2tCQS9Cb0IsYUFBYSJ9
+    }
+};
+__decorate([
+    Input(),
+    __metadata("design:type", Object)
+], PersonDetails.prototype, "userDetails", void 0);
+PersonDetails = __decorate([
+    Component({
+        selector: "person-details"
+    })
+], PersonDetails);
+export default PersonDetails;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGVyc29uLWRldGFpbHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9leGFtcGxlL3BlcnNvbnMvcGVyc29uLWRldGFpbHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLE9BQU8sRUFBRSxTQUFTLEVBQUUsS0FBSyxFQUFFLElBQUksRUFBRSxNQUFNLGFBQWEsQ0FBQztBQUtyRCxJQUFxQixhQUFhLEdBQWxDLE1BQXFCLGFBQWE7SUFBbEM7UUFFQyxnQkFBVyxHQUFRLEVBQUUsQ0FBQztJQTZCdkIsQ0FBQztJQTNCQSxNQUFNO1FBQ0wsT0FBTyxDQUFDLEdBQUcsQ0FBQyxnQkFBZ0IsRUFBRSxJQUFJLENBQUMsV0FBVyxDQUFDLENBQUM7UUFDaEQsSUFBSSxJQUFJLENBQUMsV0FBVyxDQUFDLElBQUksRUFBRTtZQUMxQixPQUFPLElBQUksQ0FBQTtpQkFDRyxJQUFJLENBQUMsV0FBVyxDQUFDLElBQUk7b0JBQ2xCLElBQUksQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLElBQUk7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBaUI3QyxDQUFDO1NBQ0Y7YUFBTTtZQUNOLE9BQU8sSUFBSSxDQUFBLEVBQUUsQ0FBQztTQUNkO0lBQ0YsQ0FBQztDQUNELENBQUE7QUE3QkE7SUFEQyxLQUFLLEVBQUU7O2tEQUNjO0FBRkYsYUFBYTtJQUhqQyxTQUFTLENBQUM7UUFDVixRQUFRLEVBQUUsZ0JBQWdCO0tBQzFCLENBQUM7R0FDbUIsYUFBYSxDQStCakM7ZUEvQm9CLGFBQWEifQ==
