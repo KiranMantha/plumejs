@@ -1,10 +1,12 @@
 {
   "name": "plumejs",
-  "version": "2.0.9",
+  "version": "2.1.0",
   "description": "a light weight typescript framework to build single page applications.",
   "files": [
     "src/**/*",
-    "testBed/**/*"
+    "testBed/**/*",
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
     "patch-update": "npm version patch --verbose",
