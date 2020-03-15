@@ -8,7 +8,7 @@ import { isNode } from "browser-or-node";
 
 interface InternalRouteItem extends RouteItem {
 	IsRegistered?: boolean;
-	TemplatePath?: Observable<any>;
+	TemplatePath?: () => Promise<any>;
 	redirectTo?: string;
 }
 
@@ -75,7 +75,8 @@ class StaticRouter {
 					"templatePath is required in route if template is mentioned."
 				);
 			obj.Template = r.template;
-			obj.TemplatePath = wrapIntoObservable(r.templatePath());
+			//obj.TemplatePath = wrapIntoObservable(r.templatePath());
+			obj.TemplatePath = r.templatePath;
 		}
 		obj.ParamCount = StaticRouter.getParamCount(obj.Params);
 		StaticRouter.routList.push(obj);
@@ -86,7 +87,7 @@ export class InternalRouter {
 	currentRoute: ICurrentRoute = {
 		params: {}
 	};
-	private currentPage: string = "";
+	private currentPage: string = null;
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
@@ -111,7 +112,7 @@ export class InternalRouter {
 					this.currentRoute.params = _params;
 					if (!routeItem.IsRegistered) {
 						if (routeItem.TemplatePath) {
-							routeItem.TemplatePath.subscribe((res: any) => {
+							wrapIntoObservable(routeItem.TemplatePath()).subscribe((res: any) => {
 								routeItem.IsRegistered = true;
 								window.history.pushState(null, "", path);
 								this.$templateSubscriber.next(routeItem.Template);

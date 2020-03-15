@@ -12,7 +12,6 @@ const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
 const fromDir = require('./custom-scss-loader');
 const scssObj = fromDir(appFolders.src, '.scss');
-const { ReactLoadablePlugin } = require('./chunks.webpack.plugin');
 
 let config = {
     devtool: 'cheap-module-source-map',
@@ -59,9 +58,6 @@ let config = {
         }),
         new webpack.DefinePlugin({
           "process.env.COMPILEDCSSOBJ": JSON.stringify(scssObj)
-        }),        
-        new ReactLoadablePlugin({
-            filename: 'manifest.json'
         })
     ],
     resolve: {
