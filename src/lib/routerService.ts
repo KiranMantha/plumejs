@@ -75,7 +75,6 @@ class StaticRouter {
 					"templatePath is required in route if template is mentioned."
 				);
 			obj.Template = r.template;
-			//obj.TemplatePath = wrapIntoObservable(r.templatePath());
 			obj.TemplatePath = r.templatePath;
 		}
 		obj.ParamCount = StaticRouter.getParamCount(obj.Params);
