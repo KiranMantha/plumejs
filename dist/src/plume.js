@@ -1,12 +1,21 @@
 //https://github.com/ibhi/webcomponent-with-di/blob/master/src/users.component.js
 //https://medium.com/@gilfink/creating-a-custom-element-decorator-using-typescript-302e7ed3a3d1
 "use strict";
-import { Injector } from "./lib/service_resolver";
-import { Component, Injectable, Input } from "./lib/decorators";
-import { html } from "lighterhtml";
-import { useRef } from "augmentor";
-import { Router } from "./lib/routerService";
-import { DomTransition } from "./lib/domTransition.service";
-import { TranslationService } from "./lib/translationService";
-export { Component, Injectable, html, Injector, Input, Router, TranslationService, DomTransition, useRef };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGx1bWUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvcGx1bWUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsaUZBQWlGO0FBQ2pGLCtGQUErRjtBQUMvRixZQUFZLENBQUM7QUFDYixPQUFPLEVBQUUsUUFBUSxFQUFFLE1BQU0sd0JBQXdCLENBQUM7QUFDbEQsT0FBTyxFQUFFLFNBQVMsRUFBRSxVQUFVLEVBQUUsS0FBSyxFQUFFLE1BQU0sa0JBQWtCLENBQUM7QUFFaEUsT0FBTyxFQUFFLElBQUksRUFBRSxNQUFNLGFBQWEsQ0FBQztBQUNuQyxPQUFPLEVBQUUsTUFBTSxFQUFFLE1BQU0sV0FBVyxDQUFDO0FBQ25DLE9BQU8sRUFBRSxNQUFNLEVBQUUsTUFBTSxxQkFBcUIsQ0FBQztBQUM3QyxPQUFPLEVBQUUsYUFBYSxFQUFFLE1BQU0sNkJBQTZCLENBQUM7QUFDNUQsT0FBTyxFQUFFLGtCQUFrQixFQUFFLE1BQU0sMEJBQTBCLENBQUM7QUFDOUQsT0FBTyxFQUNMLFNBQVMsRUFDVCxVQUFVLEVBQ1YsSUFBSSxFQUNKLFFBQVEsRUFDUixLQUFLLEVBQ0wsTUFBTSxFQUNOLGtCQUFrQixFQUNsQixhQUFhLEVBR2IsTUFBTSxFQUVQLENBQUMifQ==
+Object.defineProperty(exports, "__esModule", { value: true });
+const service_resolver_1 = require("./lib/service_resolver");
+exports.Injector = service_resolver_1.Injector;
+const decorators_1 = require("./lib/decorators");
+exports.Component = decorators_1.Component;
+exports.Injectable = decorators_1.Injectable;
+exports.Input = decorators_1.Input;
+const lighterhtml_1 = require("lighterhtml");
+exports.html = lighterhtml_1.html;
+const augmentor_1 = require("augmentor");
+exports.useRef = augmentor_1.useRef;
+const routerService_1 = require("./lib/routerService");
+exports.Router = routerService_1.Router;
+const domTransition_service_1 = require("./lib/domTransition.service");
+exports.DomTransition = domTransition_service_1.DomTransition;
+const translationService_1 = require("./lib/translationService");
+exports.TranslationService = translationService_1.TranslationService;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGx1bWUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvcGx1bWUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsaUZBQWlGO0FBQ2pGLCtGQUErRjtBQUMvRixZQUFZLENBQUM7O0FBQ2IsNkRBQWtEO0FBWWhELG1CQVpPLDJCQUFRLENBWVA7QUFYVixpREFBZ0U7QUFROUQsb0JBUk8sc0JBQVMsQ0FRUDtBQUNULHFCQVRrQix1QkFBVSxDQVNsQjtBQUdWLGdCQVo4QixrQkFBSyxDQVk5QjtBQVZQLDZDQUFtQztBQVFqQyxlQVJPLGtCQUFJLENBUVA7QUFQTix5Q0FBbUM7QUFlakMsaUJBZk8sa0JBQU0sQ0FlUDtBQWRSLHVEQUE2QztBQVMzQyxpQkFUTyxzQkFBTSxDQVNQO0FBUlIsdUVBQTREO0FBVTFELHdCQVZPLHFDQUFhLENBVVA7QUFUZixpRUFBOEQ7QUFRNUQsNkJBUk8sdUNBQWtCLENBUVAifQ==

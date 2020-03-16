@@ -1,5 +1,7 @@
-import { __decorate, __metadata } from "tslib";
-import { Component, Input, html } from "../../index";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
+const index_1 = require("../../index");
 let PersonDetails = class PersonDetails {
     constructor() {
         this.userDetails = {};
@@ -7,7 +9,7 @@ let PersonDetails = class PersonDetails {
     render() {
         console.log("selected: user", this.userDetails);
         if (this.userDetails.name) {
-            return html `
+            return index_1.html `
 				<div>Name: ${this.userDetails.name}</div>
 				<div>Company: ${this.userDetails.company.name}</div>						
 				<form>
@@ -29,18 +31,18 @@ let PersonDetails = class PersonDetails {
 			`;
         }
         else {
-            return html ``;
+            return index_1.html ``;
         }
     }
 };
-__decorate([
-    Input(),
-    __metadata("design:type", Object)
+tslib_1.__decorate([
+    index_1.Input(),
+    tslib_1.__metadata("design:type", Object)
 ], PersonDetails.prototype, "userDetails", void 0);
-PersonDetails = __decorate([
-    Component({
+PersonDetails = tslib_1.__decorate([
+    index_1.Component({
         selector: "person-details"
     })
 ], PersonDetails);
-export default PersonDetails;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGVyc29uLWRldGFpbHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9leGFtcGxlL3BlcnNvbnMvcGVyc29uLWRldGFpbHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLE9BQU8sRUFBRSxTQUFTLEVBQUUsS0FBSyxFQUFFLElBQUksRUFBRSxNQUFNLGFBQWEsQ0FBQztBQUtyRCxJQUFxQixhQUFhLEdBQWxDLE1BQXFCLGFBQWE7SUFBbEM7UUFFQyxnQkFBVyxHQUFRLEVBQUUsQ0FBQztJQTZCdkIsQ0FBQztJQTNCQSxNQUFNO1FBQ0wsT0FBTyxDQUFDLEdBQUcsQ0FBQyxnQkFBZ0IsRUFBRSxJQUFJLENBQUMsV0FBVyxDQUFDLENBQUM7UUFDaEQsSUFBSSxJQUFJLENBQUMsV0FBVyxDQUFDLElBQUksRUFBRTtZQUMxQixPQUFPLElBQUksQ0FBQTtpQkFDRyxJQUFJLENBQUMsV0FBVyxDQUFDLElBQUk7b0JBQ2xCLElBQUksQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLElBQUk7Ozs7Ozs7Ozs7Ozs7Ozs7O0lBaUI3QyxDQUFDO1NBQ0Y7YUFBTTtZQUNOLE9BQU8sSUFBSSxDQUFBLEVBQUUsQ0FBQztTQUNkO0lBQ0YsQ0FBQztDQUNELENBQUE7QUE3QkE7SUFEQyxLQUFLLEVBQUU7O2tEQUNjO0FBRkYsYUFBYTtJQUhqQyxTQUFTLENBQUM7UUFDVixRQUFRLEVBQUUsZ0JBQWdCO0tBQzFCLENBQUM7R0FDbUIsYUFBYSxDQStCakM7ZUEvQm9CLGFBQWEifQ==
+exports.default = PersonDetails;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGVyc29uLWRldGFpbHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi9leGFtcGxlL3BlcnNvbnMvcGVyc29uLWRldGFpbHMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEsdUNBQXFEO0FBS3JELElBQXFCLGFBQWEsR0FBbEMsTUFBcUIsYUFBYTtJQUFsQztRQUVDLGdCQUFXLEdBQVEsRUFBRSxDQUFDO0lBNkJ2QixDQUFDO0lBM0JBLE1BQU07UUFDTCxPQUFPLENBQUMsR0FBRyxDQUFDLGdCQUFnQixFQUFFLElBQUksQ0FBQyxXQUFXLENBQUMsQ0FBQztRQUNoRCxJQUFJLElBQUksQ0FBQyxXQUFXLENBQUMsSUFBSSxFQUFFO1lBQzFCLE9BQU8sWUFBSSxDQUFBO2lCQUNHLElBQUksQ0FBQyxXQUFXLENBQUMsSUFBSTtvQkFDbEIsSUFBSSxDQUFDLFdBQVcsQ0FBQyxPQUFPLENBQUMsSUFBSTs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFpQjdDLENBQUM7U0FDRjthQUFNO1lBQ04sT0FBTyxZQUFJLENBQUEsRUFBRSxDQUFDO1NBQ2Q7SUFDRixDQUFDO0NBQ0QsQ0FBQTtBQTdCQTtJQURDLGFBQUssRUFBRTs7a0RBQ2M7QUFGRixhQUFhO0lBSGpDLGlCQUFTLENBQUM7UUFDVixRQUFRLEVBQUUsZ0JBQWdCO0tBQzFCLENBQUM7R0FDbUIsYUFBYSxDQStCakM7a0JBL0JvQixhQUFhIn0=
