@@ -14,7 +14,7 @@ let style_registry: Map<string, string> = new Map();
 
 const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
 
-const getCss = (csspath:string) => {
+const getCss = (csspath: string) => {
 	return style_registry.has(csspath) ? style_registry.get(csspath) : '';
 }
 
@@ -44,8 +44,8 @@ const registerElement = (
 		} else if (isRoot && isRootNodeSet) {
 			throw Error(
 				"Cannot register duplicate root component in " +
-					options.selector +
-					" component"
+				options.selector +
+				" component"
 			);
 		}
 	}
@@ -59,12 +59,20 @@ const registerElement = (
 			_inputprop: string;
 			constructor() {
 				super();
-				this.shadow = isNode ? this : !options.useShadow ? this.attachShadow({ mode: "open" }) : this;
+				if (isNode) {
+					this.shadow = this;
+				} else if (options.useShadow !== undefined) {
+					this.shadow = !!options.useShadow === false ? this : this.attachShadow({ mode: "open" });
+				} else {
+					this.shadow = this.attachShadow({ mode: "open" });
+				}
 				this.shadow.adoptedStyleSheets = isNode ? [] : getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (newvalue: any, oldvalue: any) => {
-						if (oldvalue !== newvalue) {
+						let joldval = JSON.stringify(oldvalue);
+						let jnewval = JSON.stringify(newvalue);
+						if (joldval !== jnewval) {
 							if (this[klass] && this[klass][this._inputprop]) {
 								this[klass][this._inputprop] = (this as any)[this._inputprop];
 								this.update();
