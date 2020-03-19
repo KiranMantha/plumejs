@@ -1,7 +1,5 @@
 import { instantiate } from "./instance";
 import { isFunction } from "./utils";
-import { TranslationService } from "./translationService";
-import { InternalRouter, Router } from "./routerService";
 import { isNode } from 'browser-or-node';
 
 interface IInjector {
@@ -30,17 +28,6 @@ const Injector = (() => {
 				let compiledCSSObj = JSON.parse(JSON.stringify(process.env.COMPILEDCSSOBJ));
 				this.registerService("COMPILEDCSS", new Map(Object.entries(compiledCSSObj)));
 			}
-			this.registerService("TranslationService", new TranslationService());
-			const _internalRouter = new InternalRouter();
-			this.registerService("InternalRouter", _internalRouter);
-			this.registerService(
-				"Router",
-				new Router(
-					_internalRouter.getCurrentRoute.bind(_internalRouter),
-					_internalRouter.navigateTo.bind(_internalRouter),
-					_internalRouter.onNavigationStart.bind(_internalRouter)
-				)
-			);
 		}
 
 		public getService(name: string) {

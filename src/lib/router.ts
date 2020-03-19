@@ -1,7 +1,6 @@
-import { Component, Input } from "./decorators";
+import { Component } from "./decorators";
 import { html } from "lighterhtml";
-import { InternalRouter } from "./routerService";
-import { Route } from "./types";
+import { InternalRouter } from "./internalRouterService";
 
 const registerRouterComponent = () => {
 	@Component({

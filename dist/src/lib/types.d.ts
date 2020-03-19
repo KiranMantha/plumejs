@@ -17,10 +17,20 @@ interface Route {
     redirectTo?: string;
     canActivate?: () => boolean;
 }
+interface ICurrentRoute {
+    params: {
+        [key: string]: string | number | boolean;
+    };
+}
+interface InternalRouteItem extends RouteItem {
+    IsRegistered?: boolean;
+    TemplatePath?: () => Promise<any>;
+    redirectTo?: string;
+}
 declare type Ref<T> = {
     current: T;
 };
 declare type jsonObject = {
     [index: string]: any;
 };
-export { DecoratorOptions, RouteItem, Route, Ref, jsonObject };
+export { DecoratorOptions, RouteItem, Route, InternalRouteItem, Ref, jsonObject, ICurrentRoute };

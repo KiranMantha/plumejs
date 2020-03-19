@@ -1,5 +1,8 @@
 import { setDefaultLanguage, setTranslate } from "vanilla-i18n";
+import { Injectable } from './decorators';
+import { InternalTranslationService } from './internalTranslationService';
 
+@Injectable()
 export class TranslationService {
 	private defaultLanguage: string = "";
 
@@ -25,8 +28,4 @@ export class TranslationService {
 	getCurrentLanguage() {
 		return this.defaultLanguage;
 	}
-}
-
-export class InternalTranslationService {
-	static translationComponents = new Map();
 }

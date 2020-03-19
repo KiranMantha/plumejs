@@ -3,7 +3,7 @@ import { render } from "lighterhtml";
 import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
-import { InternalTranslationService } from "./translationService";
+import { InternalTranslationService } from "./internalTranslationService";
 import { augmentor } from "augmentor";
 import { Injector } from './service_resolver';
 import { isNode } from 'browser-or-node';

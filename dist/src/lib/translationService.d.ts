@@ -4,6 +4,3 @@ export declare class TranslationService {
     setDefaultLanguage(language: string): void;
     getCurrentLanguage(): string;
 }
-export declare class InternalTranslationService {
-    static translationComponents: Map<any, any>;
-}
