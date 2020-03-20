@@ -5,6 +5,7 @@ export declare class InternalRouter {
     private currentPage;
     private previousPage;
     $templateSubscriber: Subject<unknown>;
+    private _routeMatcher;
     private _navigateTo;
     getCurrentRoute(): ICurrentRoute;
     navigateTo(path?: string): void;

@@ -22,6 +22,15 @@ export class InternalRouter {
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
+	private _routeMatcher(route: string, path: string) {
+		if (route) {
+			let _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
+			return path.match(_matcher);
+		} else {
+			return route === path;
+		}
+	}
+
 	private _navigateTo(path: string) {
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
@@ -30,7 +39,7 @@ export class InternalRouter {
 				return h.length > 0;
 			});
 			let routeArr = StaticRouter.routList.filter(route => {
-				if (route.Params.length === uParams.length) {
+				if (route.Params.length === uParams.length && this._routeMatcher(route.Url, path)) {
 					return route;
 				} else if (route.Url === path) {
 					return route;
