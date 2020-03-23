@@ -210,28 +210,48 @@ By default Plumejs Routing uses dynamic imports to chunk out route specific logi
 1. Declare routes array as below
 
 ```
-  import { Router } from 'plumejs';
+  import { Router, Route } from 'plumejs';
 
-  const routes = [{
-    path: '',
-    redirectto: '/home',
-  },{
-    path: '/home',
-    template: '<app-home></app-home>',
-    templatePath: () => import('<path-to-ts-file-of-home-component>').then(t=>t.default) 
-  },{
-    path: '/contactus',
-    template: '<app-contactus></app-contactus>',
-    templatePath: () => import('<path-to-ts-file-of-contactus-component>').then(t=>t.default) 
-  },{
-    path: '/details/:id',
-    template: '<app-details></app-details>',
-    templatePath: () => import('<path-to-ts-file-of-details-component>').then(t=>t.default) 
-  }]
+  @Component({
+    selector: 'app-comp',
+    root: true
+  })
+  class AppComponent {
+    constructor() {
+      Router.registerRoutes(this.routes);
+    }
 
-  Router.registerRoutes(routes); => Routes must be registered with Router service outside of app-root component. In previous version(< 2.0.8), routes are passed as input to router-outlet.
+    routes: Array<Route> = [{
+      path: '',
+      redirectto: '/home',
+    },{
+      path: '/home',
+      template: '<app-home></app-home>',
+      templatePath: () => import('<path-to-ts-file-of-home-component>')
+    },{
+      path: '/contactus',
+      template: '<app-contactus></app-contactus>',
+      templatePath: () => import('<path-to-ts-file-of-contactus-component>')
+    },{
+      path: '/details/:id',
+      template: '<app-details></app-details>',
+      templatePath: () => import('<path-to-ts-file-of-details-component>'),
+      // canActivate route gaurd helps to check wheter the route is accesseble or not.
+      // canActivate function should return Promise<boolean> or Observable<boolean> or boolean.
+      canActivate: () => {
+        let key = localStorage.getItem('key');
+        if(!key) {
+          this.router.navigateTo('/home');
+          return false;
+        }
+        return true;
+      }
+    }]
+  }
 
-  @Component...
+  Router.registerRoutes(routes); => Routes must be registered with Router service. In previous version(< 2.0.8), routes are passed as input to router-outlet.
+
+  ...
 ```
 
 2. add `<router-outlet></router-outlet>` in your component
@@ -249,7 +269,7 @@ To navigate from one route to other from a component:
     constructor(private router: Router){}
 
     onclick() {
-      this.router.navigateTo('your-route');
+      this.router.navigateTo('/your-route');
     }
   }
 ```

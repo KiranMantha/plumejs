@@ -1,6 +1,6 @@
 {
   "name": "plumejs",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "a light weight typescript framework to build single page applications.",
   "files": [
     "src/**/*",
