@@ -28,7 +28,15 @@ class AppRoot {
 		{
 			path: '/persons/:id',
 			template: `<persons-list></persons-list>`,
-			templatePath: () => import(/* webpackChunkName: "persons" */'./persons/persons-list').then(t=>t.default)
+			templatePath: () => import(/* webpackChunkName: "persons" */'./persons/persons-list').then(t=>t.default),
+			canActivate: () => {
+				let key = localStorage.getItem('key');
+				if(!key) {
+					this.router.navigateTo('/home');
+					return false;
+				}
+				return true;
+			}
 		}
 	];	
 
