@@ -1,4 +1,5 @@
 import { jsonObject } from "./types";
+import { Observable, from, of } from 'rxjs';
 
 let $object = 'object',
   $string = 'string',
@@ -49,6 +50,22 @@ const isString = (value:any) => typeof value === $string;
 const isFunction = (value:any) => typeof value === $function;
 const isUndefined = (value:any) => typeof value == $undefined;
 const isDefined = (value:any) => typeof value != $undefined;
+const isObservable = (obj: any | Observable<any>):obj is Observable<any> => !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj: any):obj is Promise<any> => !!obj && typeof obj.then === 'function';
+function wrapIntoObservable<T>(value: T | Promise<T>| Observable<T>): Observable<T> {
+  if (isObservable(value)) {
+    return value;
+  }
+
+  if (isPromise(value)) {
+    // Use `Promise.resolve()` to wrap promise-like instances.
+    // Required ie when a Resolver returns a AngularJS `$q` promise to correctly trigger the
+    // change detection.
+    return from(Promise.resolve(value));
+  }
+
+  return of (value);
+}
 const INPUT_METADATA_KEY = Symbol("design:inputTypes");
 
-export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, klass, INPUT_METADATA_KEY };
+export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, isObservable, isPromise, wrapIntoObservable, klass, INPUT_METADATA_KEY };

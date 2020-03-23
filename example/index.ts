@@ -2,25 +2,6 @@ import { Component, html, Router, Route, useRef, Ref, TranslationService } from 
 import en from './i18n/en';
 import fr from './i18n/fr';
 
-const routes:Array<Route> = [
-	{
-		path: '',
-		redirectTo: '/home'
-	},
-	{
-		path: '/home',
-		template: `<sample-ele></sample-ele>`,
-		templatePath: () => import(/* webpackChunkName: "sample" */'./sample-ele').then(t=>t.default)
-	},
-	{
-		path: '/persons/:id',
-		template: `<persons-list></persons-list>`,
-		templatePath: () => import(/* webpackChunkName: "persons" */'./persons/persons-list').then(t=>t.default)
-	}
-];
-
-Router.registerRoutes(routes);
-
 @Component({
 	selector: 'app-root',
 	root: true,
@@ -31,7 +12,25 @@ class AppRoot {
 		translations.setTranslate(en, 'en');
 		translations.setTranslate(fr, 'fr');
 		translations.setDefaultLanguage('en');
+		Router.registerRoutes(this.routes);
 	}
+
+	routes:Array<Route> = [
+		{
+			path: '',
+			redirectTo: '/home'
+		},
+		{
+			path: '/home',
+			template: `<sample-ele></sample-ele>`,
+			templatePath: () => import(/* webpackChunkName: "sample" */'./sample-ele').then(t=>t.default)
+		},
+		{
+			path: '/persons/:id',
+			template: `<persons-list></persons-list>`,
+			templatePath: () => import(/* webpackChunkName: "persons" */'./persons/persons-list').then(t=>t.default)
+		}
+	];	
 
 	inputField:Ref<HTMLInputElement> = useRef(null);
 	

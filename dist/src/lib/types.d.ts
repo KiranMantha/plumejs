@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 interface DecoratorOptions {
     selector: string;
     styleUrl?: string;
@@ -15,7 +16,7 @@ interface Route {
     template?: string;
     templatePath?: () => Promise<any>;
     redirectTo?: string;
-    canActivate?: () => boolean;
+    canActivate?: () => Observable<boolean> | Promise<boolean> | boolean;
 }
 interface ICurrentRoute {
     params: {
@@ -26,6 +27,7 @@ interface InternalRouteItem extends RouteItem {
     IsRegistered?: boolean;
     TemplatePath?: () => Promise<any>;
     redirectTo?: string;
+    canActivate: () => Observable<boolean> | Promise<boolean> | boolean;
 }
 declare type Ref<T> = {
     current: T;

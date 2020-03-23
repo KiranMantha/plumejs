@@ -12,6 +12,9 @@ declare module 'augmentor' {
   function useRef <T> (initialValue: T): MutableRefObject<T>;
   function useRef <T> (initialValue: T | null): RefObject<T>;
   function useRef <T = undefined> (): MutableRefObject<T | undefined>;
+  function useContext():any;
+  function useContext<T>(context: T): T;
+  function createContext<T>(defaultValue: T): T;
   function render(node: HTMLElement, renderer: () => any): any;
   function augmentor(args:any):any;
   export const html: Tag<HTMLElement>;  

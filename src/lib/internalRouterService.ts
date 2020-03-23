@@ -1,17 +1,8 @@
 import { ICurrentRoute } from './types';
-import { Subject, Observable, from, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { StaticRouter } from './staticRouter';
-import { isFunction } from './utils';
+import { isFunction, wrapIntoObservable } from './utils';
 import { Injectable } from './decorators';
-
-function wrapIntoObservable(value: Promise<any>): Observable<any> {
-	return from(Promise.resolve(value)).pipe(
-		mergeMap((t: any) => {
-			return of(t);
-		})
-	);
-}
 
 @Injectable()
 export class InternalRouter {
@@ -47,24 +38,27 @@ export class InternalRouter {
 			});
 			let routeItem = routeArr.length > 0 ? routeArr[0] : null;
 			if (routeItem) {
-				let _params = StaticRouter.checkParams(uParams, routeItem);
-				if (Object.keys(_params).length > 0 || path) {
-					this.currentRoute.params = _params;
-					if (!routeItem.IsRegistered) {
-						if (routeItem.TemplatePath) {
-							wrapIntoObservable(routeItem.TemplatePath()).subscribe((res: any) => {
-								routeItem.IsRegistered = true;
-								window.history.pushState(null, "", path);
-								this.$templateSubscriber.next(routeItem.Template);
-							});
+				wrapIntoObservable(routeItem.canActivate()).subscribe((val: boolean) => {
+					if(!val) return;
+					let _params = StaticRouter.checkParams(uParams, routeItem);
+					if (Object.keys(_params).length > 0 || path) {
+						this.currentRoute.params = _params;
+						if (!routeItem.IsRegistered) {
+							if (routeItem.TemplatePath) {
+								wrapIntoObservable(routeItem.TemplatePath()).subscribe((res: any) => {
+									routeItem.IsRegistered = true;
+									window.history.pushState(null, "", path);
+									this.$templateSubscriber.next(routeItem.Template);
+								});
+							}
+						} else {
+							window.history.pushState(null, "", path);
+							this.$templateSubscriber.next(routeItem.Template);
 						}
 					} else {
-						window.history.pushState(null, "", path);
-						this.$templateSubscriber.next(routeItem.Template);
+						this._navigateTo(routeItem.redirectTo);
 					}
-				} else {
-					this._navigateTo(routeItem.redirectTo);
-				}
+				});				
 			}
 		}
 	}

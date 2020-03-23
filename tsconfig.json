@@ -14,6 +14,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "importHelpers": true,
+    "noEmitOnError": true,
     "typeRoots": [
       "@types",
       "node_modules/@types"

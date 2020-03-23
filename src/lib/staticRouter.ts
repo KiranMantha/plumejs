@@ -37,7 +37,8 @@ export class StaticRouter {
 			Template: "",
 			ParamCount: 0,
 			IsRegistered: false,
-			redirectTo: ""
+			redirectTo: "",
+			canActivate: () => true
 		};
 		obj.Params = r.path.split("/").filter((h: string) => {
 			return h.length > 0;
@@ -53,6 +54,7 @@ export class StaticRouter {
 			obj.Template = r.template;
 			obj.TemplatePath = r.templatePath;
 		}
+		if(r.canActivate) obj.canActivate = r.canActivate
 		obj.ParamCount = StaticRouter.getParamCount(obj.Params);
 		StaticRouter.routList.push(obj);
 	}
