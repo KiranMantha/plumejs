@@ -424,4 +424,9 @@ describe("Plumejs Service", () => {
 
 ```
 
+# UI Components
+
+As an additional provision, plumejs-ui npm module exposes a comprehensive set of useful ui components like modal dialog, notifications. You can check the documentaion [here](https://github.com/KiranMantha/plumejs-ui).
+
+
 In the memory of my beloved cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)

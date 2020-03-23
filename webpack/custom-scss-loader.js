@@ -42,7 +42,13 @@ function privatefromDir(startPath, filter) {
 };
 
 function fromDir(startPath, filter) {
-  privatefromDir(startPath, filter);
+  if(Array.isArray(startPath)) {
+    startPath.forEach(_path => {
+      privatefromDir(_path, filter);  
+    })
+  } else {
+    privatefromDir(startPath, filter);
+  }
   return cssMapObj;
 }
 
