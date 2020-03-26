@@ -2,6 +2,10 @@
   "name": "plumejs",
   "version": "2.1.7",
   "description": "a light weight typescript framework to build single page applications.",
+  "files": [
+    "dist/**/*"
+  ],
+  "main": "./dist/index.js",
   "scripts": {
     "start": "npm run serve",
     "serve": "webpack-dev-server --config webpack/webpack.server.config.js",
