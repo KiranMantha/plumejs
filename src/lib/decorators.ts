@@ -37,10 +37,12 @@ const depsResolver = (
 	};
 };
 
-let Component = (options: DecoratorOptions) => (target: Function) => {	
-	let obj = depsResolver(options, target);
-	target.prototype.selector = options.selector;
-	registerElement(options, target, obj.deps, obj.isRoot);
+let Component = (options: DecoratorOptions) => (target: Function) => {
+	if(!window.customElements.get(options.selector)) {	
+		let obj = depsResolver(options, target);
+		target.prototype.selector = options.selector;
+		registerElement(options, target, obj.deps, obj.isRoot);
+	}
 };
 
 const Injectable = () => (target: Function) => {
