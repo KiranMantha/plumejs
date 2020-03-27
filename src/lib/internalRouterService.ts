@@ -77,9 +77,14 @@ export class InternalRouter {
 	}
 
 	navigateTo(path: string = "") {
-		if(path) {
+		if (path) {
+            let windowHash = window.location.hash.replace(/^#/, '');
+            if(windowHash === path) {
+                this._navigateTo(path);
+            }
             window.location.hash = '#' + path;
-        } else {
+        }
+        else {
             this._navigateTo(path);
         }
 	}
