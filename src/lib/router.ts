@@ -21,13 +21,9 @@ const registerRouterComponent = () => {
 			});
 		}
 
-		mount() {
-			let self = this;
-			window.onpopstate = function() {
-				self.router.navigateTo(window.location.pathname);
-			};			
-			let path = window.location.pathname;
-			this.router.navigateTo(path !== "/" ? path : "");
+		mount() {		
+			let path = window.location.hash;
+			this.router.navigateTo(path);
 		}
 
 		unmount(){

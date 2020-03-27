@@ -205,7 +205,7 @@ Note: The constructor arguments are strictly typed and should not be native type
 
 # Routing
 
-By default Plumejs Routing uses dynamic imports to chunk out route specific logic which reduces main bundle size significantly. Routing can be implemented in 2 simple steps:
+PlumeJs uses hash-based Routing. It uses dynamic imports to chunk out route specific logic which reduces main bundle size significantly. Routing can be implemented in 2 simple steps:
 
 1. Declare routes array as below
 
@@ -357,7 +357,7 @@ For normal text translations:
 # Unit Tests
 1. sample component unit test:
 ```
-import { TestBed } from '../testBed';
+import { TestBed } from 'plumejs';
 import { AppComponent } from 'src';
 
 describe("Plumejs Component", () => {

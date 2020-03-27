@@ -13,6 +13,17 @@ export class InternalRouter {
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
+	constructor() {
+		window.addEventListener("hashchange", () => {
+			this._registerOnHashChange();
+		}, false);
+	}
+
+	private _registerOnHashChange() {
+		const path = window.location.hash.replace(/^#/, '');
+		this._navigateTo(path);
+	}
+
 	private _routeMatcher(route: string, path: string) {
 		if (route) {
 			let _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
@@ -47,16 +58,14 @@ export class InternalRouter {
 							if (routeItem.TemplatePath) {
 								wrapIntoObservable(routeItem.TemplatePath()).subscribe((res: any) => {
 									routeItem.IsRegistered = true;
-									window.history.pushState(null, "", path);
 									this.$templateSubscriber.next(routeItem.Template);
 								});
 							}
 						} else {
-							window.history.pushState(null, "", path);
 							this.$templateSubscriber.next(routeItem.Template);
 						}
 					} else {
-						this._navigateTo(routeItem.redirectTo);
+						this.navigateTo(routeItem.redirectTo);
 					}
 				});				
 			}
@@ -68,12 +77,10 @@ export class InternalRouter {
 	}
 
 	navigateTo(path: string = "") {
-		this._navigateTo(path);
-	}
-
-	onNavigationStart(cb: any) {
-		if (cb && isFunction(cb)) {
-			window.addEventListener("hashchange", cb, false);
-		}
+		if(path) {
+            window.location.hash = '#' + path;
+        } else {
+            this._navigateTo(path);
+        }
 	}
 }
