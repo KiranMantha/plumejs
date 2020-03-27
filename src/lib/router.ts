@@ -22,7 +22,7 @@ const registerRouterComponent = () => {
 		}
 
 		mount() {		
-			let path = window.location.hash;
+			let path = window.location.hash.replace(/^#/, '');
 			this.router.navigateTo(path);
 		}
 
