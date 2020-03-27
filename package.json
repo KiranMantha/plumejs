@@ -14,7 +14,7 @@
     "test-debug": "node --inspect-brk ./node_modules/jest/bin/jest --runInBand --no-cache --no-watchman",
     "tsc": "tsc",
     "webpack": "webpack --config webpack/webpack.build.config.js",
-    "patch-update": "npm version patch --verbose",
+    "patch-update": "npm version patch",
     "tag": "git push --follow-tags",
     "tag-release": "npm run patch-update && npm run tag",
     "ts-jest": "ts-jest config:init"
