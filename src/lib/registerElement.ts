@@ -111,9 +111,7 @@ const registerElement = (
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
-		},
-		{ extends: 'div' }
-	);
+		});
 };
 
 export { registerElement };
