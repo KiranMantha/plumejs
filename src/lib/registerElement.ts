@@ -23,6 +23,7 @@ const getComputedCss = (csspath: string = "") => {
 	if (csspath) {
 		sheet.replace(getCss(csspath));
 	}
+	sheet.insertRule(`:host { display: block; }`);
 	return [globalStyles, sheet];
 };
 
@@ -110,7 +111,8 @@ const registerElement = (
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
-		}
+		},
+		{ extends: 'div' }
 	);
 };
 

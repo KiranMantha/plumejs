@@ -428,6 +428,19 @@ describe("Plumejs Service", () => {
 
 As an additional provision, plumejs-ui npm module exposes a comprehensive set of useful ui components like modal dialog, notifications. You can check the documentaion [here](https://github.com/KiranMantha/plumejs-ui).
 
+# CSS Tips
+
+One problem with web components is the css selectors can't penetrate through shadow dom. There will be cases where a particular webcomponent should display in a particular way. In order to do that use:
+
+```
+:host-context(<your-selector>) {
+  display: block;
+}
+```
+
+By default all plumejs components are render as block elements. They internally have `:host { display: block; }` property.
+
+
 An example repo can be found [here](https://github.com/KiranMantha/plumejs-example-repo) for reference.
 
 In the memory of my beloved cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)
