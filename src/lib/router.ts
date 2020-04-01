@@ -4,7 +4,8 @@ import { InternalRouter } from "./internalRouterService";
 
 const registerRouterComponent = () => {
 	@Component({
-		selector: "router-outlet"
+		selector: "router-outlet",
+		useShadow: false
 	})
 	class RouterOutlet {
 		template = "";

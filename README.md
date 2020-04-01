@@ -54,13 +54,19 @@ Note: through out the entire application there will be only one root component. 
 
 For styling one can use css or scss formats.
 
-Component provide `mount` hook to perform model data initialization as follows:
+## Lifecycle Hooks
+
+`IHooks` interface provides `mount, unmount, inputChanged` lifecycle hooks.
+
+### mount Hook
+
+ It is used to perform model data initialization as follows:
 
 ```
 @Component({
   selector: 'person-list'
 })
-class PersonsList {
+class PersonsList implements IHooks {
   data:Array<string> = [];
   constructor(){}
   mount(){
@@ -84,6 +90,73 @@ class PersonsList {
 }
 
 ```
+
+### umount Hook
+
+ It is used to execute any pendending subscriptions as follows:
+
+```
+@Component({
+  selector: 'person-list'
+})
+class PersonsList implements IHooks {
+  data:Array<string> = [];
+  constructor(){}
+  mySubscription: Observable;
+
+  mount(){
+    this.mySubscription = from(fetch('persons-api').then(res => res.json()));
+
+    this.mySubscription.subscribe(data => {
+      this.data = data;
+      this.update(); // triggers change detection and update view
+    });
+  }
+
+  unmount() {
+    this.mySubscription.unsubscribe();
+  }
+
+  alertName(name:string){
+    alert(name);
+  }
+
+  render(){
+    return html(`<div>
+      <ul>${
+        this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
+      }</ul>
+    </div>`)
+  }
+}
+
+```
+
+### inputChanged
+
+It is called when there is any change in `@Input()` property
+
+```
+@Component({
+  selector: 'person-list'
+})
+class PersonsList implements IHooks {
+  @Input()
+  personsData: IPersonsData = null;
+
+  inputChanged(oldValue: IPersonsData, newValue: IPersonsData) {
+    // do your operation here.
+    // no need to call `this.update()` here. It may cause undesired results.
+    // dont have any return value.
+  }
+
+  render(){
+    ...
+  }
+}
+```
+
+## Data Sharing
 
 We can even share data between two components as below:
 
@@ -122,14 +195,19 @@ We can even share data between two components as below:
   @Component({
     selector: 'person-details'
   })
-  export class PersonDetails {
+  export class PersonDetails implements IHooks {
 
     @Input()
     userdetails:any = {};
 
+    inputChanged(oldValue: any, newValue: any) {
+      console.log('oldvalue: ', oldValue);
+      console.log('newvalue: ', newValue);
+    }
+
     render(){
       return html`${
-        <div>${this.props.name}</div>
+        <div>${this.userdetails.name}</div>
       }`
     }
   }

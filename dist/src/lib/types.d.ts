@@ -29,10 +29,16 @@ interface InternalRouteItem extends RouteItem {
     redirectTo?: string;
     canActivate: () => Observable<boolean> | Promise<boolean> | boolean;
 }
+interface IHooks {
+    mount?: () => void;
+    unmount?: () => void;
+    inputChanged?: (oldValue: any, newValue: any) => void;
+    update?: () => void;
+}
 declare type Ref<T> = {
     current: T;
 };
 declare type jsonObject = {
     [index: string]: any;
 };
-export { DecoratorOptions, RouteItem, Route, InternalRouteItem, Ref, jsonObject, ICurrentRoute };
+export { DecoratorOptions, RouteItem, Route, InternalRouteItem, Ref, jsonObject, ICurrentRoute, IHooks };

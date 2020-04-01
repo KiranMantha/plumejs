@@ -3,7 +3,7 @@
 "use strict";
 import { Injector } from "./lib/service_resolver";
 import { Component, Injectable, Input } from "./lib/decorators";
-import { DecoratorOptions, Route, Ref } from "./lib/types";
+import { DecoratorOptions, Route, Ref, IHooks } from "./lib/types";
 import { html } from "lighterhtml";
 import { useRef } from "augmentor";
 import { Router } from "./lib/routerService";
@@ -20,6 +20,7 @@ export {
   DomTransition,
   DecoratorOptions,
   Route,
+  IHooks,
   useRef,
   Ref
 };

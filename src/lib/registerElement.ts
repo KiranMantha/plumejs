@@ -70,12 +70,13 @@ const registerElement = (
 				this.shadow.adoptedStyleSheets = isNode ? [] : getComputedCss(options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
-					watch(this, this._inputprop, (newvalue: any, oldvalue: any) => {
+					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
 						let joldval = JSON.stringify(oldvalue);
 						let jnewval = JSON.stringify(newvalue);
 						if (joldval !== jnewval) {
 							if (this[klass] && this[klass][this._inputprop]) {
 								this[klass][this._inputprop] = (this as any)[this._inputprop];
+								this[klass].inputChanged && this[klass].inputChanged(oldvalue, newvalue);
 								this.update();
 							}
 						}
