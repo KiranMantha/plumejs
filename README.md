@@ -134,7 +134,7 @@ class PersonsList implements IHooks {
 
 ```
 
-### inputChanged
+### inputChanged Hook
 
 It is called when there is any change in `@Input()` property
 
@@ -506,7 +506,7 @@ describe("Plumejs Service", () => {
 
 # UI Components
 
-As an additional provision, plumejs-ui npm module exposes a comprehensive set of useful ui components like modal dialog, notifications. You can check the documentaion [here](https://github.com/KiranMantha/plumejs-ui).
+As an additional provision, plumejs-ui npm module exposes a comprehensive set of useful ui components like modal dialog, notifications, multi select dropdown, toggle. You can check the documentaion [here](https://github.com/KiranMantha/plumejs-ui).
 
 # CSS Tips
 
