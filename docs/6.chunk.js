@@ -1,4 +1,4 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[6],{44:function(e,l,a){"use strict";a.r(l);var r=a(0),o=a(1);let s=class SampleForm{render(){return o.html`
+(window.webpackJsonp=window.webpackJsonp||[]).push([[6],{44:function(e,l,a){"use strict";a.r(l);var o=a(0),s=a(1);let r=class SampleForm{render(){return s.html`
         <div>
             <form>
                 <div class="form-group">
@@ -14,7 +14,7 @@
                     <input type="checkbox" class="form-check-input" id="exampleCheck1">
                     <label class="form-check-label" for="exampleCheck1">Check me out</label>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="button is-info">Submit</button>
             </form>
         </div>
-        `}};s=Object(r.__decorate)([Object(o.Component)({selector:"sample-form"})],s)}}]);
+        `}};r=Object(o.__decorate)([Object(s.Component)({selector:"sample-form"})],r)}}]);

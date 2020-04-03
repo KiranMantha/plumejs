@@ -18,12 +18,20 @@ const getCss = (csspath: string) => {
 	return style_registry.has(csspath) ? style_registry.get(csspath) : '';
 }
 
-const getComputedCss = (csspath: string = "") => {
-	let sheet: any = new CSSStyleSheet();
-	if (csspath) {
-		sheet.replace(getCss(csspath));
+const getComputedCss = (useShadow: boolean, csspath: string = "") => {
+	let csoArray = [];
+	if(useShadow) {
+		let defaultStyles = new CSSStyleSheet();
+		defaultStyles.insertRule(`:host { display: block; }`);
+		csoArray = [globalStyles, defaultStyles];
+		if (csspath) {
+			let sheet: any = new CSSStyleSheet();
+			let styles = getCss(csspath);
+			styles ? sheet.replace(styles) : sheet.replace(csspath);
+			csoArray.push(sheet);
+		}
 	}
-	return [globalStyles, sheet];
+	return csoArray;
 };
 
 const registerElement = (
@@ -64,17 +72,19 @@ const registerElement = (
 				} else if (options.useShadow !== undefined) {
 					this.shadow = !!options.useShadow === false ? this : this.attachShadow({ mode: "open" });
 				} else {
+					options.useShadow = true;
 					this.shadow = this.attachShadow({ mode: "open" });
 				}
-				this.shadow.adoptedStyleSheets = isNode ? [] : getComputedCss(options.styleUrl);
+				this.shadow.adoptedStyleSheets = isNode ? [] : getComputedCss(options.useShadow, options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
-					watch(this, this._inputprop, (newvalue: any, oldvalue: any) => {
+					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
 						let joldval = JSON.stringify(oldvalue);
 						let jnewval = JSON.stringify(newvalue);
 						if (joldval !== jnewval) {
 							if (this[klass] && this[klass][this._inputprop]) {
 								this[klass][this._inputprop] = (this as any)[this._inputprop];
+								this[klass].inputChanged && this[klass].inputChanged(oldvalue, newvalue);
 								this.update();
 							}
 						}
@@ -110,8 +120,7 @@ const registerElement = (
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
-		}
-	);
+		});
 };
 
 export { registerElement };
