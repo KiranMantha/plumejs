@@ -1,4 +1,6 @@
-![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs) ![npm](https://img.shields.io/npm/dw/plumejs)  ![npm](https://img.shields.io/npm/v/plumejs)
+[![GitHub contributors](https://img.shields.io/github/contributors/KiranMantha/plumejs.svg)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+![npm](https://img.shields.io/npm/dm/plumejs)  ![npm](https://img.shields.io/npm/v/plumejs)
 
 Demo [here](https://kiranmantha.github.io/plumejs/). Check console logs for further details.
 
