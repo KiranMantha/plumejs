@@ -1,4 +1,4 @@
-[![GitHub contributors](https://img.shields.io/github/contributors/KiranMantha/plumejs.svg)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 ![npm](https://img.shields.io/npm/dm/plumejs)  ![npm](https://img.shields.io/npm/v/plumejs)
 
