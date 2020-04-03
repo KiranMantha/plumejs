@@ -13,7 +13,7 @@
 						<div class='mb-20'>
 							<h5 class='title is-5'>Modal</h5>
 							<button
-								class="button is-info"
+								class="button is-small is-info"
 								onclick=${()=>{this.openModal()}}
 							>
 								Open Modal
@@ -21,7 +21,7 @@
 						</div>
 						<div class='mb-20'>
 							<h5 class='title is-5'>Notification</h5>
-							<button class='button is-info' onclick=${()=>{this.notify()}}>Notify</button>
+							<button class='button is-small is-info' onclick=${()=>{this.notify()}}>Notify</button>
 						</div>
 						<div class='mb-20'>
 							<h5 class='title is-5'>Toggle Button</h5>
