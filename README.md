@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/KiranMantha/plumejs.svg?branch=master)](https://travis-ci.org/KiranMantha/plumejs) [![Coverage Status](https://coveralls.io/repos/github/KiranMantha/plumejs/badge.svg?branch=master)](https://coveralls.io/github/KiranMantha/plumejs?branch=master)
+![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs) ![npm](https://img.shields.io/npm/dw/plumejs)  ![npm](https://img.shields.io/npm/v/plumejs)
 
 Demo [here](https://kiranmantha.github.io/plumejs/). Check console logs for further details.
 
@@ -508,13 +508,41 @@ As an additional provision, plumejs-ui npm module exposes a comprehensive set of
 
 # CSS Tips
 
-One problem with web components is the css selectors can't penetrate through shadow dom. There will be cases where a particular webcomponent should display in a particular way. In order to do that use:
+One problem with webcomponents is the css selectors can't penetrate through shadow dom. There will be cases where a particular webcomponent should display in a particular way. In order to do that use:
 
 ```
-:host-context(<your-selector>) {
-  display: block;
+:host-context(your-dom-tag-name | .your-class | #your-id) {
+  // your styles
+}
+
+(or)
+
+:host(your-dom-tag-name | .your-class | #your-id) {
+  // your styles
 }
 ```
+
+## Responsive webcomponents
+
+The main problem with webcomponents when implementing `@media` css is, they always target viewport dimensions instead of element dimensions. As per observation, with respect to webcomponents, there are only 2 break points to implement `@media` css. They are:
+
+```
+// For tablets and other small screens
+@media screen and (max-width: 980px) {
+  :host(<your-selector>) /deep/ .yourclass | #your-id {
+      // your styles
+  }
+}
+
+// For desktop and above
+@media screen and (min-width: 981px) {
+  :host(<your-selector>) /deep/ .yourclass | #your-id {
+      // your styles
+  }
+}
+```
+
+`/deep/` is very helpful to penetrate through shadowDom and style the target.
 
 By default all plumejs components are render as block elements. They internally have `:host { display: block; }` property.
 
