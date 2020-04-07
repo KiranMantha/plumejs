@@ -1,5 +1,5 @@
-import { ICurrentRoute } from './types';
-import { Subject } from 'rxjs';
+import { ICurrentRoute } from "./types";
+import { Subject } from "rxjs";
 export declare class InternalRouter {
     currentRoute: ICurrentRoute;
     private currentPage;

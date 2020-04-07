@@ -1,32 +1,36 @@
-import { ICurrentRoute } from './types';
-import { Subject } from 'rxjs';
-import { StaticRouter } from './staticRouter';
-import { isFunction, wrapIntoObservable } from './utils';
-import { Injectable } from './decorators';
+import { ICurrentRoute } from "./types";
+import { Subject } from "rxjs";
+import { StaticRouter } from "./staticRouter";
+import { wrapIntoObservable } from "./utils";
+import { Injectable } from "./decorators";
 
 @Injectable()
 export class InternalRouter {
 	currentRoute: ICurrentRoute = {
-		params: {}
+		params: {},
 	};
 	private currentPage: string = null;
 	private previousPage = "";
 	$templateSubscriber = new Subject();
 
 	constructor() {
-		window.addEventListener("hashchange", () => {
-			this._registerOnHashChange();
-		}, false);
+		window.addEventListener(
+			"hashchange",
+			() => {
+				this._registerOnHashChange();
+			},
+			false
+		);
 	}
 
 	private _registerOnHashChange() {
-		const path = window.location.hash.replace(/^#/, '');
+		const path = window.location.hash.replace(/^#/, "");
 		this._navigateTo(path);
 	}
 
 	private _routeMatcher(route: string, path: string) {
 		if (route) {
-			let _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
+			let _matcher = new RegExp(route.replace(/:[^\s/]+/g, "([\\w-]+)"));
 			return path.match(_matcher);
 		} else {
 			return route === path;
@@ -37,11 +41,14 @@ export class InternalRouter {
 		if (this.currentPage !== path) {
 			this.previousPage = this.currentPage;
 			this.currentPage = path;
-			let uParams = path.split("/").filter(h => {
+			let uParams = path.split("/").filter((h) => {
 				return h.length > 0;
 			});
-			let routeArr = StaticRouter.routList.filter(route => {
-				if (route.Params.length === uParams.length && this._routeMatcher(route.Url, path)) {
+			let routeArr = StaticRouter.routList.filter((route) => {
+				if (
+					route.Params.length === uParams.length &&
+					this._routeMatcher(route.Url, path)
+				) {
 					return route;
 				} else if (route.Url === path) {
 					return route;
@@ -49,25 +56,29 @@ export class InternalRouter {
 			});
 			let routeItem = routeArr.length > 0 ? routeArr[0] : null;
 			if (routeItem) {
-				wrapIntoObservable(routeItem.canActivate()).subscribe((val: boolean) => {
-					if(!val) return;
-					let _params = StaticRouter.checkParams(uParams, routeItem);
-					if (Object.keys(_params).length > 0 || path) {
-						this.currentRoute.params = _params;
-						if (!routeItem.IsRegistered) {
-							if (routeItem.TemplatePath) {
-								wrapIntoObservable(routeItem.TemplatePath()).subscribe((res: any) => {
-									routeItem.IsRegistered = true;
-									this.$templateSubscriber.next(routeItem.Template);
-								});
+				wrapIntoObservable(routeItem.canActivate()).subscribe(
+					(val: boolean) => {
+						if (!val) return;
+						let _params = StaticRouter.checkParams(uParams, routeItem);
+						if (Object.keys(_params).length > 0 || path) {
+							this.currentRoute.params = _params;
+							if (!routeItem.IsRegistered) {
+								if (routeItem.TemplatePath) {
+									wrapIntoObservable(routeItem.TemplatePath()).subscribe(
+										(res: any) => {
+											routeItem.IsRegistered = true;
+											this.$templateSubscriber.next(routeItem.Template);
+										}
+									);
+								}
+							} else {
+								this.$templateSubscriber.next(routeItem.Template);
 							}
 						} else {
-							this.$templateSubscriber.next(routeItem.Template);
+							this.navigateTo(routeItem.redirectTo);
 						}
-					} else {
-						this.navigateTo(routeItem.redirectTo);
 					}
-				});				
+				);
 			}
 		}
 	}
@@ -78,14 +89,13 @@ export class InternalRouter {
 
 	navigateTo(path: string = "") {
 		if (path) {
-            let windowHash = window.location.hash.replace(/^#/, '');
-            if(windowHash === path) {
-                this._navigateTo(path);
-            }
-            window.location.hash = '#' + path;
-        }
-        else {
-            this._navigateTo(path);
-        }
+			let windowHash = window.location.hash.replace(/^#/, "");
+			if (windowHash === path) {
+				this._navigateTo(path);
+			}
+			window.location.hash = "#" + path;
+		} else {
+			this._navigateTo(path);
+		}
 	}
 }
