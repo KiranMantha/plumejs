@@ -2,6 +2,10 @@
 
 [![npm](https://img.shields.io/npm/dw/plumejs)](https://www.npmjs.com/package/plumejs)  [![npm](https://img.shields.io/npm/v/plumejs)](https://www.npmjs.com/package/plumejs)
 
+<p align="center">
+  <img alt="PlumeJs logo" src="./logo.jpg">  
+</p>
+
 Demo [here](https://kiranmantha.github.io/plumejs-example-repo/). Check console logs for further details.
 
 PlumeJs is a very light weight typescript framework to build spa's. It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
