@@ -27,7 +27,7 @@ Plumejs has yeoman generator which provides the entire scaffolding for your proj
 3. After completing installation run `yo plumejs` in your destination folder. This will ask you about your project name and description and will install all your required dependencies.
 4. After all the dependencies were installed, you can run application using command `npm start`.
 
-# Breaking change in upcoming version
+# Breaking change in 2.2.2 version
 
 There is a breaking change in component declaration. Check below:
 
@@ -45,6 +45,10 @@ The above change enable watch on stylesheets which is not available in older ver
 
 Documentation will be updated after testing and after release of new version.
 
+If you want to change scss to css/less, check your typings.d.ts file and update module `*.scss` to `*.css/less`.
+
+
+# Documentation
 Here is a sneak peak into bultins:
 
 # Creating Components
@@ -55,10 +59,11 @@ Creating component is a non-hectic task.
 
 ```
   import { Component, html } from 'plumejs';
+  import testEleStyles from './test-ele.scss';
 
   @Component({
     selector: 'test-ele',
-    styleUrl: 'test-ele.scss', => no need to add './' as prefix.
+    styleUrl: testEleStyles,
     root: true
   })
   class TestEle {
