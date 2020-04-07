@@ -530,7 +530,7 @@ One problem with webcomponents is the css selectors can't penetrate through shad
 
 ## Responsive webcomponents
 
-The main problem with webcomponents when implementing `@media` css is, they always target viewport dimensions instead of element dimensions. As per observation, with respect to webcomponents, there are only 2 break points to implement `@media` css. They are:
+The main problem with webcomponents when implementing `@media` css arises if there is no `<meta name="viewport" content="width=device-width,initial-scale=1">` meta tag in html page, so they always target viewport dimensions instead of element dimensions. As per observation, with respect to webcomponents, there are only 2 break points to implement `@media` css. They are:
 
 ```
 // For tablets and other small screens
@@ -547,6 +547,8 @@ The main problem with webcomponents when implementing `@media` css is, they alwa
   }
 }
 ```
+
+All the media breakpoints will work if the above meta tag is there in html page.
 
 `/deep/` is very helpful to penetrate through shadowDom and style the target.
 
