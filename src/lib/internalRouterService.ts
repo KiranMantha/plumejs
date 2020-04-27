@@ -9,8 +9,6 @@ export class InternalRouter {
 	currentRoute: ICurrentRoute = {
 		params: {},
 	};
-	private currentPage: string = null;
-	private previousPage = "";
 	$templateSubscriber = new Subject();
 
 	constructor() {
@@ -38,48 +36,42 @@ export class InternalRouter {
 	}
 
 	private _navigateTo(path: string) {
-		if (this.currentPage !== path) {
-			this.previousPage = this.currentPage;
-			this.currentPage = path;
-			let uParams = path.split("/").filter((h) => {
-				return h.length > 0;
-			});
-			let routeArr = StaticRouter.routList.filter((route) => {
-				if (
-					route.Params.length === uParams.length &&
-					this._routeMatcher(route.Url, path)
-				) {
-					return route;
-				} else if (route.Url === path) {
-					return route;
+		let uParams = path.split("/").filter((h) => {
+			return h.length > 0;
+		});
+		let routeArr = StaticRouter.routList.filter((route) => {
+			if (
+				route.Params.length === uParams.length &&
+				this._routeMatcher(route.Url, path)
+			) {
+				return route;
+			} else if (route.Url === path) {
+				return route;
+			}
+		});
+		let routeItem = routeArr.length > 0 ? routeArr[0] : null;
+		if (routeItem) {
+			wrapIntoObservable(routeItem.canActivate()).subscribe((val: boolean) => {
+				if (!val) return;
+				let _params = StaticRouter.checkParams(uParams, routeItem);
+				if (Object.keys(_params).length > 0 || path) {
+					this.currentRoute.params = _params;
+					if (!routeItem.IsRegistered) {
+						if (routeItem.TemplatePath) {
+							wrapIntoObservable(routeItem.TemplatePath()).subscribe(
+								(res: any) => {
+									routeItem.IsRegistered = true;
+									this.$templateSubscriber.next(routeItem.Template);
+								}
+							);
+						}
+					} else {
+						this.$templateSubscriber.next(routeItem.Template);
+					}
+				} else {
+					this.navigateTo(routeItem.redirectTo);
 				}
 			});
-			let routeItem = routeArr.length > 0 ? routeArr[0] : null;
-			if (routeItem) {
-				wrapIntoObservable(routeItem.canActivate()).subscribe(
-					(val: boolean) => {
-						if (!val) return;
-						let _params = StaticRouter.checkParams(uParams, routeItem);
-						if (Object.keys(_params).length > 0 || path) {
-							this.currentRoute.params = _params;
-							if (!routeItem.IsRegistered) {
-								if (routeItem.TemplatePath) {
-									wrapIntoObservable(routeItem.TemplatePath()).subscribe(
-										(res: any) => {
-											routeItem.IsRegistered = true;
-											this.$templateSubscriber.next(routeItem.Template);
-										}
-									);
-								}
-							} else {
-								this.$templateSubscriber.next(routeItem.Template);
-							}
-						} else {
-							this.navigateTo(routeItem.redirectTo);
-						}
-					}
-				);
-			}
 		}
 	}
 
