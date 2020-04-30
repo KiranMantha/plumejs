@@ -5,34 +5,10 @@ import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
 import { InternalTranslationService } from "./internalTranslationService";
 import { augmentor } from "augmentor";
-import { Injector } from './service_resolver';
 import { isNode } from 'browser-or-node';
-
-let isRootNodeSet = false;
-let globalStyles: any = new CSSStyleSheet();
-let style_registry: Map<string, string> = new Map();
+import { componentRegistry } from './componentRegistry';
 
 const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
-
-const getCss = (csspath: string) => {
-	return style_registry.has(csspath) ? style_registry.get(csspath) : '';
-}
-
-const getComputedCss = (useShadow: boolean, csspath: string = "") => {
-	let csoArray = [];
-	if(useShadow) {
-		let defaultStyles = new CSSStyleSheet();
-		defaultStyles.insertRule(`:host { display: block; }`);
-		csoArray = [globalStyles, defaultStyles];
-		if (csspath) {
-			let sheet: any = new CSSStyleSheet();
-			let styles = getCss(csspath);
-			styles ? sheet.replace(styles) : sheet.replace(csspath);
-			csoArray.push(sheet);
-		}
-	}
-	return csoArray;
-};
 
 const registerElement = (
 	options: DecoratorOptions,
@@ -41,15 +17,14 @@ const registerElement = (
 	isRoot: boolean
 ) => {
 	if (!isNode) {
-		if (isRoot && !isRootNodeSet && options.styleUrl) {
-			style_registry = Injector.get('COMPILEDCSS');
-			isRootNodeSet = true;
+		if (isRoot && ! componentRegistry.isRootNodeSet && options.styleUrl) {
+			componentRegistry.isRootNodeSet = true;
 			const styletag = document.createElement("style");
-			let styles = getCss(options.styleUrl);
+			let styles = componentRegistry.getCss(options.styleUrl);
 			styletag.innerText = (styles || "").toString();
-			globalStyles.replace((styles || "").toString());
+			componentRegistry.globalStyles.replace((styles || "").toString());
 			document.getElementsByTagName("head")[0].appendChild(styletag);
-		} else if (isRoot && isRootNodeSet) {
+		} else if (isRoot && componentRegistry.isRootNodeSet) {
 			throw Error(
 				"Cannot register duplicate root component in " +
 				options.selector +
@@ -75,7 +50,7 @@ const registerElement = (
 					options.useShadow = true;
 					this.shadow = this.attachShadow({ mode: "open" });
 				}
-				this.shadow.adoptedStyleSheets = isNode ? [] : getComputedCss(options.useShadow, options.styleUrl);
+				this.shadow.adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styleUrl);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
