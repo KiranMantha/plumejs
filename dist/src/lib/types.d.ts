@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 interface DecoratorOptions {
     selector: string;
-    styleUrl?: string;
+    styles?: string;
     root?: boolean;
     useShadow?: boolean;
 }

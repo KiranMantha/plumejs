@@ -20,14 +20,6 @@ const Injector = (() => {
 		constructor() {
 			this.get = this._map.get.bind(this._map);
 			this.set = this._map.set.bind(this._map);
-			this._defaultServices();
-		}
-
-		private _defaultServices() {
-			if(!isNode) {
-				let compiledCSSObj = JSON.parse(JSON.stringify(process.env.COMPILEDCSSOBJ));
-				this.registerService("COMPILEDCSS", new Map(Object.entries(compiledCSSObj)));
-			}
 		}
 
 		public getService(name: string) {

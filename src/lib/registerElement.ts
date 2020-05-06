@@ -17,10 +17,10 @@ const registerElement = (
 	isRoot: boolean
 ) => {
 	if (!isNode) {
-		if (isRoot && ! componentRegistry.isRootNodeSet && options.styleUrl) {
+		if (isRoot && ! componentRegistry.isRootNodeSet && options.styles) {
 			componentRegistry.isRootNodeSet = true;
 			const styletag = document.createElement("style");
-			let styles = componentRegistry.getCss(options.styleUrl);
+			let styles = options.styles;
 			styletag.innerText = (styles || "").toString();
 			componentRegistry.globalStyles.replace((styles || "").toString());
 			document.getElementsByTagName("head")[0].appendChild(styletag);
@@ -50,7 +50,7 @@ const registerElement = (
 					options.useShadow = true;
 					this.shadow = this.attachShadow({ mode: "open" });
 				}
-				this.shadow.adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styleUrl);
+				this.shadow.adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
