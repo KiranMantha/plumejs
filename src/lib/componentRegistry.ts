@@ -4,7 +4,12 @@ class _componentRegistry {
   isRootNodeSet: boolean;
 
   constructor(){
-    this.globalStyles = new CSSStyleSheet();
+    try {
+      this.globalStyles = new CSSStyleSheet();
+    } catch(e) {
+      this.globalStyles = '';
+    }
+    
     this.isRootNodeSet = false;
   }
 

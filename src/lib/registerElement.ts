@@ -10,6 +10,14 @@ import { componentRegistry } from './componentRegistry';
 
 const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
 
+const createSTyleTag = (content: string) => { 
+	let tag = document.createElement('style');
+	tag.innerHTML = content;
+	return tag;
+}
+
+let globalStyletag = null;
+
 const registerElement = (
 	options: DecoratorOptions,
 	target: Function,
@@ -19,11 +27,11 @@ const registerElement = (
 	if (!isNode) {
 		if (isRoot && ! componentRegistry.isRootNodeSet && options.styles) {
 			componentRegistry.isRootNodeSet = true;
-			const styletag = document.createElement("style");
+			globalStyletag = document.createElement("style");
 			let styles = options.styles;
-			styletag.innerText = (styles || "").toString();
+			globalStyletag.innerText = (styles || "").toString();
 			componentRegistry.globalStyles.replace((styles || "").toString());
-			document.getElementsByTagName("head")[0].appendChild(styletag);
+			document.getElementsByTagName("head")[0].appendChild(globalStyletag);
 		} else if (isRoot && componentRegistry.isRootNodeSet) {
 			throw Error(
 				"Cannot register duplicate root component in " +
@@ -40,6 +48,11 @@ const registerElement = (
 			[klass]: jsonObject;
 			private shadow: any;
 			_inputprop: string;
+			// begin experimental
+			CSS_SHEET_NOT_SUPPORTED = false;
+			componentStyleTag = null;
+			// end experimental
+
 			constructor() {
 				super();
 				if (isNode) {
@@ -50,7 +63,16 @@ const registerElement = (
 					options.useShadow = true;
 					this.shadow = this.attachShadow({ mode: "open" });
 				}
-				this.shadow.adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
+				try {
+					this.shadow.adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
+				} catch(e) {
+					if(!isNode) {
+						this.componentStyleTag = createSTyleTag(options.styles || '');
+						this.shadow.appendChild(this.componentStyleTag);
+						this.CSS_SHEET_NOT_SUPPORTED = true;
+					}
+				}
+				
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
@@ -73,6 +95,9 @@ const registerElement = (
 			}
 
 			connectedCallback() {
+				if(this.CSS_SHEET_NOT_SUPPORTED){
+					this.shadow.adoptedStyleSheets = [globalStyletag.sheet, this.componentStyleTag.sheet];
+				}
 				this[klass] = augmentor(wrapper(target, providers, (this as any)[this._inputprop]))();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
