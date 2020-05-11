@@ -1,4 +1,4 @@
-import { klass, INPUT_METADATA_KEY } from "./utils";
+import { klass, INPUT_METADATA_KEY, isUndefined } from "./utils";
 import { render } from "lighterhtml";
 import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
@@ -13,10 +13,18 @@ const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instant
 const createSTyleTag = (content: string) => { 
 	let tag = document.createElement('style');
 	tag.innerHTML = content;
+	document.head.appendChild(tag);
 	return tag;
 }
 
-let globalStyletag = null;
+const transformCSS = (styles: string, selector: string) => {
+	if(styles) {
+		styles = selector + ' ' + styles.replace('}', `} ${selector}`);		
+	}
+	return styles;
+}
+
+let CSS_SHEET_NOT_SUPPORTED = false;
 
 const registerElement = (
 	options: DecoratorOptions,
@@ -27,11 +35,8 @@ const registerElement = (
 	if (!isNode) {
 		if (isRoot && ! componentRegistry.isRootNodeSet && options.styles) {
 			componentRegistry.isRootNodeSet = true;
-			globalStyletag = document.createElement("style");
-			let styles = options.styles;
-			globalStyletag.innerText = (styles || "").toString();
-			componentRegistry.globalStyles.replace((styles || "").toString());
-			document.getElementsByTagName("head")[0].appendChild(globalStyletag);
+			createSTyleTag(options.styles);
+			componentRegistry.globalStyles.replace((options.styles || "").toString());
 		} else if (isRoot && componentRegistry.isRootNodeSet) {
 			throw Error(
 				"Cannot register duplicate root component in " +
@@ -48,31 +53,25 @@ const registerElement = (
 			[klass]: jsonObject;
 			private shadow: any;
 			_inputprop: string;
-			// begin experimental
-			CSS_SHEET_NOT_SUPPORTED = false;
-			componentStyleTag = null;
-			// end experimental
+			componentStyleTag:HTMLStyleElement = null;
 
 			constructor() {
 				super();
-				if (isNode) {
-					this.shadow = this;
-				} else if (options.useShadow !== undefined) {
-					this.shadow = !!options.useShadow === false ? this : this.attachShadow({ mode: "open" });
-				} else {
-					options.useShadow = true;
-					this.shadow = this.attachShadow({ mode: "open" });
-				}
+				let adoptedStyleSheets = [];
+				options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
 				try {
-					this.shadow.adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
-				} catch(e) {
-					if(!isNode) {
-						this.componentStyleTag = createSTyleTag(options.styles || '');
-						this.shadow.appendChild(this.componentStyleTag);
-						this.CSS_SHEET_NOT_SUPPORTED = true;
+					adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
+					if (isNode) {
+						this.shadow = this;
+					} else {
+						this.shadow = options.useShadow ? this.attachShadow({ mode: "open" }) : this;
 					}
+					this.shadow.adoptedStyleSheets = adoptedStyleSheets;
+				} catch(e) {
+					options.useShadow = false;
+					this.shadow = this;
+					CSS_SHEET_NOT_SUPPORTED = true;
 				}
-				
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
 					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
@@ -94,10 +93,18 @@ const registerElement = (
 				render.bind(this[klass], this.shadow, _returnfn)();
 			}
 
-			connectedCallback() {
-				if(this.CSS_SHEET_NOT_SUPPORTED){
-					this.shadow.adoptedStyleSheets = [globalStyletag.sheet, this.componentStyleTag.sheet];
+			private emulateComponent() {
+				if(CSS_SHEET_NOT_SUPPORTED && options.styles) {
+					let id = new Date().getTime();
+					let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
+					console.log(compiledCSS);
+					this.componentStyleTag = createSTyleTag(compiledCSS);
+					this.setAttribute('data-cid', id.toString());					
 				}
+			}
+
+			connectedCallback() {
+				this.emulateComponent();
 				this[klass] = augmentor(wrapper(target, providers, (this as any)[this._inputprop]))();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
@@ -116,6 +123,7 @@ const registerElement = (
 			};
 
 			disconnectedCallback() {
+				this.componentStyleTag.remove();
 				InternalTranslationService.translationComponents.delete(this);
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
