@@ -1,5 +1,5 @@
 import { jsonObject } from "./types";
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
 declare const foreach: (collection: any[], callback: (o: any, i: any, c: any[]) => void, scope?: any) => void;
 declare const lookup: (obj: jsonObject, path: string, defaultValue: any) => any;
 declare const klass: unique symbol;
@@ -14,4 +14,5 @@ declare const isObservable: (obj: any) => obj is Observable<any>;
 declare const isPromise: (obj: any) => obj is Promise<any>;
 declare function wrapIntoObservable<T>(value: T | Promise<T> | Observable<T>): Observable<T>;
 declare const INPUT_METADATA_KEY: unique symbol;
-export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, isObservable, isPromise, wrapIntoObservable, klass, INPUT_METADATA_KEY };
+declare const CSS_SHEET_NOT_SUPPORTED: boolean;
+export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, isObservable, isPromise, wrapIntoObservable, klass, INPUT_METADATA_KEY, CSS_SHEET_NOT_SUPPORTED };

@@ -1,4 +1,4 @@
-import { klass, INPUT_METADATA_KEY, isUndefined } from "./utils";
+import { klass, INPUT_METADATA_KEY, CSS_SHEET_NOT_SUPPORTED, isUndefined } from "./utils";
 import { render } from "lighterhtml";
 import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
@@ -19,12 +19,10 @@ const createSTyleTag = (content: string) => {
 
 const transformCSS = (styles: string, selector: string) => {
 	if(styles) {
-		styles = selector + ' ' + styles.replace('}', `} ${selector}`);		
+		styles = selector + ' ' + styles.toString().replace('}', `} ${selector}`);
 	}
 	return styles;
 }
-
-let CSS_SHEET_NOT_SUPPORTED = false;
 
 const registerElement = (
 	options: DecoratorOptions,
@@ -59,7 +57,7 @@ const registerElement = (
 				super();
 				let adoptedStyleSheets = [];
 				options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-				try {
+				if(!CSS_SHEET_NOT_SUPPORTED) {
 					adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
 					if (isNode) {
 						this.shadow = this;
@@ -67,10 +65,9 @@ const registerElement = (
 						this.shadow = options.useShadow ? this.attachShadow({ mode: "open" }) : this;
 					}
 					this.shadow.adoptedStyleSheets = adoptedStyleSheets;
-				} catch(e) {
+				} else {
 					options.useShadow = false;
 					this.shadow = this;
-					CSS_SHEET_NOT_SUPPORTED = true;
 				}
 				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				if (this._inputprop) {
@@ -94,10 +91,9 @@ const registerElement = (
 			}
 
 			private emulateComponent() {
-				if(CSS_SHEET_NOT_SUPPORTED && options.styles) {
+				if(CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
 					let id = new Date().getTime();
 					let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
-					console.log(compiledCSS);
 					this.componentStyleTag = createSTyleTag(compiledCSS);
 					this.setAttribute('data-cid', id.toString());					
 				}
