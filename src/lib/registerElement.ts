@@ -119,7 +119,7 @@ const registerElement = (
 			};
 
 			disconnectedCallback() {
-				this.componentStyleTag.remove();
+				this.componentStyleTag && this.componentStyleTag.remove();
 				InternalTranslationService.translationComponents.delete(this);
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
