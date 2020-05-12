@@ -19,7 +19,7 @@ const createSTyleTag = (content: string) => {
 
 const transformCSS = (styles: string, selector: string) => {
 	if(styles) {
-		styles = selector + ' ' + styles.toString().replace('}', `} ${selector}`);
+		styles = selector + ' ' + styles.toString().replace('}', ` } ${selector} `);
 	}
 	return styles;
 }
