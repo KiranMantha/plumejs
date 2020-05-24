@@ -47,6 +47,19 @@ Documentation will be updated after testing and after release of new version.
 
 If you want to change scss to css/less, check your typings.d.ts file and update module `*.scss` to `*.css/less`.
 
+The above implementation will break existing unit tests. To fix them, 
+1. run `npm i -D jest-transform-stub`
+2. add 
+```
+{
+  ...
+  moduleFileExtensions: ['ts', 'html', 'js', 'json'],
+  moduleNameMapper: {
+    "^.+.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
+  }
+}
+```
+to your `jest.config.js`
 
 # Documentation
 Here is a sneak peak into bultins:
