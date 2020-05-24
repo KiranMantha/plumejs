@@ -268,6 +268,26 @@ class SampleComp {
 ```
 
 
+
+
+## Partial attributes
+
+Partial attributes implementation like conditional css class modification is a breeze.
+Examples:
+```
+// THE FOLLOWING IS OK 👍
+html`<div class=${`foo ${mayBar ? 'bar' : ''}`}>Foo bar?</div>`;
+html`<div class=${'foo' + (mayBar ? ' bar' : '')}>Foo bar?</div>`;
+html`<div class=${['foo', mayBar ? 'bar' : ''].join(' ')}>Foo bar?</div>`;
+html`<div style=${`top:${top}; left:${left};`}>x</div>`;
+ 
+// THE FOLLOWING BREAKS ⚠️
+html`<div style="top:${top}; left:${left};">x</div>`;
+html`<div class="foo ${ mayBar ? 'bar' : '' }">x</div>`; // this may work in browser but will fail in unit tests
+```
+
+For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
+
 # Creating Services
 
 Creating service is as simple as creating a component
@@ -396,7 +416,7 @@ To Access current route parameters
 
 # Setting up Internationalization
 
-Adding translations in PLumeJS is a breeze. Checkout below for implementation:
+Adding translations in PlumeJS is a breeze. Checkout below for implementation:
 
 1. add `i18n` folder to your src folder (you can name it as per your standards)
 
