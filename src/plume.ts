@@ -5,7 +5,7 @@ import { Injector } from "./lib/service_resolver";
 import { Component, Injectable, Input } from "./lib/decorators";
 import { DecoratorOptions, Route, Ref, IHooks } from "./lib/types";
 import { html } from "lighterhtml";
-import { useRef } from "augmentor";
+import { useRef, useState, useContext } from "augmentor";
 import { Router } from "./lib/routerService";
 import { DomTransition } from "./lib/domTransition.service";
 import { TranslationService } from "./lib/translationService";
@@ -22,5 +22,7 @@ export {
   Route,
   IHooks,
   useRef,
-  Ref
+  Ref,
+  useState,
+  useContext
 };
