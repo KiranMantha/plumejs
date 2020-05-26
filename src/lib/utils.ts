@@ -1,5 +1,6 @@
 import { jsonObject } from "./types";
 import { Observable, from, of } from "rxjs";
+import { useState } from 'augmentor';
 
 let $object = "object",
 	$string = "string",
@@ -84,6 +85,19 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
 	}
 })();
 
+function useFormFields<T>(initialValues: T) {
+	let [formFields, setFormFields] = useState<T>(initialValues);
+	const createChangeHandler = (key: keyof T) => (e: Event) => {
+		let target: any = e.target;
+		const value = target.value;
+		setFormFields(() => {
+            formFields[key] = value;
+			return formFields;
+		});
+	};
+	return { formFields, createChangeHandler };
+}
+
 export {
 	foreach,
 	isNumber,
@@ -99,5 +113,6 @@ export {
 	wrapIntoObservable,
 	klass,
   INPUT_METADATA_KEY,
-  CSS_SHEET_NOT_SUPPORTED
+	CSS_SHEET_NOT_SUPPORTED,
+	useFormFields
 };

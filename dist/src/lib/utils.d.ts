@@ -15,4 +15,8 @@ declare const isPromise: (obj: any) => obj is Promise<any>;
 declare function wrapIntoObservable<T>(value: T | Promise<T> | Observable<T>): Observable<T>;
 declare const INPUT_METADATA_KEY: unique symbol;
 declare const CSS_SHEET_NOT_SUPPORTED: boolean;
-export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, isObservable, isPromise, wrapIntoObservable, klass, INPUT_METADATA_KEY, CSS_SHEET_NOT_SUPPORTED };
+declare function useFormFields<T>(initialValues: T): {
+    formFields: T;
+    createChangeHandler: (key: keyof T) => (e: Event) => void;
+};
+export { foreach, isNumber, lookup, isArray, isObject, isString, isFunction, isUndefined, isDefined, isObservable, isPromise, wrapIntoObservable, klass, INPUT_METADATA_KEY, CSS_SHEET_NOT_SUPPORTED, useFormFields };

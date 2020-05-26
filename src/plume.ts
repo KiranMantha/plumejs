@@ -9,6 +9,7 @@ import { useRef, useState, useContext } from "augmentor";
 import { Router } from "./lib/routerService";
 import { DomTransition } from "./lib/domTransition.service";
 import { TranslationService } from "./lib/translationService";
+import { useFormFields } from './lib/utils';
 export {
   Component,
   Injectable,
@@ -24,5 +25,6 @@ export {
   useRef,
   Ref,
   useState,
-  useContext
+  useContext,
+  useFormFields
 };
