@@ -6,5 +6,5 @@ import { useRef, useState, useContext } from "augmentor";
 import { Router } from "./lib/routerService";
 import { DomTransition } from "./lib/domTransition.service";
 import { TranslationService } from "./lib/translationService";
-import { useFormFields } from './lib/utils';
+import { useFormFields } from './lib/hooks';
 export { Component, Injectable, html, Injector, Input, Router, TranslationService, DomTransition, DecoratorOptions, Route, IHooks, useRef, Ref, useState, useContext, useFormFields };
