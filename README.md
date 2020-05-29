@@ -8,6 +8,8 @@
 
 Demo [here](https://kiranmantha.github.io/plumejs-example-repo/). Check console logs for further details.
 
+Example [repo](https://github.com/KiranMantha/plumejs-example-repo/)
+
 PlumeJs is a very light weight typescript framework to build spa's. It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
 
 PlumeJs is a conceptual combination of angularjs and react. just like angular one can register services, components, life-cycle hooks, `Input` for passing data from one component to another and like react `update` function to update the view after modal updations and a render function to render the component.
@@ -300,6 +302,127 @@ html`<div class="foo ${ mayBar ? 'bar' : '' }">x</div>`; // this may work in bro
 ```
 
 For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
+
+
+
+# Hooks
+## useFormFields
+`useFormFields` is very helpful to build forms and retrive form data.
+
+example:
+```
+import {..., useFormFields} from 'plumejs';
+import {IMultiSelectOptions} from 'plumejs-ui';
+
+@Component(...)
+class SampleForm {
+  sampleformFields: any;
+	createChangeHandler: any;
+	multiSelectChangehandler: any;
+  multiSelectOptions: IMultiSelectOptions = {
+		data: ['option1', 'option2', 'option3', 'option4'],
+		multiple: true,
+		onchange: (optionsArr: string[]) => {
+			this.multiSelectChangehandler({
+				target: { 
+					value: optionsArr
+				}
+			});
+		},		
+		buttonText: (options:Array<string>) => {
+			if (options.length === 0) {
+				return 'None selected';
+			}
+			else if (options.length > 3) {
+				return options.length + ' selected';
+			} else {
+				return options.join(', ');
+			}
+		},
+	}
+
+  constructor() {
+    const { formFields, createChangeHandler } = useFormFields({
+			email: "",
+			checkme: false,
+			option: '',
+			options: [],
+			gender: "",
+		});
+		this.sampleformFields = formFields;
+		this.createChangeHandler = createChangeHandler;
+		this.multiSelectChangehandler = this.createChangeHandler('options');
+		this.submitForm = this.submitForm.bind(this);
+  }
+
+  submitForm(e: Event) {
+		e.preventDefault();
+		console.log(this.sampleformFields);
+	}
+
+  render() {
+    return html`
+      <form onsubmit=${this.submitForm}>
+        <div>
+          <label>textbox</label>
+          <input onchange=${this.createChangeHandler("email")}/>
+        </div>
+        <div>
+          <b>radio</b>
+          <input
+							type="radio"
+							id="gender_male"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_male">Male</label>
+						<input
+							type="radio"
+							id="gender_female"
+							name="gender"
+							value="female"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_female">Female</label>
+        <div>
+        <div>
+          <label>checkbox</label>
+          <input
+							type="checkbox"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("checkme")}
+						/>
+        <div>
+        <div>
+          <label>single select</label>
+          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <div>
+          <label>multi select</label>
+          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <div>
+          <label>plumeui component multi select</label>
+          <multi-select multiSelectOptions=${ this.multiSelectOptions }></multi-select>
+        <div>
+        <button type="submit" class="button is-info">Submit</button>
+      </form>
+    `
+  }
+}
+```
 
 # Creating Services
 
