@@ -2,7 +2,7 @@ import { useState } from "augmentor";
 
 const getTargetValue = (target: HTMLElement) => {
 	let targetValue;
-	switch (target.nodeName.toLowerCase()) {
+	switch (target.nodeName && target.nodeName.toLowerCase()) {
 		case "input":
 		case "textarea": {
 			let nonTextElements = ["radio", "checkbox"];
@@ -27,6 +27,10 @@ const getTargetValue = (target: HTMLElement) => {
 					.filter((option) => option.selected)
 					.map((option) => option.value);
 			}
+			break;
+		}
+		default: {
+			targetValue = (target as any).value;
 			break;
 		}
 	}
