@@ -92,7 +92,7 @@ const registerElement = (
 
 			private emulateComponent() {
 				if(!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
-					let id = new Date().getTime();
+					let id = new Date().getTime() + Math.floor((Math.random() * 1000) + 1);
 					let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
 					this.componentStyleTag = createSTyleTag(compiledCSS);
 					this.setAttribute('data-cid', id.toString());					
