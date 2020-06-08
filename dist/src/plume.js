@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const service_resolver_1 = require("./lib/service_resolver");
+const service_resolver_1 = require("./lib/router/service_resolver");
 exports.Injector = service_resolver_1.Injector;
 const decorators_1 = require("./lib/decorators");
 exports.Component = decorators_1.Component;
@@ -12,12 +12,12 @@ const augmentor_1 = require("augmentor");
 exports.useRef = augmentor_1.useRef;
 exports.useState = augmentor_1.useState;
 exports.useContext = augmentor_1.useContext;
-const routerService_1 = require("./lib/routerService");
-exports.Router = routerService_1.Router;
+const router_1 = require("./lib/router");
+exports.Router = router_1.Router;
+exports.registerRouterComponent = router_1.registerRouterComponent;
 const domTransition_service_1 = require("./lib/domTransition.service");
 exports.DomTransition = domTransition_service_1.DomTransition;
 const translationService_1 = require("./lib/translationService");
 exports.TranslationService = translationService_1.TranslationService;
 const hooks_1 = require("./lib/hooks");
 exports.useFormFields = hooks_1.useFormFields;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGx1bWUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvcGx1bWUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRUEsWUFBWSxDQUFDOztBQUNiLDZEQUFrRDtBQWFoRCxtQkFiTywyQkFBUSxDQWFQO0FBWlYsaURBQWdFO0FBUzlELG9CQVRPLHNCQUFTLENBU1A7QUFDVCxxQkFWa0IsdUJBQVUsQ0FVbEI7QUFHVixnQkFiOEIsa0JBQUssQ0FhOUI7QUFYUCw2Q0FBbUM7QUFTakMsZUFUTyxrQkFBSSxDQVNQO0FBUk4seUNBQXlEO0FBaUJ2RCxpQkFqQk8sa0JBQU0sQ0FpQlA7QUFFTixtQkFuQmUsb0JBQVEsQ0FtQmY7QUFDUixxQkFwQnlCLHNCQUFVLENBb0J6QjtBQW5CWix1REFBNkM7QUFVM0MsaUJBVk8sc0JBQU0sQ0FVUDtBQVRSLHVFQUE0RDtBQVcxRCx3QkFYTyxxQ0FBYSxDQVdQO0FBVmYsaUVBQThEO0FBUzVELDZCQVRPLHVDQUFrQixDQVNQO0FBUnBCLHVDQUE0QztBQWlCMUMsd0JBakJPLHFCQUFhLENBaUJQIn0=

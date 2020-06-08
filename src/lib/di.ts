@@ -1,4 +1,4 @@
-import { Injector } from './service_resolver';
+import { Injector } from './router/service_resolver';
 
 const setDI = (fn:Function, deps:Array<string>, props:any):Array<any> => {
   let di:Array<any> = [],

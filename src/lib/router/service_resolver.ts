@@ -1,5 +1,5 @@
-import { instantiate } from "./instance";
-import { isFunction } from "./utils";
+import { instantiate } from "../instance";
+import { isFunction } from "../utils";
 import { isNode } from 'browser-or-node';
 
 interface IInjector {

@@ -5,7 +5,7 @@
     "lib": ["dom", "es2015", "es2015.promise"],
     "moduleResolution": "node",
     "declaration": true,
-    "inlineSourceMap": true,
+    "inlineSourceMap": false,
     "declarationDir": "dist",
     "outDir": "dist",
     "rootDir": "./",

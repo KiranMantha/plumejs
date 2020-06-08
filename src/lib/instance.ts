@@ -1,7 +1,4 @@
 import { setDI } from './di';
-import { augmentor } from "augmentor";
-
-
 
 function instantiate(fn:Function, deps:Array<string> = [], props:any = {}) {
   let $deps = setDI(fn, deps, props), instance;

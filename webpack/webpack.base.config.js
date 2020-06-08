@@ -10,8 +10,6 @@ const webpack = require('webpack');
 const WebpackPrebuild = require('pre-build-webpack');
 const del = require('del');
 const HtmlWebpack = require('html-webpack-plugin');
-const fromDir = require('./custom-scss-loader');
-const scssObj = fromDir(appFolders.src, '.scss');
 
 let config = {
     devtool: 'cheap-module-source-map',
@@ -55,9 +53,6 @@ let config = {
             filename: 'index.html',
             template: appFolders.index_html,
             inject: 'head'
-        }),
-        new webpack.DefinePlugin({
-          "process.env.COMPILEDCSSOBJ": JSON.stringify(scssObj)
         })
     ],
     resolve: {

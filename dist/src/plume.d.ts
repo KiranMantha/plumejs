@@ -1,10 +1,10 @@
-import { Injector } from "./lib/service_resolver";
+import { Injector } from "./lib/router/service_resolver";
 import { Component, Injectable, Input } from "./lib/decorators";
 import { DecoratorOptions, Route, Ref, IHooks } from "./lib/types";
 import { html } from "lighterhtml";
 import { useRef, useState, useContext } from "augmentor";
-import { Router } from "./lib/routerService";
+import { Router, registerRouterComponent } from "./lib/router";
 import { DomTransition } from "./lib/domTransition.service";
 import { TranslationService } from "./lib/translationService";
 import { useFormFields } from './lib/hooks';
-export { Component, Injectable, html, Injector, Input, Router, TranslationService, DomTransition, DecoratorOptions, Route, IHooks, useRef, Ref, useState, useContext, useFormFields };
+export { Component, Injectable, html, Injector, Input, Router, registerRouterComponent, TranslationService, DomTransition, DecoratorOptions, Route, IHooks, useRef, Ref, useState, useContext, useFormFields };

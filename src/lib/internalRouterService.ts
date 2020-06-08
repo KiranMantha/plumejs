@@ -1,6 +1,6 @@
 import { ICurrentRoute } from "./types";
 import { Subject } from "rxjs";
-import { StaticRouter } from "./staticRouter";
+import { StaticRouter } from "./router/staticRouter";
 import { wrapIntoObservable } from "./utils";
 import { Injectable } from "./decorators";
 

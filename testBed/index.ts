@@ -1,4 +1,4 @@
-import { Injector } from '../src/lib/service_resolver';
+import { Injector } from '../src/lib/router/service_resolver';
 
 export class TestBed {
   static async MockComponent(target:Function) {
