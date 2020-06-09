@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Router = void 0;
 const tslib_1 = require("tslib");
 const utils_1 = require("../utils");
 const browser_or_node_1 = require("browser-or-node");

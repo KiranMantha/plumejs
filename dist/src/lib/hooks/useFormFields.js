@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.useFormFields = void 0;
 const augmentor_1 = require("augmentor");
 const getTargetValue = (target) => {
     let targetValue;

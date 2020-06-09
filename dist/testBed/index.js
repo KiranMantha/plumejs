@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestBed = void 0;
 const tslib_1 = require("tslib");
-const service_resolver_1 = require("../src/lib/router/service_resolver");
+const service_resolver_1 = require("../src/lib/service_resolver");
 class TestBed {
     static MockComponent(target) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {

@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Input = exports.Injectable = exports.Component = void 0;
 const reflection_1 = require("@abraham/reflection");
 const registerElement_1 = require("./registerElement");
-const service_resolver_1 = require("./router/service_resolver");
+const service_resolver_1 = require("./service_resolver");
 const utils_1 = require("./utils");
 const getDeps = (target) => {
     let types = reflection_1.Reflection.getMetadata("design:paramtypes", target) || [];

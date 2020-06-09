@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.registerElement = void 0;
 const utils_1 = require("./utils");
 const lighterhtml_1 = require("lighterhtml");
 const watchObject_1 = require("./watchObject");

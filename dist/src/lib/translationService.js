@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TranslationService = void 0;
 const tslib_1 = require("tslib");
 const vanilla_i18n_1 = require("vanilla-i18n");
 const decorators_1 = require("./decorators");

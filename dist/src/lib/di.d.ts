@@ -1,2 +1,2 @@
-declare const setDI: (fn: Function, deps: string[], props: any) => any[];
+declare const setDI: (fn: Function, deps: Array<string>, props: any) => Array<any>;
 export { setDI };

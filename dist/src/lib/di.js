@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const service_resolver_1 = require("./router/service_resolver");
+exports.setDI = void 0;
+const service_resolver_1 = require("./service_resolver");
 const setDI = (fn, deps, props) => {
     let di = [], finalArr = [], func_deps = deps && deps.length > 0 ? deps : [];
     if (func_deps.length > 0) {

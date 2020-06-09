@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Injector = void 0;
 const instance_1 = require("../instance");
 const utils_1 = require("../utils");
 const Injector = (() => {

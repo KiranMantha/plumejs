@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.instantiate = void 0;
 const di_1 = require("./di");
 function instantiate(fn, deps = [], props = {}) {
     let $deps = di_1.setDI(fn, deps, props), instance;

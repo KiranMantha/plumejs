@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DomTransition = void 0;
 const tslib_1 = require("tslib");
 const decorators_1 = require("./decorators");
 let DomTransition = class DomTransition {

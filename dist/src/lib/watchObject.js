@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.unwatch = exports.watch = void 0;
 let mapObj = new WeakMap();
 const clone = (obj) => {
     if (null == obj || "object" != typeof obj) {
