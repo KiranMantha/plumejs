@@ -1,9 +1,13 @@
 import { setDefaultLanguage, setTranslate } from "vanilla-i18n";
 import { Injectable } from './decorators';
-import { InternalTranslationService } from './internalTranslationService';
+import { Injector } from '../plume';
 
 @Injectable()
 export class TranslationService {
+	private internalTranslationService: any;
+	constructor() {
+		this.internalTranslationService = Injector.get('InternalTranslationService');
+	}
 	private defaultLanguage: string = "";
 
 	setTranslate(i18n: object, lang: string) {
@@ -13,16 +17,7 @@ export class TranslationService {
 	setDefaultLanguage(language: string) {
 		this.defaultLanguage = language;
 		setDefaultLanguage(language);
-		let iterator = InternalTranslationService.translationComponents.entries();
-		let result = iterator.next();
-		while (!result.done) {
-			let component: HTMLElement = result.value[0];
-			let tagname: string = result.value[1];
-			if (tagname !== "router-outlet") {
-				component.update();
-			}
-			result = iterator.next();
-		}
+		this.internalTranslationService.updateTranslations.next();
 	}
 
 	getCurrentLanguage() {

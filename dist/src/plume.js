@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isArray = exports.wrapIntoObservable = exports.useFormFields = exports.useContext = exports.useState = exports.useRef = exports.DomTransition = exports.TranslationService = exports.Input = exports.Injector = exports.html = exports.Injectable = exports.Component = void 0;
+const internalTranslationService_1 = require("./lib/internalTranslationService");
+internalTranslationService_1.registerInternaltranslationService();
 const service_resolver_1 = require("./lib/service_resolver");
 Object.defineProperty(exports, "Injector", { enumerable: true, get: function () { return service_resolver_1.Injector; } });
 const decorators_1 = require("./lib/decorators");

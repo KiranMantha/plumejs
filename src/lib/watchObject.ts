@@ -1,4 +1,5 @@
 import { jsonObject } from "./types";
+import { Subject } from 'rxjs';
 
 let mapObj = new WeakMap();
 
@@ -43,6 +44,7 @@ class CreateWatch {
 	_clonedValue: any = null;
 	_watchableProp: string;
 	_handler: Function = null;
+	_subscription$ = new Subject();
 
 	constructor(obj: jsonObject, prop: string, handler: Function) {
     this.defineProp(obj, prop, handler);

@@ -1,3 +1,4 @@
+import '@abraham/reflection';
 import { DecoratorOptions } from "./types";
 declare let Component: (options: DecoratorOptions) => (target: Function) => void;
 declare const Injectable: () => (target: Function) => void;

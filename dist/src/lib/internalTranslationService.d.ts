@@ -1,3 +1,2 @@
-export declare class InternalTranslationService {
-    static translationComponents: Map<any, any>;
-}
+declare const registerInternaltranslationService: () => void;
+export { registerInternaltranslationService };

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.unwatch = exports.watch = void 0;
+const rxjs_1 = require("rxjs");
 let mapObj = new WeakMap();
 const clone = (obj) => {
     if (null == obj || "object" != typeof obj) {
@@ -41,6 +42,7 @@ class CreateWatch {
         this._actualValue = null;
         this._clonedValue = null;
         this._handler = null;
+        this._subscription$ = new rxjs_1.Subject();
         this.defineProp(obj, prop, handler);
         obj['objVal'] = null;
         this._obj = obj;

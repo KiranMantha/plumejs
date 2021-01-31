@@ -1,28 +1,35 @@
-import { klass, INPUT_METADATA_KEY, CSS_SHEET_NOT_SUPPORTED, isUndefined } from "./utils";
+import {
+	klass,
+	INPUT_METADATA_KEY,
+	CSS_SHEET_NOT_SUPPORTED,
+	isUndefined,
+} from "./utils";
 import { render } from "lighterhtml";
 import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
-import { InternalTranslationService } from "./internalTranslationService";
 import { augmentor } from "augmentor";
-import { isNode } from 'browser-or-node';
-import { componentRegistry } from './componentRegistry';
+import { isNode } from "browser-or-node";
+import { componentRegistry } from "./componentRegistry";
+import { Subscription } from "rxjs";
+import { Injector } from "../..";
 
-const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
+const wrapper = (fn: Function, deps: Array<string>, props: any) => () =>
+	instantiate(fn, deps, props);
 
-const createSTyleTag = (content: string) => { 
-	let tag = document.createElement('style');
+const createSTyleTag = (content: string) => {
+	let tag = document.createElement("style");
 	tag.innerHTML = content;
 	document.head.appendChild(tag);
 	return tag;
-}
+};
 
 const transformCSS = (styles: string, selector: string) => {
-	if(styles) {
-		styles = selector + ' ' + styles.toString().replace('}', ` } ${selector} `);
+	if (styles) {
+		styles = selector + " " + styles.toString().replace("}", ` } ${selector} `);
 	}
 	return styles;
-}
+};
 
 const registerElement = (
 	options: DecoratorOptions,
@@ -31,15 +38,15 @@ const registerElement = (
 	isRoot: boolean
 ) => {
 	if (!isNode) {
-		if (isRoot && ! componentRegistry.isRootNodeSet && options.styles) {
+		if (isRoot && !componentRegistry.isRootNodeSet && options.styles) {
 			componentRegistry.isRootNodeSet = true;
 			createSTyleTag(options.styles);
 			componentRegistry.globalStyles.replace((options.styles || "").toString());
 		} else if (isRoot && componentRegistry.isRootNodeSet) {
 			throw Error(
 				"Cannot register duplicate root component in " +
-				options.selector +
-				" component"
+					options.selector +
+					" component"
 			);
 		}
 	}
@@ -50,19 +57,30 @@ const registerElement = (
 			render: Function;
 			[klass]: jsonObject;
 			private shadow: any;
+			private translationSubscription: Subscription;
+			private internalTranslationService: any;
 			_inputprop: string;
-			componentStyleTag:HTMLStyleElement = null;
+			componentStyleTag: HTMLStyleElement = null;
 
 			constructor() {
 				super();
 				let adoptedStyleSheets = [];
-				options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-				if(!CSS_SHEET_NOT_SUPPORTED) {
-					adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
+				options.useShadow = isUndefined(options.useShadow)
+					? true
+					: options.useShadow;
+				if (!CSS_SHEET_NOT_SUPPORTED) {
+					adoptedStyleSheets = isNode
+						? []
+						: componentRegistry.getComputedCss(
+								options.useShadow,
+								options.styles
+						  );
 					if (isNode) {
 						this.shadow = this;
 					} else {
-						this.shadow = options.useShadow ? this.attachShadow({ mode: "open" }) : this;
+						this.shadow = options.useShadow
+							? this.attachShadow({ mode: "open" })
+							: this;
 					}
 					this.shadow.adoptedStyleSheets = adoptedStyleSheets;
 				} else {
@@ -77,12 +95,16 @@ const registerElement = (
 						if (joldval !== jnewval) {
 							if (this[klass] && this[klass][this._inputprop]) {
 								this[klass][this._inputprop] = (this as any)[this._inputprop];
-								this[klass].inputChanged && this[klass].inputChanged(oldvalue, newvalue);
+								this[klass].inputChanged &&
+									this[klass].inputChanged(oldvalue, newvalue);
 								this.update();
 							}
 						}
 					});
 				}
+				this.internalTranslationService = Injector.get(
+					"InternalTranslationService"
+				);
 			}
 
 			private init() {
@@ -91,23 +113,37 @@ const registerElement = (
 			}
 
 			private emulateComponent() {
-				if(!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
-					let id = new Date().getTime() + Math.floor((Math.random() * 1000) + 1);
-					let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
+				if (
+					!isNode &&
+					CSS_SHEET_NOT_SUPPORTED &&
+					options.styles &&
+					!options.root
+				) {
+					let id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
+					let compiledCSS = transformCSS(
+						options.styles,
+						`[data-cid="${id.toString()}"]`
+					);
 					this.componentStyleTag = createSTyleTag(compiledCSS);
-					this.setAttribute('data-cid', id.toString());					
+					this.setAttribute("data-cid", id.toString());
 				}
 			}
 
 			connectedCallback() {
 				this.emulateComponent();
-				this[klass] = augmentor(wrapper(target, providers, (this as any)[this._inputprop]))();
+				this[klass] = augmentor(
+					wrapper(target, providers, (this as any)[this._inputprop])
+				)();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
-				InternalTranslationService.translationComponents.set(this, options.selector);
+				this.translationSubscription = this.internalTranslationService.updateTranslations.subscribe(
+					() => {
+						this.update();
+					}
+				);
 			}
 
 			update = () => {
@@ -119,12 +155,13 @@ const registerElement = (
 			};
 
 			disconnectedCallback() {
+				this.translationSubscription.unsubscribe();
 				this.componentStyleTag && this.componentStyleTag.remove();
-				InternalTranslationService.translationComponents.delete(this);
 				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
-		});
+		}
+	);
 };
 
 export { registerElement };

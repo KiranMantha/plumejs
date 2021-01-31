@@ -5,7 +5,7 @@ interface HTMLElement {
 }
 
 interface Window {
-	XMLHttpRequest: jest.Mock<any, any>;
+	XMLHttpRequest: any;
 	returnMockHttpResponse: (response: any) => void;
 	MutationObserver: any;
 	WebKitMutationObserver: any;

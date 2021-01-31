@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Input = exports.Injectable = exports.Component = void 0;
-const reflection_1 = require("@abraham/reflection");
+require("@abraham/reflection");
 const registerElement_1 = require("./registerElement");
 const service_resolver_1 = require("./service_resolver");
 const utils_1 = require("./utils");
 const getDeps = (target) => {
-    let types = reflection_1.Reflection.getMetadata("design:paramtypes", target) || [];
+    let types = Reflect.getMetadata("design:paramtypes", target) || [];
     let deps = types.map((a) => {
         if (a) {
             if (a.name !== "Object") {
@@ -47,6 +47,6 @@ const Injectable = () => (target) => {
 };
 exports.Injectable = Injectable;
 const Input = () => (target, key) => {
-    reflection_1.Reflection.defineMetadata(utils_1.INPUT_METADATA_KEY, key, target.constructor);
+    Reflect.defineMetadata(utils_1.INPUT_METADATA_KEY, key, target.constructor);
 };
 exports.Input = Input;

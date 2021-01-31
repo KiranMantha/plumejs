@@ -1,6 +1,9 @@
 //https://github.com/ibhi/webcomponent-with-di/blob/master/src/users.component.js
 //https://medium.com/@gilfink/creating-a-custom-element-decorator-using-typescript-302e7ed3a3d1
 "use strict";
+
+import { registerInternaltranslationService } from './lib/internalTranslationService';
+registerInternaltranslationService();
 import { Injector } from "./lib/service_resolver";
 import { Component, Injectable, Input } from "./lib/decorators";
 import { DecoratorOptions, Route, Ref, IHooks } from "./lib/types";
@@ -9,7 +12,7 @@ import { useRef, useState, useContext } from "augmentor";
 import { DomTransition } from "./lib/domTransition.service";
 import { TranslationService } from "./lib/translationService";
 import { useFormFields } from './lib/hooks';
-import { wrapIntoObservable, isArray } from './lib/utils'
+import { wrapIntoObservable, isArray } from './lib/utils';
 export {
   Component,
   Injectable,
