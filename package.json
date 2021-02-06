@@ -6,6 +6,9 @@
     "dist/**/*"
   ],
   "main": "./dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "tsc": "tsc",
     "patch-update": "npm version patch",
