@@ -73,7 +73,7 @@ Creating component is a non-hectic task.
 1. import `Component, html` functions and create component as follows
 
 ```
-  import { Component, html } from 'plumejs';
+  import { Component, html } from '@plumejs/core';
   import testEleStyles from './test-ele.scss';
 
   @Component({
@@ -204,7 +204,7 @@ class PersonsList implements IHooks {
 We can even share data between two components as below:
 
 ```
-  import { Component, html, Input } from 'plumejs';
+  import { Component, html, Input } from '@plumejs/core';
 
   @Component({
     selector: 'person-list'
@@ -260,7 +260,8 @@ We can even share data between two components as below:
 Just like react, PlumeJs provides `useRef` as references. example:
 
 ```
-import {Component, Ref, useRef}
+import { Component, Ref, useRef } from '@plumejs/core';
+
 @Component({
   selector: 'sample-comp'
 })
@@ -311,8 +312,8 @@ For more documentation check [here](https://viperhtml.js.org/hyperhtml/documenta
 
 example:
 ```
-import {..., useFormFields} from 'plumejs';
-import {IMultiSelectOptions} from 'plumejs-ui';
+import { ..., useFormFields } from '@plumejs/core';
+import { IMultiSelectOptions } from 'plumejs-ui';
 
 @Component(...)
 class SampleForm {
@@ -429,7 +430,7 @@ class SampleForm {
 Creating service is as simple as creating a component
 
 ```
-  import { Injectable } from './plumejs';
+  import { Injectable } from '@plumejs/core';
 
   @Injectable()
   export class PersonService {
@@ -472,7 +473,7 @@ PlumeJs uses hash-based Routing. It uses dynamic imports to chunk out route spec
 1. Declare routes array as below
 
 ```
-  import { Router, Route } from 'plumejs';
+  import { Router, Route } from '@plumejs/core';
 
   @Component({
     selector: 'app-comp',
@@ -523,7 +524,8 @@ That's it. Now we have the routing in our application.
 To navigate from one route to other from a component:
 
 ```
-  import {Router} from './plumejs'
+  import { Router } from '@plumejs/core';
+
   @Component({
     selector: '<your-selector></your-selector>'
   })
@@ -585,7 +587,7 @@ export default locale_fr;
 
 3. import translation files in root component and pass them to translation service
 ```
-import {..., TranslationService} from 'plumejs';
+import { ..., TranslationService } from '@plumejs/core';
 import locale_en from '<folder-i18n>/en';
 import locale_fr from '<folder-i18n>/fr';
 
@@ -619,7 +621,7 @@ For normal text translations:
 # Unit Tests
 1. sample component unit test:
 ```
-import { TestBed } from 'plumejs';
+import { TestBed } from '@plumejs/core';
 import { AppComponent } from 'src';
 
 describe("Plumejs Component", () => {
