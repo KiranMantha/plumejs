@@ -123,9 +123,10 @@ const registerElement = (options, target, providers, isRoot) => {
             });
         }
         disconnectedCallback() {
+            this.__properties = {};
+            this.triggerInputChanged = null;
             this.translationSubscription.unsubscribe();
             this.componentStyleTag && this.componentStyleTag.remove();
-            this.__properties = {};
             this[utils_1.klass].unmount && this[utils_1.klass].unmount();
         }
     });
