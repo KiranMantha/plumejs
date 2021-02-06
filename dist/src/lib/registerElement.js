@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerElement = void 0;
 const utils_1 = require("./utils");
 const lighterhtml_1 = require("lighterhtml");
-const watchObject_1 = require("./watchObject");
 const instance_1 = require("./instance");
 const augmentor_1 = require("augmentor");
 const browser_or_node_1 = require("browser-or-node");
@@ -67,17 +66,27 @@ const registerElement = (options, target, providers, isRoot) => {
                 options.useShadow = false;
                 this.shadow = this;
             }
-            this._inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
-            if (this._inputprop) {
-                watchObject_1.watch(this, this._inputprop, (oldvalue, newvalue) => {
-                    let joldval = JSON.stringify(oldvalue);
-                    let jnewval = JSON.stringify(newvalue);
-                    if (joldval !== jnewval) {
-                        if (this[utils_1.klass] && this[utils_1.klass][this._inputprop]) {
-                            this[utils_1.klass][this._inputprop] = this[this._inputprop];
-                            this[utils_1.klass].inputChanged &&
-                                this[utils_1.klass].inputChanged(oldvalue, newvalue);
-                            this.update();
+            const _inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
+            this.__properties = {};
+            if (_inputprop) {
+                Object.defineProperty(this, _inputprop, {
+                    get: function () { return this.__properties[_inputprop]; },
+                    set: function (value) {
+                        let oldValue = this.__properties[_inputprop];
+                        let joldval = JSON.stringify(this.__properties[_inputprop]);
+                        let jnewval = JSON.stringify(value);
+                        this.__properties[_inputprop] = value;
+                        if (this.triggerInputChanged) {
+                            this.triggerInputChanged();
+                        }
+                        else {
+                            this.triggerInputChanged = () => {
+                                if (this.isConnected && joldval !== jnewval) {
+                                    this[utils_1.klass][_inputprop] = value;
+                                    this[utils_1.klass].inputChanged && this[utils_1.klass].inputChanged(oldValue, value);
+                                    this.update();
+                                }
+                            };
                         }
                     }
                 });
@@ -101,12 +110,14 @@ const registerElement = (options, target, providers, isRoot) => {
         }
         connectedCallback() {
             this.emulateComponent();
-            this[utils_1.klass] = augmentor_1.augmentor(wrapper(target, providers, this[this._inputprop]))();
+            const _inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
+            this[utils_1.klass] = augmentor_1.augmentor(wrapper(target, providers, this[_inputprop]))();
             this[utils_1.klass]["element"] = this.shadow;
             this[utils_1.klass].beforeMount && this[utils_1.klass].beforeMount();
             this.init();
             this[utils_1.klass]["update"] = this.update.bind(this);
             this[utils_1.klass].mount && this[utils_1.klass].mount();
+            this.triggerInputChanged && this.triggerInputChanged();
             this.translationSubscription = this.internalTranslationService.updateTranslations.subscribe(() => {
                 this.update();
             });
@@ -114,7 +125,7 @@ const registerElement = (options, target, providers, isRoot) => {
         disconnectedCallback() {
             this.translationSubscription.unsubscribe();
             this.componentStyleTag && this.componentStyleTag.remove();
-            this._inputprop && watchObject_1.unwatch(this);
+            this.__properties = {};
             this[utils_1.klass].unmount && this[utils_1.klass].unmount();
         }
     });

@@ -5,7 +5,6 @@ import {
 	isUndefined,
 } from "./utils";
 import { render } from "lighterhtml";
-import { watch, unwatch } from "./watchObject";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
 import { augmentor } from "augmentor";
@@ -45,8 +44,8 @@ const registerElement = (
 		} else if (isRoot && componentRegistry.isRootNodeSet) {
 			throw Error(
 				"Cannot register duplicate root component in " +
-					options.selector +
-					" component"
+				options.selector +
+				" component"
 			);
 		}
 	}
@@ -56,10 +55,11 @@ const registerElement = (
 		class extends HTMLElement {
 			render: Function;
 			[klass]: jsonObject;
+			private __properties: { [key: string]: any };
 			private shadow: any;
 			private translationSubscription: Subscription;
 			private internalTranslationService: any;
-			_inputprop: string;
+			private triggerInputChanged: () => void;
 			componentStyleTag: HTMLStyleElement = null;
 
 			constructor() {
@@ -72,9 +72,9 @@ const registerElement = (
 					adoptedStyleSheets = isNode
 						? []
 						: componentRegistry.getComputedCss(
-								options.useShadow,
-								options.styles
-						  );
+							options.useShadow,
+							options.styles
+						);
 					if (isNode) {
 						this.shadow = this;
 					} else {
@@ -87,17 +87,26 @@ const registerElement = (
 					options.useShadow = false;
 					this.shadow = this;
 				}
-				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
-				if (this._inputprop) {
-					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
-						let joldval = JSON.stringify(oldvalue);
-						let jnewval = JSON.stringify(newvalue);
-						if (joldval !== jnewval) {
-							if (this[klass] && this[klass][this._inputprop]) {
-								this[klass][this._inputprop] = (this as any)[this._inputprop];
-								this[klass].inputChanged &&
-									this[klass].inputChanged(oldvalue, newvalue);
-								this.update();
+				const _inputprop: string = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+				this.__properties = {};
+				if (_inputprop) {
+					Object.defineProperty(this, _inputprop, {
+						get: function () { return this.__properties[_inputprop]; },
+						set: function (value) {
+							let oldValue = this.__properties[_inputprop];
+							let joldval = JSON.stringify(this.__properties[_inputprop]);
+							let jnewval = JSON.stringify(value);
+							this.__properties[_inputprop] = value;
+							if (this.triggerInputChanged) {
+								this.triggerInputChanged();
+							} else {
+								this.triggerInputChanged = () => {
+									if (this.isConnected && joldval !== jnewval) {
+										this[klass][_inputprop] = value;
+										this[klass].inputChanged && this[klass].inputChanged(oldValue, value);
+										this.update();
+									}
+								}
 							}
 						}
 					});
@@ -131,14 +140,16 @@ const registerElement = (
 
 			connectedCallback() {
 				this.emulateComponent();
+				const _inputprop: string = Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				this[klass] = augmentor(
-					wrapper(target, providers, (this as any)[this._inputprop])
+					wrapper(target, providers, (this as any)[_inputprop])
 				)();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();
 				this.init();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
+				this.triggerInputChanged && this.triggerInputChanged();
 				this.translationSubscription = this.internalTranslationService.updateTranslations.subscribe(
 					() => {
 						this.update();
@@ -155,9 +166,10 @@ const registerElement = (
 			};
 
 			disconnectedCallback() {
+				this.__properties = {};
+				this.triggerInputChanged = null;
 				this.translationSubscription.unsubscribe();
 				this.componentStyleTag && this.componentStyleTag.remove();
-				this._inputprop && unwatch(this);
 				this[klass].unmount && this[klass].unmount();
 			}
 		}
