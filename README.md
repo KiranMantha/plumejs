@@ -177,14 +177,14 @@ class PersonsList implements IHooks {
 
 ### inputChanged Hook
 
-It is called when there is any change in `@Input()` property
+It is called when there is any change in `@Input` property
 
 ```
 @Component({
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
-  @Input()
+  @Input
   personsData: IPersonsData = null;
 
   inputChanged(oldValue: IPersonsData, newValue: IPersonsData) {
@@ -240,7 +240,7 @@ We can even share data between two components as below:
   })
   export class PersonDetails implements IHooks {
 
-    @Input()
+    @Input
     userdetails:any = {};
 
     inputChanged(oldValue: any, newValue: any) {
