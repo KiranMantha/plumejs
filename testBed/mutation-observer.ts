@@ -1,21 +1,21 @@
 const getValue = (obj: any, key: string) => {
-	return obj[key] || null;
+  return obj[key] || null;
 };
 
 const mo = (() => {
   'use strict';
-  let listeners:any = [],
+  let listeners: any = [],
     doc = window.document,
-    MutationObserver:any = getValue(window, "MutationObserver") ||  getValue(window, "WebKitMutationObserver"),
-    listenersObj:any = {};
+    MutationObserver: any = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"),
+    listenersObj: any = {};
 
-  const _ready = (selector:string, callback:any) => {
+  const _ready = (selector: string, callback: any) => {
     // Store the selector and callback to be monitored
     listeners.push({
       selector: selector,
       fn: callback
     });
-    
+
     // Watch for changes in the document
     let observer = new MutationObserver(check);
     observer.observe(doc.documentElement, {
@@ -23,12 +23,12 @@ const mo = (() => {
       subtree: true
     });
     listenersObj[selector] = observer;
-    
+
     // Check if the element is currently in the DOM
     check();
   }
 
-  const _destroy = (selector:string) => {
+  const _destroy = (selector: string) => {
     listenersObj[selector] && listenersObj[selector].disconnect();
   }
 

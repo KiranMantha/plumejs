@@ -1,5 +1,5 @@
+import { from, Observable, of } from "rxjs";
 import { jsonObject } from "./types";
-import { Observable, from, of } from "rxjs";
 
 let $object = "object",
 	$string = "string",
@@ -98,6 +98,7 @@ export {
 	isPromise,
 	wrapIntoObservable,
 	klass,
-  INPUT_METADATA_KEY,
+	INPUT_METADATA_KEY,
 	CSS_SHEET_NOT_SUPPORTED
 };
+

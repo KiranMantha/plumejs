@@ -2,33 +2,13 @@
 //https://medium.com/@gilfink/creating-a-custom-element-decorator-using-typescript-302e7ed3a3d1
 "use strict";
 
-import { registerInternaltranslationService } from './lib/internalTranslationService';
-registerInternaltranslationService();
-import { Injector } from "./lib/service_resolver";
-import { Component, Injectable, Input } from "./lib/decorators";
-import { DecoratorOptions, Route, Ref, IHooks } from "./lib/types";
-import { html } from "lighterhtml";
-import { useRef, useState, useContext } from "augmentor";
-import { DomTransition } from "./lib/domTransition.service";
-import { TranslationService } from "./lib/translationService";
-import { useFormFields } from './lib/hooks';
-import { wrapIntoObservable, isArray } from './lib/utils';
-export {
-  Component,
-  Injectable,
-  html,
-  Injector,
-  Input,
-  TranslationService,
-  DomTransition,
-  DecoratorOptions,
-  Route,
-  IHooks,
-  useRef,
-  Ref,
-  useState,
-  useContext,
-  useFormFields,
-  wrapIntoObservable, 
-  isArray
-};
+export { useContext, useRef, useState } from "augmentor/esm";
+export { html } from "lighterhtml/esm";
+export { Component, Injectable, Input } from "./lib/decorators";
+export { DomTransition } from "./lib/domTransition.service";
+export { useFormFields } from './lib/hooks';
+export { Injector } from "./lib/service_resolver";
+export { TranslationService } from "./lib/translationService";
+export { DecoratorOptions, IHooks, Ref, Route } from "./lib/types";
+export { isArray, wrapIntoObservable } from './lib/utils';
+

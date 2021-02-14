@@ -1,17 +1,11 @@
-import {
-	klass,
-	INPUT_METADATA_KEY,
-	CSS_SHEET_NOT_SUPPORTED,
-	isUndefined,
-} from "./utils";
-import { render } from "lighterhtml";
+import { augmentor } from "augmentor/esm";
+import { isNode } from "browser-or-node";
+import { render } from "lighterhtml/esm";
+import { BehaviorSubject, fromEvent, Subscription } from "rxjs";
+import { componentRegistry } from "./componentRegistry";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
-import { augmentor } from "augmentor";
-import { isNode } from "browser-or-node";
-import { componentRegistry } from "./componentRegistry";
-import { Subscription } from "rxjs";
-import { Injector } from "../..";
+import { CSS_SHEET_NOT_SUPPORTED, INPUT_METADATA_KEY, isUndefined, klass } from "./utils";
 
 const wrapper = (fn: Function, deps: Array<string>, props: any) => () =>
 	instantiate(fn, deps, props);
@@ -57,9 +51,11 @@ const registerElement = (
 			[klass]: jsonObject;
 			private __properties: { [key: string]: any };
 			private shadow: any;
-			private translationSubscription: Subscription;
-			private internalTranslationService: any;
-			private triggerInputChanged: () => void;
+			private subscriptions: Subscription = new Subscription();
+			private triggerInputChanged: BehaviorSubject<{ oldValue, newValue }> = new BehaviorSubject<{ oldValue, newValue }>({
+				oldValue: null,
+				newValue: null
+			});
 			componentStyleTag: HTMLStyleElement = null;
 
 			constructor() {
@@ -92,28 +88,17 @@ const registerElement = (
 				if (_inputprop) {
 					Object.defineProperty(this, _inputprop, {
 						get: function () { return this.__properties[_inputprop]; },
-						set: function (value) {
-							let oldValue = this.__properties[_inputprop];
-							let joldval = JSON.stringify(this.__properties[_inputprop]);
-							let jnewval = JSON.stringify(value);
-							this.__properties[_inputprop] = value;
-							if (this.triggerInputChanged) {
-								this.triggerInputChanged();
-							} else {
-								this.triggerInputChanged = () => {
-									if (this.isConnected && joldval !== jnewval) {
-										this[klass][_inputprop] = value;
-										this[klass].inputChanged && this[klass].inputChanged(oldValue, value);
-										this.update();
-									}
-								}
+						set: function (newValue) {
+							let oldValue = { ...this.__properties[_inputprop] };
+							let joldval = JSON.stringify(oldValue);
+							let jnewval = JSON.stringify(newValue);
+							if (joldval !== jnewval) {
+								this.triggerInputChanged.next({ oldValue, newValue });
 							}
+							this.__properties[_inputprop] = newValue;
 						}
 					});
 				}
-				this.internalTranslationService = Injector.get(
-					"InternalTranslationService"
-				);
 			}
 
 			private init() {
@@ -149,11 +134,19 @@ const registerElement = (
 				this.init();
 				this[klass]["update"] = this.update.bind(this);
 				this[klass].mount && this[klass].mount();
-				this.triggerInputChanged && this.triggerInputChanged();
-				this.translationSubscription = this.internalTranslationService.updateTranslations.subscribe(
-					() => {
+				this.subscriptions.add(
+					this.triggerInputChanged.subscribe((obj: { oldValue, newValue }) => {
+						if (obj.oldValue || obj.newValue) {
+							this[klass][_inputprop] = obj.newValue;
+							this[klass].inputChanged && this[klass].inputChanged(obj.oldValue, obj.newValue);
+							this.update();
+						}
+					})
+				);
+				this.subscriptions.add(
+					fromEvent(window, 'onLanguageChange').subscribe(() => {
 						this.update();
-					}
+					})
 				);
 			}
 
@@ -167,8 +160,7 @@ const registerElement = (
 
 			disconnectedCallback() {
 				this.__properties = {};
-				this.triggerInputChanged = null;
-				this.translationSubscription.unsubscribe();
+				this.subscriptions.unsubscribe();
 				this.componentStyleTag && this.componentStyleTag.remove();
 				this[klass].unmount && this[klass].unmount();
 			}
@@ -177,3 +169,4 @@ const registerElement = (
 };
 
 export { registerElement };
+

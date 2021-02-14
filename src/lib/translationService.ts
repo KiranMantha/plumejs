@@ -1,13 +1,8 @@
 import { setDefaultLanguage, setTranslate } from "vanilla-i18n";
 import { Injectable } from './decorators';
-import { Injector } from '../plume';
 
 @Injectable()
 export class TranslationService {
-	private internalTranslationService: any;
-	constructor() {
-		this.internalTranslationService = Injector.get('InternalTranslationService');
-	}
 	private defaultLanguage: string = "";
 
 	setTranslate(i18n: object, lang: string) {
@@ -17,7 +12,8 @@ export class TranslationService {
 	setDefaultLanguage(language: string) {
 		this.defaultLanguage = language;
 		setDefaultLanguage(language);
-		this.internalTranslationService.updateTranslations.next();
+		let event = new CustomEvent<any>('onLanguageChange');
+		window.dispatchEvent(event);
 	}
 
 	getCurrentLanguage() {

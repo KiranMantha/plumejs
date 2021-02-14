@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
     "lib": ["dom", "ESNext"],
     "moduleResolution": "node",
     "declaration": true,
@@ -17,7 +17,8 @@
     "noEmitOnError": true,
     "typeRoots": [
       "@types",
-      "node_modules/@types"
+      "node_modules/@types",
+      "node_modules/@abraham/reflection/src"
     ]
   },
   "exclude": ["__tests__","dist", "node_modules"]

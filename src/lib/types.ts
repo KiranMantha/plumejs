@@ -43,4 +43,5 @@ interface IHooks {
 type Ref<T> = { current: T };
 type jsonObject = { [index: string]: any };
 
-export { DecoratorOptions, RouteItem, Route,InternalRouteItem, Ref, jsonObject, ICurrentRoute, IHooks };
+export { DecoratorOptions, RouteItem, Route, InternalRouteItem, Ref, jsonObject, ICurrentRoute, IHooks };
+

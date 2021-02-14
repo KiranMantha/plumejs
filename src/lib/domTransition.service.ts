@@ -9,7 +9,7 @@ export class DomTransition {
 	}
 
 	private removeTransition(element: HTMLElement) {
-		element.removeEventListener(this.transition, () => {}, false);
+		element.removeEventListener(this.transition, () => { }, false);
 	}
 
 	private whichTransitionEnd() {

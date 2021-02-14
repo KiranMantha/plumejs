@@ -3,11 +3,11 @@
 import '@abraham/reflection';
 import { registerElement } from "./registerElement";
 import { Injector } from "./service_resolver";
-import { INPUT_METADATA_KEY } from "./utils";
 import { DecoratorOptions } from "./types";
+import { INPUT_METADATA_KEY } from "./utils";
 
 const getDeps = (target: Function): Array<string> => {
-	let types:Array<any> = Reflect.getMetadata("design:paramtypes", target) || [];
+	let types: Array<any> = Reflect.getMetadata("design:paramtypes", target) || [];
 	let deps = types.map((a: Function) => {
 		if (a) {
 			if (a.name !== "Object") {
@@ -38,7 +38,7 @@ const depsResolver = (
 };
 
 let Component = (options: DecoratorOptions) => (target: Function) => {
-	if(!window.customElements.get(options.selector)) {	
+	if (!window.customElements.get(options.selector)) {
 		let obj = depsResolver(options, target);
 		target.prototype.selector = options.selector;
 		registerElement(options, target, obj.deps, obj.isRoot);
@@ -50,8 +50,9 @@ const Injectable = () => (target: Function) => {
 	Injector.register(target.name, target, s);
 };
 
-const Input = () => (target: any, key: string) => {
+const Input = (target: any, key: string) => {
 	Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
 };
 
 export { Component, Injectable, Input };
+

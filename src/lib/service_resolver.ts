@@ -1,6 +1,5 @@
 import { instantiate } from "./instance";
 import { isFunction } from "./utils";
-import { isNode } from 'browser-or-node';
 
 interface IInjector {
 	getService(name: string): void | {};
@@ -9,7 +8,7 @@ interface IInjector {
 		fn: Function | Object,
 		deps?: Array<string>
 	): void;
-	clear():void;
+	clear(): void;
 }
 
 const Injector = (() => {
@@ -31,7 +30,7 @@ const Injector = (() => {
 			}
 		}
 
-		public clear():void {
+		public clear(): void {
 			this._map = new Map();
 		}
 
@@ -61,3 +60,4 @@ const Injector = (() => {
 })();
 
 export { Injector };
+

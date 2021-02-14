@@ -12,7 +12,7 @@ interface Window {
 }
 
 interface Type<T> {
-	new (...args: any[]): T;
+	new(...args: any[]): T;
 }
 
 interface String {
@@ -21,5 +21,5 @@ interface String {
 
 interface fetch {
 	resetMocks: () => void;
-	mockResponseOnce: (mockResponse:string) => void;
+	mockResponseOnce: (mockResponse: string) => void;
 }

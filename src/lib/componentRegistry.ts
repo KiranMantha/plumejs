@@ -3,19 +3,19 @@ class _componentRegistry {
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
 
-  constructor(){
+  constructor() {
     try {
       this.globalStyles = new CSSStyleSheet();
-    } catch(e) {
+    } catch (e) {
       this.globalStyles = '';
     }
-    
+
     this.isRootNodeSet = false;
   }
 
   getComputedCss = (useShadow: boolean, styles: string = "") => {
     let csoArray = [];
-    if(useShadow) {
+    if (useShadow) {
       let defaultStyles = new CSSStyleSheet();
       defaultStyles.insertRule(`:host { display: block; }`);
       csoArray = [this.globalStyles, defaultStyles];
