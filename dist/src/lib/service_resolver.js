@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Injector = void 0;
-const instance_1 = require("./instance");
-const utils_1 = require("./utils");
+import { instantiate } from "./instance";
+import { isFunction } from "./utils";
 const Injector = (() => {
     class InternalInjector {
         constructor() {
@@ -25,8 +22,8 @@ const Injector = (() => {
         registerService(name, fn, deps = []) {
             if (name && fn) {
                 if (!this.get(name)) {
-                    if (utils_1.isFunction(fn)) {
-                        let instance = instance_1.instantiate(fn, deps);
+                    if (isFunction(fn)) {
+                        let instance = instantiate(fn, deps);
                         this.set(name, instance);
                     }
                     else {
@@ -46,4 +43,4 @@ const Injector = (() => {
         clear: injectorInstance.clear.bind(injectorInstance)
     };
 })();
-exports.Injector = Injector;
+export { Injector };

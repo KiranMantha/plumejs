@@ -1,5 +1,5 @@
-import { jsonObject } from "./types";
 import { Observable } from "rxjs";
+import { jsonObject } from "./types";
 declare const foreach: (collection: Array<any>, callback: (o: any, i: any, c: Array<any>) => void, scope?: any) => void;
 declare const lookup: (obj: jsonObject, path: string, defaultValue: any) => any;
 declare const klass: unique symbol;

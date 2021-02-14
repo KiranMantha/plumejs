@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.componentRegistry = void 0;
 class _componentRegistry {
     constructor() {
         this.getComputedCss = (useShadow, styles = "") => {
@@ -27,4 +24,4 @@ class _componentRegistry {
     }
 }
 const componentRegistry = new _componentRegistry();
-exports.componentRegistry = componentRegistry;
+export { componentRegistry };

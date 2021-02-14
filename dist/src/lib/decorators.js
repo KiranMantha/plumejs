@@ -1,10 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Input = exports.Injectable = exports.Component = void 0;
-require("@abraham/reflection");
-const registerElement_1 = require("./registerElement");
-const service_resolver_1 = require("./service_resolver");
-const utils_1 = require("./utils");
+import '@abraham/reflection';
+import { registerElement } from "./registerElement";
+import { Injector } from "./service_resolver";
+import { INPUT_METADATA_KEY } from "./utils";
 const getDeps = (target) => {
     let types = Reflect.getMetadata("design:paramtypes", target) || [];
     let deps = types.map((a) => {
@@ -37,16 +34,14 @@ let Component = (options) => (target) => {
     if (!window.customElements.get(options.selector)) {
         let obj = depsResolver(options, target);
         target.prototype.selector = options.selector;
-        registerElement_1.registerElement(options, target, obj.deps, obj.isRoot);
+        registerElement(options, target, obj.deps, obj.isRoot);
     }
 };
-exports.Component = Component;
 const Injectable = () => (target) => {
     let s = getDeps(target);
-    service_resolver_1.Injector.register(target.name, target, s);
+    Injector.register(target.name, target, s);
 };
-exports.Injectable = Injectable;
-const Input = () => (target, key) => {
-    Reflect.defineMetadata(utils_1.INPUT_METADATA_KEY, key, target.constructor);
+const Input = (target, key) => {
+    Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
 };
-exports.Input = Input;
+export { Component, Injectable, Input };

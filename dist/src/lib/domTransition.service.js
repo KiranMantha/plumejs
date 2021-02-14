@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DomTransition = void 0;
-const tslib_1 = require("tslib");
-const decorators_1 = require("./decorators");
+import { __decorate, __metadata } from "tslib";
+import { Injectable } from "./decorators";
 let DomTransition = class DomTransition {
     constructor() {
         this.transition = "";
@@ -45,8 +42,8 @@ let DomTransition = class DomTransition {
         setTimeout(callback, duration);
     }
 };
-DomTransition = tslib_1.__decorate([
-    decorators_1.Injectable(),
-    tslib_1.__metadata("design:paramtypes", [])
+DomTransition = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [])
 ], DomTransition);
-exports.DomTransition = DomTransition;
+export { DomTransition };

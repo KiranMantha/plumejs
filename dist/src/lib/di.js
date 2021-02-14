@@ -1,13 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setDI = void 0;
-const service_resolver_1 = require("./service_resolver");
+import { Injector } from './service_resolver';
 const setDI = (fn, deps, props) => {
     let di = [], finalArr = [], func_deps = deps && deps.length > 0 ? deps : [];
     if (func_deps.length > 0) {
         func_deps.map((o) => {
             if (o !== 'props') {
-                let depsrvc = service_resolver_1.Injector.get(o);
+                let depsrvc = Injector.get(o);
                 if (depsrvc) {
                     let k = depsrvc;
                     di.push(k);
@@ -18,4 +15,4 @@ const setDI = (fn, deps, props) => {
     finalArr = [fn, di];
     return finalArr;
 };
-exports.setDI = setDI;
+export { setDI };

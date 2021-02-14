@@ -1,4 +1,4 @@
 export declare function useFormFields<T>(initialValues: T): {
-    formFields: T;
+    formFields: any;
     createChangeHandler: (key: keyof T) => (e: Event) => void;
 };

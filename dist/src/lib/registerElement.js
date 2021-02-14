@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerElement = void 0;
-const utils_1 = require("./utils");
-const lighterhtml_1 = require("lighterhtml");
-const instance_1 = require("./instance");
-const augmentor_1 = require("augmentor");
-const browser_or_node_1 = require("browser-or-node");
-const componentRegistry_1 = require("./componentRegistry");
-const __1 = require("../..");
-const wrapper = (fn, deps, props) => () => instance_1.instantiate(fn, deps, props);
+import { augmentor } from "augmentor/esm";
+import { isNode } from "browser-or-node";
+import { render } from "lighterhtml/esm";
+import { BehaviorSubject, fromEvent, Subscription } from "rxjs";
+import { componentRegistry } from "./componentRegistry";
+import { instantiate } from "./instance";
+import { CSS_SHEET_NOT_SUPPORTED, INPUT_METADATA_KEY, isUndefined, klass } from "./utils";
+const wrapper = (fn, deps, props) => () => instantiate(fn, deps, props);
 const createSTyleTag = (content) => {
     let tag = document.createElement("style");
     tag.innerHTML = content;
@@ -22,13 +19,13 @@ const transformCSS = (styles, selector) => {
     return styles;
 };
 const registerElement = (options, target, providers, isRoot) => {
-    if (!browser_or_node_1.isNode) {
-        if (isRoot && !componentRegistry_1.componentRegistry.isRootNodeSet && options.styles) {
-            componentRegistry_1.componentRegistry.isRootNodeSet = true;
+    if (!isNode) {
+        if (isRoot && !componentRegistry.isRootNodeSet && options.styles) {
+            componentRegistry.isRootNodeSet = true;
             createSTyleTag(options.styles);
-            componentRegistry_1.componentRegistry.globalStyles.replace((options.styles || "").toString());
+            componentRegistry.globalStyles.replace((options.styles || "").toString());
         }
-        else if (isRoot && componentRegistry_1.componentRegistry.isRootNodeSet) {
+        else if (isRoot && componentRegistry.isRootNodeSet) {
             throw Error("Cannot register duplicate root component in " +
                 options.selector +
                 " component");
@@ -37,22 +34,27 @@ const registerElement = (options, target, providers, isRoot) => {
     window.customElements.define(options.selector, class extends HTMLElement {
         constructor() {
             super();
+            this.subscriptions = new Subscription();
+            this.triggerInputChanged = new BehaviorSubject({
+                oldValue: null,
+                newValue: null
+            });
             this.componentStyleTag = null;
             this.update = () => {
                 this.init();
             };
             this.getModel = () => {
-                return this[utils_1.klass];
+                return this[klass];
             };
             let adoptedStyleSheets = [];
-            options.useShadow = utils_1.isUndefined(options.useShadow)
+            options.useShadow = isUndefined(options.useShadow)
                 ? true
                 : options.useShadow;
-            if (!utils_1.CSS_SHEET_NOT_SUPPORTED) {
-                adoptedStyleSheets = browser_or_node_1.isNode
+            if (!CSS_SHEET_NOT_SUPPORTED) {
+                adoptedStyleSheets = isNode
                     ? []
-                    : componentRegistry_1.componentRegistry.getComputedCss(options.useShadow, options.styles);
-                if (browser_or_node_1.isNode) {
+                    : componentRegistry.getComputedCss(options.useShadow, options.styles);
+                if (isNode) {
                     this.shadow = this;
                 }
                 else {
@@ -66,40 +68,30 @@ const registerElement = (options, target, providers, isRoot) => {
                 options.useShadow = false;
                 this.shadow = this;
             }
-            const _inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
+            const _inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
             this.__properties = {};
             if (_inputprop) {
                 Object.defineProperty(this, _inputprop, {
                     get: function () { return this.__properties[_inputprop]; },
-                    set: function (value) {
-                        let oldValue = this.__properties[_inputprop];
-                        let joldval = JSON.stringify(this.__properties[_inputprop]);
-                        let jnewval = JSON.stringify(value);
-                        this.__properties[_inputprop] = value;
-                        if (this.triggerInputChanged) {
-                            this.triggerInputChanged();
+                    set: function (newValue) {
+                        let oldValue = { ...this.__properties[_inputprop] };
+                        let joldval = JSON.stringify(oldValue);
+                        let jnewval = JSON.stringify(newValue);
+                        if (joldval !== jnewval) {
+                            this.triggerInputChanged.next({ oldValue, newValue });
                         }
-                        else {
-                            this.triggerInputChanged = () => {
-                                if (this.isConnected && joldval !== jnewval) {
-                                    this[utils_1.klass][_inputprop] = value;
-                                    this[utils_1.klass].inputChanged && this[utils_1.klass].inputChanged(oldValue, value);
-                                    this.update();
-                                }
-                            };
-                        }
+                        this.__properties[_inputprop] = newValue;
                     }
                 });
             }
-            this.internalTranslationService = __1.Injector.get("InternalTranslationService");
         }
         init() {
-            let _returnfn = this[utils_1.klass].render.bind(this[utils_1.klass]);
-            lighterhtml_1.render.bind(this[utils_1.klass], this.shadow, _returnfn)();
+            let _returnfn = this[klass].render.bind(this[klass]);
+            render.bind(this[klass], this.shadow, _returnfn)();
         }
         emulateComponent() {
-            if (!browser_or_node_1.isNode &&
-                utils_1.CSS_SHEET_NOT_SUPPORTED &&
+            if (!isNode &&
+                CSS_SHEET_NOT_SUPPORTED &&
                 options.styles &&
                 !options.root) {
                 let id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
@@ -110,25 +102,30 @@ const registerElement = (options, target, providers, isRoot) => {
         }
         connectedCallback() {
             this.emulateComponent();
-            const _inputprop = Reflect.getMetadata(utils_1.INPUT_METADATA_KEY, target);
-            this[utils_1.klass] = augmentor_1.augmentor(wrapper(target, providers, this[_inputprop]))();
-            this[utils_1.klass]["element"] = this.shadow;
-            this[utils_1.klass].beforeMount && this[utils_1.klass].beforeMount();
+            const _inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+            this[klass] = augmentor(wrapper(target, providers, this[_inputprop]))();
+            this[klass]["element"] = this.shadow;
+            this[klass].beforeMount && this[klass].beforeMount();
             this.init();
-            this[utils_1.klass]["update"] = this.update.bind(this);
-            this[utils_1.klass].mount && this[utils_1.klass].mount();
-            this.triggerInputChanged && this.triggerInputChanged();
-            this.translationSubscription = this.internalTranslationService.updateTranslations.subscribe(() => {
+            this[klass]["update"] = this.update.bind(this);
+            this[klass].mount && this[klass].mount();
+            this.subscriptions.add(this.triggerInputChanged.subscribe((obj) => {
+                if (obj.oldValue || obj.newValue) {
+                    this[klass][_inputprop] = obj.newValue;
+                    this[klass].inputChanged && this[klass].inputChanged(obj.oldValue, obj.newValue);
+                    this.update();
+                }
+            }));
+            this.subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
                 this.update();
-            });
+            }));
         }
         disconnectedCallback() {
             this.__properties = {};
-            this.triggerInputChanged = null;
-            this.translationSubscription.unsubscribe();
+            this.subscriptions.unsubscribe();
             this.componentStyleTag && this.componentStyleTag.remove();
-            this[utils_1.klass].unmount && this[utils_1.klass].unmount();
+            this[klass].unmount && this[klass].unmount();
         }
     });
 };
-exports.registerElement = registerElement;
+export { registerElement };

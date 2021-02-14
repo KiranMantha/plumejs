@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFormFields = void 0;
-const augmentor_1 = require("augmentor");
+import { useState } from "augmentor";
 const getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -40,8 +37,8 @@ const getTargetValue = (target) => {
     }
     return targetValue;
 };
-function useFormFields(initialValues) {
-    let [formFields, setFormFields] = augmentor_1.useState(initialValues);
+export function useFormFields(initialValues) {
+    let [formFields, setFormFields] = useState(initialValues);
     const createChangeHandler = (key) => (e) => {
         let target = e.target;
         const value = getTargetValue(target);
@@ -52,4 +49,3 @@ function useFormFields(initialValues) {
     };
     return { formFields, createChangeHandler };
 }
-exports.useFormFields = useFormFields;
