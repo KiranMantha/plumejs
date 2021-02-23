@@ -29,11 +29,20 @@ Plumejs has yeoman generator which provides the entire scaffolding for your proj
 3. After completing installation run `yo plumejs` in your destination folder. This will ask you about your project name and description and will install all your required dependencies.
 4. After all the dependencies were installed, you can run application using command `npm start`.
 
-# Breaking change in 2.2.2 version
+# Whats new in 3.0.0 version
+
+Plumejs is now moving to scoped packages, deprecating older versions. In the process it shed 50% in size and dependencies compared to its previous versions. The `core aka @plumejs/core` scope is now only ~50KB and acts more as a library instead of a framework. So the devs can plugin `router aka @plumejs/router` scope for routing, `ui aka @plumejs/ui` scope for built in controls and more to come.
+
+## Breaking change in 3.0.0 version
+
+The usage of `Input` decorator is changed from `@Input() property` to `@Input property`. 
+
+## Breaking change from 2.2.2 version
 
 There is a breaking change in component declaration. Check below:
 
 ```
+import { Component } from '@plumejs/core';
 // import stylesheet in ts file
 import componentStyles from './styles.scss';
 
@@ -66,7 +75,7 @@ to your `jest.config.js`
 # Documentation
 Here is a sneak peak into bultins:
 
-# Creating Components
+## Creating Components
 
 Creating component is a non-hectic task.
 
@@ -83,19 +92,21 @@ Creating component is a non-hectic task.
   })
   class TestEle {
     test:string;
+
     constructor(){
       this.text = 'hello world!'
     }
+
     render(){
-      return html(`<div>${this.text}</div>`)
+      return html`<div>${this.text}</div>`;
     }
   }
 
 ```
 
-Note: through out the entire application there will be only one root component. adding more root components will not render the page and throw duplicate root component error.
+Note: Through out the entire application there will be only one root component. Adding more than one root component will not render the page and throw duplicate root component error.
 
-For styling one can use css or scss formats.
+For styling one can use css or scss formats. but scss is the most preferred one. By default all plumejs components are render as block elements. They internally have `:host { display: block; }` property.
 
 ## Lifecycle Hooks
 
@@ -106,12 +117,16 @@ For styling one can use css or scss formats.
  It is used to perform model data initialization as follows:
 
 ```
+import { Component, html, IHooks } from '@plumejs/core';
+
 @Component({
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
   data:Array<string> = [];
+
   constructor(){}
+
   mount(){
     fetch('persons-api').then(res => res.json()).then(data => {
       this.data = data;
@@ -124,11 +139,11 @@ class PersonsList implements IHooks {
   }
 
   render(){
-    return html(`<div>
+    return html`<div>
       <ul>${
         this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
       }</ul>
-    </div>`)
+    </div>`;
   }
 }
 
@@ -139,13 +154,17 @@ class PersonsList implements IHooks {
  It is used to execute any pendending subscriptions as follows:
 
 ```
+import { Component, html, IHooks } from '@plumejs/core';
+import { from, Observable } from 'rxjs';
+
 @Component({
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
   data:Array<string> = [];
-  constructor(){}
   mySubscription: Observable;
+
+  constructor(){}
 
   mount(){
     this.mySubscription = from(fetch('persons-api').then(res => res.json()));
@@ -165,11 +184,13 @@ class PersonsList implements IHooks {
   }
 
   render(){
-    return html(`<div>
-      <ul>${
+    return html`<div>
+      <ul>
+      ${
         this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
-      }</ul>
-    </div>`)
+      }
+      </ul>
+    </div>`;
   }
 }
 
@@ -180,12 +201,37 @@ class PersonsList implements IHooks {
 It is called when there is any change in `@Input` property
 
 ```
+import { Component, html, Input, IHooks } from '@plumejs/core';
+
+@Component({
+  selector: 'app-root'
+})
+class App {
+  persons: IPersonsData;
+
+  constructor() {
+    this.updatePersons = this.updatePersons.bind(this);
+  }
+
+  updatePersons() {
+    // directly updating persons array will not update UI. so creating new array.
+    this.persons = [...this.persons, new person record]; 
+    this.update();
+  }
+
+  render() {
+    return html`
+      <button onclick=${this.updatePersons}>Update persons</button>
+      <person-list personsData=${ this.persons }></person-list>
+    `;
+  }
+}
+
 @Component({
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
-  @Input
-  personsData: IPersonsData = null;
+  @Input personsData: IPersonsData = null;
 
   inputChanged(oldValue: IPersonsData, newValue: IPersonsData) {
     // do your operation here.
@@ -204,15 +250,17 @@ class PersonsList implements IHooks {
 We can even share data between two components as below:
 
 ```
-  import { Component, html, Input } from '@plumejs/core';
+  import { Component, html, Input, IHooks } from '@plumejs/core';
 
   @Component({
     selector: 'person-list'
   })
-  class PersonsList {
+  class PersonsList implements IHooks {
     data:Array<string> = [];
     persondetails:any = {};
+
     constructor(){}
+
     mount(){
       fetch('persons-api').then(res => res.json()).then(data => {
         this.data = data;
@@ -240,8 +288,7 @@ We can even share data between two components as below:
   })
   export class PersonDetails implements IHooks {
 
-    @Input
-    userdetails:any = {};
+    @Input userdetails:any = {};
 
     inputChanged(oldValue: any, newValue: any) {
       console.log('oldvalue: ', oldValue);
@@ -283,9 +330,6 @@ class SampleComp {
 }
 ```
 
-
-
-
 ## Partial attributes
 
 Partial attributes implementation like conditional css class modification is a breeze.
@@ -305,19 +349,30 @@ html`<div class="foo ${ mayBar ? 'bar' : '' }">x</div>`; // this may work in bro
 For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
 
 
+## Hooks
+### useFormFields
 
-# Hooks
-## useFormFields
 `useFormFields` is very helpful to build forms and retrive form data.
 
 example:
 ```
-import { ..., useFormFields } from '@plumejs/core';
-import { IMultiSelectOptions } from 'plumejs-ui';
+import { Component, html, useFormFields } from '@plumejs/core';
+import { IMultiSelectOptions, registerMultiSelectComponent } from '@plumejs/ui';
+
+// call in root component only.
+registerMultiSelectComponent();
+
+interface IFormFields {
+  email: string;
+  checkme: boolean;
+  option: string;
+  options: string[];
+  gender: string
+}
 
 @Component(...)
 class SampleForm {
-  sampleformFields: any;
+  sampleformFields: IFormFields;
 	createChangeHandler: any;
 	multiSelectChangehandler: any;
   multiSelectOptions: IMultiSelectOptions = {
@@ -343,7 +398,7 @@ class SampleForm {
 	}
 
   constructor() {
-    const { formFields, createChangeHandler } = useFormFields({
+    const { formFields, createChangeHandler } = useFormFields<IFormFields>({
 			email: "",
 			checkme: false,
 			option: '',
@@ -425,7 +480,7 @@ class SampleForm {
 }
 ```
 
-# Creating Services
+## Creating Services
 
 Creating service is as simple as creating a component
 
@@ -440,13 +495,15 @@ Creating service is as simple as creating a component
   }
 
   // in component
+  import { Component, IHooks } from '@plumejs/core';
 
   @Component({
     selector: 'test-ele'
   })
-  class TestEle {
+  class TestEle implementing IHooks {
     test:string;
     data:Array<string> = [];
+
     constructor(private personSrvc:PersonService){
       this.text = 'hello world!'
     }
@@ -466,93 +523,7 @@ Services in PlumeJs are singleton
 
 Note: The constructor arguments are strictly typed and should not be native types or 'any'. Else they will return undefined.
 
-# Routing
-
-PlumeJs uses hash-based Routing. It uses dynamic imports to chunk out route specific logic which reduces main bundle size significantly. Routing can be implemented in 2 simple steps:
-
-1. Declare routes array as below
-
-```
-  import { Router, Route } from '@plumejs/core';
-
-  @Component({
-    selector: 'app-comp',
-    root: true
-  })
-  class AppComponent {
-    constructor() {
-      Router.registerRoutes(this.routes);
-    }
-
-    routes: Array<Route> = [{
-      path: '',
-      redirectto: '/home',
-    },{
-      path: '/home',
-      template: '<app-home></app-home>',
-      templatePath: () => import('<path-to-ts-file-of-home-component>')
-    },{
-      path: '/contactus',
-      template: '<app-contactus></app-contactus>',
-      templatePath: () => import('<path-to-ts-file-of-contactus-component>')
-    },{
-      path: '/details/:id',
-      template: '<app-details></app-details>',
-      templatePath: () => import('<path-to-ts-file-of-details-component>'),
-      // canActivate route gaurd helps to check wheter the route is accesseble or not.
-      // canActivate function should return Promise<boolean> or Observable<boolean> or boolean.
-      canActivate: () => {
-        let key = localStorage.getItem('key');
-        if(!key) {
-          this.router.navigateTo('/home');
-          return false;
-        }
-        return true;
-      }
-    }]
-  }
-
-  Router.registerRoutes(routes); => Routes must be registered with Router service. In previous version(< 2.0.8), routes are passed as input to router-outlet.
-
-  ...
-```
-
-2. add `<router-outlet></router-outlet>` in your component
-
-That's it. Now we have the routing in our application.
-
-To navigate from one route to other from a component:
-
-```
-  import { Router } from '@plumejs/core';
-
-  @Component({
-    selector: '<your-selector></your-selector>'
-  })
-  class YourClass {
-    constructor(private router: Router){}
-
-    onclick() {
-      this.router.navigateTo('/your-route');
-    }
-  }
-```
-
-To Access current route parameters
-
-```
-  route = [{
-    path: '/details/:id'
-    ....
-  }]
-  ...
-
-  if window.url is /details/123
-  const currentRoute = this.router.getCurrentRoute();
-  const id = currentRoute.params.id; /// returns 123
-```
-
-# Setting up Internationalization
+## Setting up Internationalization
 
 Adding translations in PlumeJS is a breeze. Checkout below for implementation:
 
@@ -587,7 +558,7 @@ export default locale_fr;
 
 3. import translation files in root component and pass them to translation service
 ```
-import { ..., TranslationService } from '@plumejs/core';
+import { Component, TranslationService } from '@plumejs/core';
 import locale_en from '<folder-i18n>/en';
 import locale_fr from '<folder-i18n>/fr';
 
@@ -607,10 +578,10 @@ class AppComponent {
 5. To pass html from translations:
 
 ```
-<div>${{html: 'html-translation'.translate() }}</div>
+<div>${{ html: 'html-translation'.translate() }}</div>
 ```
 
-The above object inside template literal contains 'html' key which properly allow lighterhtml to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
+The above object inside template literal contains 'html' key which properly allow compiler to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
 
 For normal text translations:
 
@@ -618,7 +589,8 @@ For normal text translations:
 <div>${ 'text-translation'.translate() }</div>
 ```
 
-# Unit Tests
+## Unit Tests
+
 1. sample component unit test:
 ```
 import { TestBed } from '@plumejs/core';
@@ -688,51 +660,13 @@ describe("Plumejs Service", () => {
 
 ```
 
+# Routing
+
+As a scoped package one can install `@plumejs/router` for routing. For documentation check [plumejs router repo](https://github.com/KiranMantha/plumejs-router)
+
 # UI Components
 
-As an additional provision, plumejs-ui npm module exposes a comprehensive set of useful ui components like modal dialog, notifications, multi select dropdown, toggle. You can check the documentaion [here](https://github.com/KiranMantha/plumejs-ui).
-
-# CSS Tips
-
-One problem with webcomponents is the css selectors can't penetrate through shadow dom. There will be cases where a particular webcomponent should display in a particular way. In order to do that use:
-
-```
-:host-context(your-dom-tag-name | .your-class | #your-id) {
-  // your styles
-}
-
-(or)
-
-:host(your-dom-tag-name | .your-class | #your-id) {
-  // your styles
-}
-```
-
-## Responsive webcomponents
-
-The main problem with webcomponents when implementing `@media` css arises if there is no `<meta name="viewport" content="width=device-width,initial-scale=1">` meta tag in html page. so they always target viewport dimensions instead of element dimensions. As per observation, with respect to webcomponents, if there is no above mentioned meta tag then there are only 2 break points to implement `@media` css. They are:
-
-```
-// For tablets and other small screens
-@media screen and (max-width: 980px) {
-  :host(<your-selector>) /deep/ .yourclass | #your-id {
-      // your styles
-  }
-}
-
-// For desktop and above
-@media screen and (min-width: 981px) {
-  :host(<your-selector>) /deep/ .yourclass | #your-id {
-      // your styles
-  }
-}
-```
-
-All the media breakpoints will work if the above meta tag is there in html page.
-
-`/deep/` is very helpful to penetrate through shadowDom and style the target.
-
-By default all plumejs components are render as block elements. They internally have `:host { display: block; }` property.
+As an additional provision, `@plumejs/ui` npm module exposes a comprehensive set of useful ui components like modal dialog, notifications, multi select dropdown, toggle. You can check the documentaion [plumejs ui repo](https://github.com/KiranMantha/plumejs-ui).
 
 
 An example repo can be found [here](https://github.com/KiranMantha/plumejs-example-repo) for reference.
