@@ -52,10 +52,7 @@ const registerElement = (
 			private __properties: { [key: string]: any };
 			private shadow: any;
 			private subscriptions: Subscription = new Subscription();
-			private triggerInputChanged: BehaviorSubject<{ oldValue, newValue }> = new BehaviorSubject<{ oldValue, newValue }>({
-				oldValue: null,
-				newValue: null
-			});
+			private triggerInputChanged: BehaviorSubject<{ oldValue, newValue }>;
 			componentStyleTag: HTMLStyleElement = null;
 
 			constructor() {
@@ -83,13 +80,17 @@ const registerElement = (
 					options.useShadow = false;
 					this.shadow = this;
 				}
-				const _inputprop: string = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+				const _inputprop: string = (target as any).inputProp //Reflect.getMetadata(INPUT_METADATA_KEY, target);
 				this.__properties = {};
+				this.triggerInputChanged = new BehaviorSubject<{ oldValue, newValue }>({
+					oldValue: null,
+					newValue: null
+				});
 				if (_inputprop) {
 					Object.defineProperty(this, _inputprop, {
 						get: function () { return this.__properties[_inputprop]; },
 						set: function (newValue) {
-							let oldValue = { ...this.__properties[_inputprop] };
+							let oldValue = this.__properties[_inputprop] || null;
 							let joldval = JSON.stringify(oldValue);
 							let jnewval = JSON.stringify(newValue);
 							if (joldval !== jnewval) {

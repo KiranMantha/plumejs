@@ -1,4 +1,4 @@
-class _componentRegistry {
+const componentRegistry = new class {
     constructor() {
         this.getComputedCss = (useShadow, styles = "") => {
             let csoArray = [];
@@ -22,6 +22,5 @@ class _componentRegistry {
         }
         this.isRootNodeSet = false;
     }
-}
-const componentRegistry = new _componentRegistry();
+};
 export { componentRegistry };

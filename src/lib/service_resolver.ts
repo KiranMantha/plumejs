@@ -34,11 +34,11 @@ const Injector = (() => {
 			this._map = new Map();
 		}
 
-		public registerService(name: string, fn: any, deps: Array<string> = []) {
+		public registerService(name: string, fn: Function | object, deps: Array<string> = []) {
 			if (name && fn) {
 				if (!this.get(name)) {
 					if (isFunction(fn)) {
-						let instance = instantiate(fn, deps);
+						let instance = instantiate(fn as Function, deps);
 						this.set(name, instance);
 					} else {
 						this.set(name, fn);

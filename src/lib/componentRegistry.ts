@@ -1,4 +1,4 @@
-class _componentRegistry {
+const componentRegistry = new class {
   globalStyles: any;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
@@ -29,6 +29,5 @@ class _componentRegistry {
   };
 }
 
-const componentRegistry = new _componentRegistry();
-
 export { componentRegistry };
+

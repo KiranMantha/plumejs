@@ -4,7 +4,6 @@ import '@abraham/reflection';
 import { registerElement } from "./registerElement";
 import { Injector } from "./service_resolver";
 import { DecoratorOptions } from "./types";
-import { INPUT_METADATA_KEY } from "./utils";
 
 const getDeps = (target: Function): Array<string> => {
 	let types: Array<any> = Reflect.getMetadata("design:paramtypes", target) || [];
@@ -45,14 +44,20 @@ let Component = (options: DecoratorOptions) => (target: Function) => {
 	}
 };
 
-const Injectable = () => (target: Function) => {
-	let s = getDeps(target);
-	Injector.register(target.name, target, s);
+const Injectable = (name?: string) => (target: Function | [...Array<string>, Function]) => {
+	//let s = getDeps(target);
+	let klass = (target as [...Array<string>, Function]).pop();
+	let dependencies = target;
+	Injector.register(name, klass, dependencies);
 };
 
 const Input = (target: any, key: string) => {
-	Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
+	//Reflect.defineMetadata(INPUT_METADATA_KEY, key, target.constructor);
+	target.inputProp = key;
 };
+
+@Injectable()
+class test { }
 
 export { Component, Injectable, Input };
 

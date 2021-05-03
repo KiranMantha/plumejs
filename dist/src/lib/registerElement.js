@@ -35,10 +35,6 @@ const registerElement = (options, target, providers, isRoot) => {
         constructor() {
             super();
             this.subscriptions = new Subscription();
-            this.triggerInputChanged = new BehaviorSubject({
-                oldValue: null,
-                newValue: null
-            });
             this.componentStyleTag = null;
             this.update = () => {
                 this.init();
@@ -70,11 +66,15 @@ const registerElement = (options, target, providers, isRoot) => {
             }
             const _inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
             this.__properties = {};
+            this.triggerInputChanged = new BehaviorSubject({
+                oldValue: null,
+                newValue: null
+            });
             if (_inputprop) {
                 Object.defineProperty(this, _inputprop, {
                     get: function () { return this.__properties[_inputprop]; },
                     set: function (newValue) {
-                        let oldValue = { ...this.__properties[_inputprop] };
+                        let oldValue = this.__properties[_inputprop] ? { ...this.__properties[_inputprop] } : {};
                         let joldval = JSON.stringify(oldValue);
                         let jnewval = JSON.stringify(newValue);
                         if (joldval !== jnewval) {

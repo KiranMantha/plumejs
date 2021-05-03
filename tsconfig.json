@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["dom", "ESNext"],
     "moduleResolution": "node",
     "declaration": true,
     "inlineSourceMap": false,
@@ -12,7 +11,7 @@
     "removeComments": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,    
+    "emitDecoratorMetadata": true,
     "importHelpers": true,
     "noEmitOnError": true,
     "typeRoots": [
@@ -21,5 +20,9 @@
       "node_modules/@abraham/reflection/src"
     ]
   },
-  "exclude": ["__tests__","dist", "node_modules"]
+  "exclude": [
+    "__tests__",
+    "dist",
+    "node_modules"
+  ]
 }
