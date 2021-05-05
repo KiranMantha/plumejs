@@ -5,12 +5,11 @@ import { BehaviorSubject, fromEvent, Subscription } from "rxjs";
 import { componentRegistry } from "./componentRegistry";
 import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
-import { CSS_SHEET_NOT_SUPPORTED, INPUT_METADATA_KEY, isUndefined, klass } from "./utils";
+import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from "./utils";
 
-const wrapper = (fn: Function, deps: Array<string>, props: any) => () =>
-	instantiate(fn, deps, props);
+const wrapper = (fn: Function, deps: Array<string>) => () => instantiate(fn, deps);
 
-const createSTyleTag = (content: string) => {
+const createStyleTag = (content: string) => {
 	let tag = document.createElement("style");
 	tag.innerHTML = content;
 	document.head.appendChild(tag);
@@ -33,7 +32,7 @@ const registerElement = (
 	if (!isNode) {
 		if (isRoot && !componentRegistry.isRootNodeSet && options.styles) {
 			componentRegistry.isRootNodeSet = true;
-			createSTyleTag(options.styles);
+			createStyleTag(options.styles);
 			componentRegistry.globalStyles.replace((options.styles || "").toString());
 		} else if (isRoot && componentRegistry.isRootNodeSet) {
 			throw Error(
@@ -80,7 +79,7 @@ const registerElement = (
 					options.useShadow = false;
 					this.shadow = this;
 				}
-				const _inputprop: string = (target as any).inputProp //Reflect.getMetadata(INPUT_METADATA_KEY, target);
+				const _inputprop: string = (target as any).inputProp;
 				this.__properties = {};
 				this.triggerInputChanged = new BehaviorSubject<{ oldValue, newValue }>({
 					oldValue: null,
@@ -119,16 +118,16 @@ const registerElement = (
 						options.styles,
 						`[data-cid="${id.toString()}"]`
 					);
-					this.componentStyleTag = createSTyleTag(compiledCSS);
+					this.componentStyleTag = createStyleTag(compiledCSS);
 					this.setAttribute("data-cid", id.toString());
 				}
 			}
 
 			connectedCallback() {
 				this.emulateComponent();
-				const _inputprop: string = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+				const _inputprop: string = (target as any).inputProp;
 				this[klass] = augmentor(
-					wrapper(target, providers, (this as any)[_inputprop])
+					wrapper(target, providers)
 				)();
 				this[klass]["element"] = this.shadow;
 				this[klass].beforeMount && this[klass].beforeMount();

@@ -1,2 +1,2 @@
-declare function instantiate(fn: Function, deps?: Array<string>, props?: any): any;
+declare function instantiate(fn: Function, deps?: Array<string>): any;
 export { instantiate };

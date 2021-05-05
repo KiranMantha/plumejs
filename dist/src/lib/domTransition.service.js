@@ -1,6 +1,5 @@
-import { __decorate, __metadata } from "tslib";
 import { Injectable } from "./decorators";
-let DomTransition = class DomTransition {
+export class DomTransition {
     constructor() {
         this.transition = "";
         this.whichTransitionEnd();
@@ -41,9 +40,5 @@ let DomTransition = class DomTransition {
         };
         setTimeout(callback, duration);
     }
-};
-DomTransition = __decorate([
-    Injectable(),
-    __metadata("design:paramtypes", [])
-], DomTransition);
-export { DomTransition };
+}
+Injectable("DomTransition")([DomTransition]);

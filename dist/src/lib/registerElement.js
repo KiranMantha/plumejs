@@ -4,9 +4,9 @@ import { render } from "lighterhtml/esm";
 import { BehaviorSubject, fromEvent, Subscription } from "rxjs";
 import { componentRegistry } from "./componentRegistry";
 import { instantiate } from "./instance";
-import { CSS_SHEET_NOT_SUPPORTED, INPUT_METADATA_KEY, isUndefined, klass } from "./utils";
-const wrapper = (fn, deps, props) => () => instantiate(fn, deps, props);
-const createSTyleTag = (content) => {
+import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from "./utils";
+const wrapper = (fn, deps) => () => instantiate(fn, deps);
+const createStyleTag = (content) => {
     let tag = document.createElement("style");
     tag.innerHTML = content;
     document.head.appendChild(tag);
@@ -22,7 +22,7 @@ const registerElement = (options, target, providers, isRoot) => {
     if (!isNode) {
         if (isRoot && !componentRegistry.isRootNodeSet && options.styles) {
             componentRegistry.isRootNodeSet = true;
-            createSTyleTag(options.styles);
+            createStyleTag(options.styles);
             componentRegistry.globalStyles.replace((options.styles || "").toString());
         }
         else if (isRoot && componentRegistry.isRootNodeSet) {
@@ -64,7 +64,7 @@ const registerElement = (options, target, providers, isRoot) => {
                 options.useShadow = false;
                 this.shadow = this;
             }
-            const _inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
+            const _inputprop = target.inputProp;
             this.__properties = {};
             this.triggerInputChanged = new BehaviorSubject({
                 oldValue: null,
@@ -74,7 +74,7 @@ const registerElement = (options, target, providers, isRoot) => {
                 Object.defineProperty(this, _inputprop, {
                     get: function () { return this.__properties[_inputprop]; },
                     set: function (newValue) {
-                        let oldValue = this.__properties[_inputprop] ? { ...this.__properties[_inputprop] } : {};
+                        let oldValue = this.__properties[_inputprop] || null;
                         let joldval = JSON.stringify(oldValue);
                         let jnewval = JSON.stringify(newValue);
                         if (joldval !== jnewval) {
@@ -96,14 +96,14 @@ const registerElement = (options, target, providers, isRoot) => {
                 !options.root) {
                 let id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
                 let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
-                this.componentStyleTag = createSTyleTag(compiledCSS);
+                this.componentStyleTag = createStyleTag(compiledCSS);
                 this.setAttribute("data-cid", id.toString());
             }
         }
         connectedCallback() {
             this.emulateComponent();
-            const _inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
-            this[klass] = augmentor(wrapper(target, providers, this[_inputprop]))();
+            const _inputprop = target.inputProp;
+            this[klass] = augmentor(wrapper(target, providers))();
             this[klass]["element"] = this.shadow;
             this[klass].beforeMount && this[klass].beforeMount();
             this.init();

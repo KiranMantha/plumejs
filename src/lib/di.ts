@@ -1,22 +1,15 @@
 import { Injector } from './service_resolver';
 
-const setDI = (fn: Function, deps: Array<string>, props: any): Array<any> => {
+const setDI = (fn: Function, deps: Array<string>): Array<any> => {
   let di: Array<any> = [],
-    finalArr = [],
-    func_deps = deps && deps.length > 0 ? deps : [];
-  if (func_deps.length > 0) {
-    func_deps.map((o: string) => {
-      if (o !== 'props') {
-        let depsrvc = Injector.get(o);
-        if (depsrvc) {
-          let k = depsrvc;
-          di.push(k);
-        }
-      }
-    });
-  }
+    finalArr = [];
+  deps.map((o: string) => {
+    let service = Injector.get(o);
+    service && di.push(service);
+  });
   finalArr = [fn, di];
   return finalArr;
 }
 
 export { setDI };
+

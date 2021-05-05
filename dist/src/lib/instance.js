@@ -1,6 +1,6 @@
 import { setDI } from './di';
-function instantiate(fn, deps = [], props = {}) {
-    let $deps = setDI(fn, deps, props), instance;
+function instantiate(fn, deps = []) {
+    let $deps = setDI(fn, deps), instance;
     if ($deps[1].length > 0) {
         instance = new $deps[0](...$deps[1]);
     }

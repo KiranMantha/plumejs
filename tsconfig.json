@@ -2,6 +2,10 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
     "moduleResolution": "node",
     "declaration": true,
     "inlineSourceMap": false,
@@ -18,11 +22,19 @@
       "@types",
       "node_modules/@types",
       "node_modules/@abraham/reflection/src"
+    ],
+    "plugins": [
+      {
+        "transform": "./ast-transformer.ts",
+        "type": "raw",
+        "after": false
+      }
     ]
   },
   "exclude": [
     "__tests__",
     "dist",
-    "node_modules"
+    "node_modules",
+    "./ast-transformer.ts"
   ]
 }
