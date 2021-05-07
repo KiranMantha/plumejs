@@ -5,7 +5,7 @@ import { BehaviorSubject, fromEvent, Subscription } from "rxjs";
 import { componentRegistry } from "./componentRegistry";
 import { instantiate } from "./instance";
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from "./utils";
-const wrapper = (fn, deps) => () => instantiate(fn, deps);
+const wrapper = (klass, serviceNames) => () => instantiate(klass, serviceNames);
 const createStyleTag = (content) => {
     let tag = document.createElement("style");
     tag.innerHTML = content;

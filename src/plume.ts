@@ -9,6 +9,6 @@ export { DomTransition } from "./lib/domTransition.service";
 export { useFormFields } from './lib/hooks';
 export { Injector } from "./lib/service_resolver";
 export { TranslationService } from "./lib/translationService";
-export { DecoratorOptions, IHooks, Ref, Route } from "./lib/types";
+export { DecoratorOptions, IHooks, Ref } from "./lib/types";
 export { isArray, wrapIntoObservable } from './lib/utils';
 

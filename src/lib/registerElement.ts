@@ -7,7 +7,7 @@ import { instantiate } from "./instance";
 import { DecoratorOptions, jsonObject } from "./types";
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from "./utils";
 
-const wrapper = (fn: Function, deps: Array<string>) => () => instantiate(fn, deps);
+const wrapper = (klass: Type<Function>, serviceNames: Array<string>) => () => instantiate(klass, serviceNames);
 
 const createStyleTag = (content: string) => {
 	let tag = document.createElement("style");
@@ -25,7 +25,7 @@ const transformCSS = (styles: string, selector: string) => {
 
 const registerElement = (
 	options: DecoratorOptions,
-	target: Function,
+	target: Type<Function>,
 	providers: Array<string>,
 	isRoot: boolean
 ) => {

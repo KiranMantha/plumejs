@@ -1,2 +1,2 @@
-declare function instantiate(fn: Function, deps?: Array<string>): any;
+declare function instantiate(klass: Type<Function>, serviceNames?: Array<string>): Function;
 export { instantiate };

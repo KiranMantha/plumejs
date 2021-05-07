@@ -2,62 +2,46 @@ import { instantiate } from "./instance";
 import { isFunction } from "./utils";
 
 interface IInjector {
-	getService(name: string): void | {};
-	registerService(
+	get(serviceName: string): void | {};
+	register(
 		name: string,
 		fn: Function | Object,
-		deps?: Array<string>
+		serviceNames?: Array<string>
 	): void;
 	clear(): void;
 }
 
-const Injector = (() => {
-	class InternalInjector implements IInjector {
-		private _map: Map<string, any> = new Map();
-		private get: (key: string) => any;
-		private set: (key: string, value: object) => Map<any, any>;
-		constructor() {
-			this.get = this._map.get.bind(this._map);
-			this.set = this._map.set.bind(this._map);
-		}
+const Injector: IInjector = new class implements IInjector {
+	private _map: Map<string, object> = new Map();
 
-		public getService(name: string) {
-			let instance = this.get(name);
-			if (instance) {
-				return instance;
-			} else {
-				throw Error(`${name} is not a registered provider.`);
-			}
-		}
-
-		public clear(): void {
-			this._map = new Map();
-		}
-
-		public registerService(name: string, fn: Function | object, deps: Array<string> = []) {
-			if (name && fn) {
-				if (!this.get(name)) {
-					if (isFunction(fn)) {
-						let instance = instantiate(fn as Function, deps);
-						this.set(name, instance);
-					} else {
-						this.set(name, fn);
-					}
-				}
-			} else {
-				throw "error: Requires name and constructor to define service";
-			}
+	public get(serviceName: string): object {
+		let instance = this._map.get(serviceName);
+		if (instance) {
+			return instance;
+		} else {
+			throw Error(`${serviceName} is not a registered provider.`);
 		}
 	}
 
-	const injectorInstance: IInjector = new InternalInjector();
+	public clear(): void {
+		this._map = new Map();
+	}
 
-	return {
-		register: injectorInstance.registerService.bind(injectorInstance),
-		get: injectorInstance.getService.bind(injectorInstance),
-		clear: injectorInstance.clear.bind(injectorInstance)
-	};
-})();
+	public register(serviceName: string, fn: Function | object, serviceNames: Array<string> = []) {
+		if (serviceName && fn) {
+			if (!this._map.get(serviceName)) {
+				if (isFunction(fn)) {
+					let instance = instantiate(fn as Type<Function>, serviceNames);
+					this._map.set(serviceName, instance);
+				} else {
+					this._map.set(serviceName, fn);
+				}
+			}
+		} else {
+			throw "error: Requires name and constructor to define service";
+		}
+	}
+}
 
 export { Injector };
 

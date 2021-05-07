@@ -9,7 +9,7 @@ let Component = (options: DecoratorOptions) => (target: Function | Array<any>) =
 		throw new Error("You need at least 1 dash in the custom element name!");
 	}
 	if (!window.customElements.get(options.selector)) {
-		let klass: Function = (target as Array<any>).pop();
+		let klass: Type<Function> = (target as Array<any>).pop();
 		let dependencies = target as string[];
 		klass.prototype.selector = options.selector;
 		registerElement(options, klass, dependencies, options.root || false);
@@ -17,7 +17,7 @@ let Component = (options: DecoratorOptions) => (target: Function | Array<any>) =
 };
 
 const Injectable = (name?: string) => (target: Function | Array<any>) => {
-	let klass: Function = (target as Array<any>).pop();
+	let klass: Type<Function> = (target as Array<any>).pop();
 	let dependencies = target as string[];
 	Injector.register(name, klass, dependencies);
 };

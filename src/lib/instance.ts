@@ -1,13 +1,14 @@
-import { setDI } from './di';
+import { Injector } from './service_resolver';
 
-function instantiate(fn: Function, deps: Array<string> = []) {
-  let $deps = setDI(fn, deps), instance;
-  if ($deps[1].length > 0) {
-    instance = new $deps[0](...$deps[1]);
+function instantiate(klass: Type<Function>, serviceNames: Array<string> = []) {
+  const services = serviceNames.map((serviceName: string) => {
+    return Injector.get(serviceName);
+  });
+  if (services.length > 0) {
+    return new klass(...services);
   } else {
-    instance = new $deps[0]();
+    return new klass();
   }
-  return instance;
 }
 
 export { instantiate };
