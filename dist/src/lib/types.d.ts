@@ -7,13 +7,9 @@ interface DecoratorOptions {
 interface IHooks {
     mount?: () => void;
     unmount?: () => void;
-    inputChanged?: (oldValue: any, newValue: any) => void;
     update?: () => void;
 }
-declare type Ref<T> = {
-    current: T;
-};
 declare type jsonObject = {
     [index: string]: any;
 };
-export { DecoratorOptions, Ref, jsonObject, IHooks };
+export { DecoratorOptions, IHooks, jsonObject };

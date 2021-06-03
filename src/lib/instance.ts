@@ -1,13 +1,22 @@
 import { Injector } from './service_resolver';
+import { jsonObject } from './types';
+import { getArgs } from './utils';
 
-function instantiate(klass: Type<Function>, serviceNames: Array<string> = []) {
-  const services = serviceNames.map((serviceName: string) => {
-    return Injector.get(serviceName);
-  });
+const instantiate = (fn: Array<any>): jsonObject => {
+  const controller = fn[fn.length - 1];
+  const services = [];
+  for (let i = 0; i < fn.length - 1; i++) {
+    services.push(Injector.getService(fn[i]));
+  }
   if (services.length > 0) {
-    return new klass(...services);
+    const constructorArgs = getArgs(controller);
+    const instance = new controller(...services);
+    constructorArgs.forEach((arg, i) => {
+      instance[arg] = services[i];
+    });
+    return instance;
   } else {
-    return new klass();
+    return new controller();
   }
 }
 

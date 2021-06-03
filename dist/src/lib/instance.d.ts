@@ -1,2 +1,3 @@
-declare function instantiate(klass: Type<Function>, serviceNames?: Array<string>): Function;
+import { jsonObject } from './types';
+declare const instantiate: (fn: Array<any>) => jsonObject;
 export { instantiate };

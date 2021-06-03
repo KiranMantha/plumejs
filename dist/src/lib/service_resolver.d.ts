@@ -1,6 +1,7 @@
+import { jsonObject } from "./types";
 interface IInjector {
-    get(serviceName: string): void | {};
-    register(name: string, fn: Function | Object, serviceNames?: Array<string>): void;
+    getService(serviceName: string): void | {};
+    register(name: string, instance: jsonObject): void;
     clear(): void;
 }
 declare const Injector: IInjector;

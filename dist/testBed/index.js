@@ -6,7 +6,7 @@ export class TestBed {
     }
     static MockService(name, target) {
         Injector.register(name, target);
-        return Injector.get(name);
+        return Injector.getService(name);
     }
     static RemoveComponent(node) {
         document.removeChild(node);

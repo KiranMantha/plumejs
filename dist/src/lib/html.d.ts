@@ -1,2 +1,3 @@
-declare const html: () => void;
-export default html;
+declare const html: (templates: TemplateStringsArray, ...values: Array<any>) => DocumentFragment;
+declare const render: (where: HTMLElement, what: DocumentFragment) => void;
+export { html, render };

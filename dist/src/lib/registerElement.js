@@ -1,11 +1,10 @@
-import { augmentor } from "augmentor/esm";
 import { isNode } from "browser-or-node";
-import { render } from "lighterhtml/esm";
-import { BehaviorSubject, fromEvent, Subscription } from "rxjs";
+import { fromEvent, Subscription } from "rxjs";
 import { componentRegistry } from "./componentRegistry";
+import { render } from "./html";
 import { instantiate } from "./instance";
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from "./utils";
-const wrapper = (klass, serviceNames) => () => instantiate(klass, serviceNames);
+const COMPONENT_DATA_ATTR = "data-compid";
 const createStyleTag = (content) => {
     let tag = document.createElement("style");
     tag.innerHTML = content;
@@ -18,7 +17,7 @@ const transformCSS = (styles, selector) => {
     }
     return styles;
 };
-const registerElement = (options, target, providers, isRoot) => {
+const registerElement = (options, target, isRoot) => {
     if (!isNode) {
         if (isRoot && !componentRegistry.isRootNodeSet && options.styles) {
             componentRegistry.isRootNodeSet = true;
@@ -36,12 +35,6 @@ const registerElement = (options, target, providers, isRoot) => {
             super();
             this.subscriptions = new Subscription();
             this.componentStyleTag = null;
-            this.update = () => {
-                this.init();
-            };
-            this.getModel = () => {
-                return this[klass];
-            };
             let adoptedStyleSheets = [];
             options.useShadow = isUndefined(options.useShadow)
                 ? true
@@ -64,30 +57,6 @@ const registerElement = (options, target, providers, isRoot) => {
                 options.useShadow = false;
                 this.shadow = this;
             }
-            const _inputprop = target.inputProp;
-            this.__properties = {};
-            this.triggerInputChanged = new BehaviorSubject({
-                oldValue: null,
-                newValue: null
-            });
-            if (_inputprop) {
-                Object.defineProperty(this, _inputprop, {
-                    get: function () { return this.__properties[_inputprop]; },
-                    set: function (newValue) {
-                        let oldValue = this.__properties[_inputprop] || null;
-                        let joldval = JSON.stringify(oldValue);
-                        let jnewval = JSON.stringify(newValue);
-                        if (joldval !== jnewval) {
-                            this.triggerInputChanged.next({ oldValue, newValue });
-                        }
-                        this.__properties[_inputprop] = newValue;
-                    }
-                });
-            }
-        }
-        init() {
-            let _returnfn = this[klass].render.bind(this[klass]);
-            render.bind(this[klass], this.shadow, _returnfn)();
         }
         emulateComponent() {
             if (!isNode &&
@@ -95,36 +64,55 @@ const registerElement = (options, target, providers, isRoot) => {
                 options.styles &&
                 !options.root) {
                 let id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
-                let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
+                let compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
                 this.componentStyleTag = createStyleTag(compiledCSS);
-                this.setAttribute("data-cid", id.toString());
+                this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
             }
         }
         connectedCallback() {
             this.emulateComponent();
-            const _inputprop = target.inputProp;
-            this[klass] = augmentor(wrapper(target, providers))();
-            this[klass]["element"] = this.shadow;
-            this[klass].beforeMount && this[klass].beforeMount();
-            this.init();
+            const fn = Array.isArray(target) ? target : [target];
+            this[klass] = instantiate(fn);
+            this[klass]["renderer"] = this.shadow;
+            this[klass]["emitEvent"] = this.emitEvent.bind(this);
             this[klass]["update"] = this.update.bind(this);
+            this[klass].beforeMount && this[klass].beforeMount();
+            this.update();
             this[klass].mount && this[klass].mount();
-            this.subscriptions.add(this.triggerInputChanged.subscribe((obj) => {
-                if (obj.oldValue || obj.newValue) {
-                    this[klass][_inputprop] = obj.newValue;
-                    this[klass].inputChanged && this[klass].inputChanged(obj.oldValue, obj.newValue);
-                    this.update();
-                }
-            }));
             this.subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
                 this.update();
             }));
         }
+        update() {
+            render(this.shadow, (this[klass].render.bind(this[klass]))());
+        }
+        ;
+        getModel() {
+            return this[klass];
+        }
+        ;
+        setProps(propsObj) {
+            for (const [key, value] of Object.entries(propsObj)) {
+                this[klass][key] = value;
+            }
+            this.update();
+        }
+        emitEvent(eventName, data) {
+            const event = new CustomEvent(eventName, {
+                detail: data
+            });
+            this.dispatchEvent(event);
+        }
         disconnectedCallback() {
-            this.__properties = {};
             this.subscriptions.unsubscribe();
             this.componentStyleTag && this.componentStyleTag.remove();
             this[klass].unmount && this[klass].unmount();
+            if (this.eventListenersMap) {
+                for (const [key, value] of Object.entries(this.eventListenersMap)) {
+                    this.removeEventListener(key, value);
+                }
+            }
+            this.eventListenersMap = null;
         }
     });
 };

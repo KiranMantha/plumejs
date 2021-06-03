@@ -1,4 +1,4 @@
-import { useState } from "augmentor";
+import { useState } from "../utils";
 const getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -37,7 +37,7 @@ const getTargetValue = (target) => {
     }
     return targetValue;
 };
-export function useFormFields(initialValues) {
+const useFormFields = (initialValues) => {
     let [formFields, setFormFields] = useState(initialValues);
     const createChangeHandler = (key) => (e) => {
         let target = e.target;
@@ -48,4 +48,5 @@ export function useFormFields(initialValues) {
         });
     };
     return { formFields, createChangeHandler };
-}
+};
+export { useFormFields };

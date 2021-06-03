@@ -1,4 +1,5 @@
-import { useState } from "augmentor";
+import { jsonObject } from "../types";
+import { useState } from "../utils";
 
 const getTargetValue = (target: HTMLElement) => {
 	let targetValue;
@@ -37,9 +38,9 @@ const getTargetValue = (target: HTMLElement) => {
 	return targetValue;
 };
 
-export function useFormFields<T>(initialValues: T) {
-	let [formFields, setFormFields] = useState<T>(initialValues);
-	const createChangeHandler = (key: keyof T) => (e: Event) => {
+const useFormFields = (initialValues: jsonObject): { formFields: jsonObject, createChangeHandler: (key: string) => (e: Event) => void } => {
+	let [formFields, setFormFields] = useState(initialValues);
+	const createChangeHandler = (key: string) => (e: Event) => {
 		let target: any = e.target;
 		const value = getTargetValue(target);
 		setFormFields(() => {
@@ -49,3 +50,6 @@ export function useFormFields<T>(initialValues: T) {
 	};
 	return { formFields, createChangeHandler };
 }
+
+export { useFormFields };
+

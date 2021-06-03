@@ -4,8 +4,7 @@ const factory = ts.factory;
 
 const enum DecoratorTypes {
     COMPONENT = 'Component',
-    INJECTABLE = 'Injectable',
-    INPUT = 'Input'
+    INJECTABLE = 'Injectable'
 }
 
 function containDecorators(decorators: string[], node: ts.Decorator) {
@@ -40,7 +39,7 @@ const getConstructorMethod = (node: ts.ClassDeclaration) => {
 const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.TransformationContext) => {
     return sourceFile => {
         const visitor: ts.Visitor = (node: ts.Node): ts.Node | ts.Node[] => {
-            if (ts.isDecorator(node) && containDecorators([DecoratorTypes.COMPONENT, DecoratorTypes.INJECTABLE, DecoratorTypes.INPUT], node)) {
+            if (ts.isDecorator(node) && containDecorators([DecoratorTypes.COMPONENT, DecoratorTypes.INJECTABLE], node)) {
                 return undefined;
             }
             if (ts.isClassDeclaration(node)) {
@@ -89,26 +88,6 @@ const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.Transf
                     }
                     const updatedClassNode = factory.updateClassDeclaration(node, undefined, node.modifiers, node.name, node.typeParameters, node.heritageClauses, node.members);
                     return [ts.visitEachChild(updatedClassNode, visitor, context), decoratorStaticNode];
-                }
-            }
-            if (ts.isPropertyDeclaration(node)) {
-                if (node.decorators) {
-                    const inputDecorator = getDecoratorMetaData(DecoratorTypes.INPUT, node);
-                    if (inputDecorator) {
-                        const decoratorStaticNode = factory.createGetAccessorDeclaration(
-                            undefined,
-                            [factory.createModifier(ts.SyntaxKind.StaticKeyword)],
-                            factory.createIdentifier('inputProp'),
-                            [],
-                            undefined,
-                            factory.createBlock(
-                                [factory.createReturnStatement(factory.createStringLiteral(node.name.getText()))],
-                                true
-                            )
-                        );
-                        const updatedPropertyNode = factory.updatePropertyDeclaration(node, undefined, node.modifiers, node.name, node.questionToken, node.type, node.initializer);
-                        return [decoratorStaticNode, ts.visitEachChild(updatedPropertyNode, visitor, context)];
-                    }
                 }
             }
             return ts.visitEachChild(node, visitor, context);
