@@ -3,5 +3,5 @@ export declare class DomTransition {
     constructor();
     private removeTransition;
     private whichTransitionEnd;
-    onTransitionEnd(element: HTMLElement, cb: Function, duration: number): void;
+    onTransitionEnd(element: HTMLElement, cb: () => void, duration: number): void;
 }

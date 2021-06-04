@@ -4,9 +4,9 @@ const getValue = (obj: any, key: string) => {
 
 const mo = (() => {
   'use strict';
-  let listeners: any = [],
+  const listeners: any = [],
     doc = window.document,
-    MutationObserver: any = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"),
+    MutationObserver: any = getValue(window, 'MutationObserver') || getValue(window, 'WebKitMutationObserver'),
     listenersObj: any = {};
 
   const _ready = (selector: string, callback: any) => {
@@ -17,7 +17,7 @@ const mo = (() => {
     });
 
     // Watch for changes in the document
-    let observer = new MutationObserver(check);
+    const observer = new MutationObserver(check);
     observer.observe(doc.documentElement, {
       childList: true,
       subtree: true
@@ -26,11 +26,11 @@ const mo = (() => {
 
     // Check if the element is currently in the DOM
     check();
-  }
+  };
 
   const _destroy = (selector: string) => {
     listenersObj[selector] && listenersObj[selector].disconnect();
-  }
+  };
 
   const check = () => {
     // Check the DOM for elements matching a stored selector
@@ -40,18 +40,17 @@ const mo = (() => {
       elements = doc.querySelectorAll(listener.selector);
       for (let j = 0, jLen = elements.length, element; j < jLen; j++) {
         element = elements[j];
-        let k = element.constructor();
+        const k = element.constructor();
         element.connectedCallback.call(k);
         listener.fn(k);
       }
     }
-  }
+  };
 
   return {
     ready: _ready,
     destroy: _destroy
   };
-
 })();
 
 export default mo;

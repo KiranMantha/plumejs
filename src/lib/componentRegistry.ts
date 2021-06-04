@@ -2,10 +2,10 @@ interface IComponentRegistry {
   globalStyles: any;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
-  getComputedCss: (useShadow: boolean, styles: string) => CSSStyleSheet[]
+  getComputedCss: (useShadow: boolean, styles: string) => CSSStyleSheet[];
 }
 
-const componentRegistry: IComponentRegistry = new class implements IComponentRegistry {
+const componentRegistry: IComponentRegistry = new (class implements IComponentRegistry {
   globalStyles: any;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
@@ -20,21 +20,20 @@ const componentRegistry: IComponentRegistry = new class implements IComponentReg
     this.isRootNodeSet = false;
   }
 
-  getComputedCss = (useShadow: boolean, styles: string = "") => {
+  getComputedCss = (useShadow: boolean, styles = '') => {
     let csoArray = [];
     if (useShadow) {
-      let defaultStyles = new CSSStyleSheet();
+      const defaultStyles = new CSSStyleSheet();
       defaultStyles.insertRule(`:host { display: block; }`);
       csoArray = [this.globalStyles, defaultStyles];
       if (styles) {
-        let sheet: any = new CSSStyleSheet();
+        const sheet: any = new CSSStyleSheet();
         sheet.replace(styles);
         csoArray.push(sheet);
       }
     }
     return csoArray;
   };
-}
+})();
 
 export { componentRegistry };
-

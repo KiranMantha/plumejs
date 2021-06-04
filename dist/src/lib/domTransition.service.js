@@ -1,23 +1,23 @@
-import { Injectable } from "./decorators";
+import { Injectable } from './decorators';
 export class DomTransition {
+    transition = '';
     constructor() {
-        this.transition = "";
         this.whichTransitionEnd();
     }
-    removeTransition(element) {
-        element.removeEventListener(this.transition, () => { }, false);
+    removeTransition(element, fn) {
+        element.removeEventListener(this.transition, fn, false);
     }
     whichTransitionEnd() {
-        let element = document.createElement("div");
-        let styleobj = element.style;
-        let transitions = {
-            transition: "transitionend",
-            WebkitTransition: "webkitTransitionEnd",
-            MozTransition: "transitionend",
-            OTransition: "otransitionend"
+        const element = document.createElement('div');
+        const styleobj = element.style;
+        const transitions = {
+            transition: 'transitionend',
+            WebkitTransition: 'webkitTransitionEnd',
+            MozTransition: 'transitionend',
+            OTransition: 'otransitionend'
         };
-        for (let t in transitions) {
-            if (typeof styleobj[t] !== "undefined") {
+        for (const t in transitions) {
+            if (typeof styleobj[t] !== 'undefined') {
                 this.transition = transitions[t];
                 break;
             }
@@ -25,17 +25,17 @@ export class DomTransition {
     }
     onTransitionEnd(element, cb, duration) {
         let called = false;
-        let _fn = () => {
+        const _fn = () => {
             if (!called) {
                 called = true;
                 cb && cb();
-                this.removeTransition(element);
+                this.removeTransition(element, _fn);
             }
         };
         element.addEventListener(this.transition, () => {
             _fn();
         }, false);
-        let callback = () => {
+        const callback = () => {
             _fn();
         };
         setTimeout(callback, duration);

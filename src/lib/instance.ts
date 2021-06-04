@@ -18,7 +18,6 @@ const instantiate = (fn: Array<any>): jsonObject => {
   } else {
     return new controller();
   }
-}
+};
 
 export { instantiate };
-

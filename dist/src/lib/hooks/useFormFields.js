@@ -1,13 +1,13 @@
-import { useState } from "../utils";
+import { useState } from '../utils';
 const getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
-        case "input":
-        case "textarea": {
-            let nonTextElements = ["radio", "checkbox"];
+        case 'input':
+        case 'textarea': {
+            const nonTextElements = ['radio', 'checkbox'];
             if (nonTextElements.includes(target.type)) {
                 targetValue = target.checked
-                    ? target.value !== null && target.value !== "on"
+                    ? target.value !== null && target.value !== 'on'
                         ? target.value
                         : true
                     : false;
@@ -17,16 +17,14 @@ const getTargetValue = (target) => {
             }
             break;
         }
-        case "select": {
-            let one = target.type === "select-one";
+        case 'select': {
+            const one = target.type === 'select-one';
             if (one) {
                 targetValue = target.value;
             }
             else {
-                let options = Array.apply(null, target.options);
-                targetValue = [...options]
-                    .filter((option) => option.selected)
-                    .map((option) => option.value);
+                const options = Array.from(target.options);
+                targetValue = [...options].filter((option) => option.selected).map((option) => option.value);
             }
             break;
         }
@@ -38,9 +36,9 @@ const getTargetValue = (target) => {
     return targetValue;
 };
 const useFormFields = (initialValues) => {
-    let [formFields, setFormFields] = useState(initialValues);
+    const [formFields, setFormFields] = useState(initialValues);
     const createChangeHandler = (key) => (e) => {
-        let target = e.target;
+        const target = e.target;
         const value = getTargetValue(target);
         setFormFields(() => {
             formFields[key] = value;

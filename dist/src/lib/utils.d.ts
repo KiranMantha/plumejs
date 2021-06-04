@@ -1,5 +1,5 @@
-import { Observable } from "rxjs";
-import { jsonObject } from "./types";
+import { Observable } from 'rxjs';
+import { jsonObject } from './types';
 declare const klass: unique symbol;
 declare const isObject: (value: any) => boolean;
 declare const isFunction: (value: any) => boolean;
@@ -9,5 +9,5 @@ declare const isPromise: (obj: any) => obj is Promise<any>;
 declare const wrapIntoObservable: <T>(value: T | Promise<T> | Observable<T>) => Observable<T>;
 declare const CSS_SHEET_NOT_SUPPORTED: boolean;
 declare function getArgs(func: any): any;
-declare const useState: (obj: jsonObject) => [jsonObject, (obj: Function | jsonObject) => void];
+declare const useState: (obj: jsonObject) => [jsonObject, (obj: () => void | jsonObject) => void];
 export { isObject, isFunction, isUndefined, isObservable, isPromise, wrapIntoObservable, useState, getArgs, klass, CSS_SHEET_NOT_SUPPORTED };

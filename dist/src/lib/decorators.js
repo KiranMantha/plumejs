@@ -1,18 +1,18 @@
-import { instantiate } from "./instance";
-import { registerElement } from "./registerElement";
-import { Injector } from "./service_resolver";
-import { isFunction, isObject } from "./utils";
-const Component = (options) => target => {
-    if (options.selector.indexOf("-") <= 0) {
-        throw new Error("You need at least 1 dash in the custom element name!");
+import { instantiate } from './instance';
+import { registerElement } from './registerElement';
+import { Injector } from './service_resolver';
+import { isFunction, isObject } from './utils';
+const Component = (options) => (target) => {
+    if (options.selector.indexOf('-') <= 0) {
+        throw new Error('You need at least 1 dash in the custom element name!');
     }
     if (!window.customElements.get(options.selector)) {
-        let klass = target[target.length - 1];
+        const klass = target[target.length - 1];
         klass.prototype.selector = options.selector;
         registerElement(options, target, options.root || false);
     }
 };
-const Injectable = (name) => target => {
+const Injectable = (name) => (target) => {
     if (name && target) {
         if (isFunction(target) || Array.isArray(target)) {
             const fn = Array.isArray(target) ? target : [target];

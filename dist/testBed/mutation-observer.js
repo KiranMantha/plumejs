@@ -3,13 +3,13 @@ const getValue = (obj, key) => {
 };
 const mo = (() => {
     'use strict';
-    let listeners = [], doc = window.document, MutationObserver = getValue(window, "MutationObserver") || getValue(window, "WebKitMutationObserver"), listenersObj = {};
+    const listeners = [], doc = window.document, MutationObserver = getValue(window, 'MutationObserver') || getValue(window, 'WebKitMutationObserver'), listenersObj = {};
     const _ready = (selector, callback) => {
         listeners.push({
             selector: selector,
             fn: callback
         });
-        let observer = new MutationObserver(check);
+        const observer = new MutationObserver(check);
         observer.observe(doc.documentElement, {
             childList: true,
             subtree: true
@@ -26,7 +26,7 @@ const mo = (() => {
             elements = doc.querySelectorAll(listener.selector);
             for (let j = 0, jLen = elements.length, element; j < jLen; j++) {
                 element = elements[j];
-                let k = element.constructor();
+                const k = element.constructor();
                 element.connectedCallback.call(k);
                 listener.fn(k);
             }

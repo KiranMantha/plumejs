@@ -1,69 +1,69 @@
-import { from, Observable, of } from "rxjs";
-import { jsonObject } from "./types";
+import { from, Observable, of } from 'rxjs';
+import { jsonObject } from './types';
 
-const klass = Symbol("klass");
-const isObject = (value: any) => value !== null && typeof value === "object";
-const isFunction = (value: any) => typeof value === "function";
-const isUndefined = (value: any) => typeof value == "undefined";
-const isObservable = (obj: any | Observable<any>): obj is Observable<any> => !!obj && typeof obj.subscribe === "function";
-const isPromise = (obj: any): obj is Promise<any> => !!obj && typeof obj.then === "function";
+const klass = Symbol('klass');
+const isObject = (value: any) => value !== null && typeof value === 'object';
+const isFunction = (value: any) => typeof value === 'function';
+const isUndefined = (value: any) => typeof value == 'undefined';
+const isObservable = (obj: any | Observable<any>): obj is Observable<any> =>
+  !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj: any): obj is Promise<any> => !!obj && typeof obj.then === 'function';
 
 const wrapIntoObservable = <T>(value: T | Promise<T> | Observable<T>): Observable<T> => {
-	if (isObservable(value)) {
-		return value;
-	} else if (isPromise(value)) {
-		return from(Promise.resolve(value));
-	} else {
-		return of(value);
-	}
-}
+  if (isObservable(value)) {
+    return value;
+  } else if (isPromise(value)) {
+    return from(Promise.resolve(value));
+  } else {
+    return of(value);
+  }
+};
 
 const CSS_SHEET_NOT_SUPPORTED = (() => {
-	try {
-		let k = new CSSStyleSheet();
-		return false;
-	} catch (e) {
-		return true;
-	}
+  try {
+    new CSSStyleSheet();
+    return false;
+  } catch (e) {
+    return true;
+  }
 })();
 
 function getArgs(func) {
-	return Function.toString
-		.call(func)
-		.replace(/[/][/].*$/gm, '') // strip single-line comments
-		.replace(/\s+/g, '') // strip white space
-		.replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments
-		.split('){', 1)[0]
-		.replace(/^[^(]*[(]/, '') // extract the parameters
-		.replace(/=[^,]+/g, '') // strip any ES6 defaults
-		.split(',')
-		.filter(Boolean); // split & filter [""]
+  return Function.toString
+    .call(func)
+    .replace(/[/][/].*$/gm, '') // strip single-line comments
+    .replace(/\s+/g, '') // strip white space
+    .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments
+    .split('){', 1)[0]
+    .replace(/^[^(]*[(]/, '') // extract the parameters
+    .replace(/=[^,]+/g, '') // strip any ES6 defaults
+    .split(',')
+    .filter(Boolean); // split & filter [""]
 }
 
-const useState = (obj: jsonObject): [jsonObject, (obj: Function | jsonObject) => void] => {
-	let initialState = obj;
-	const reducer = fn => {
-		let newState;
-		if (isFunction(fn)) {
-			newState = fn(initialState);
-		} else {
-			newState = fn;
-		}
-		Object.assign(initialState, newState);
-	};
-	return [initialState, reducer];
-}
-
-export {
-	isObject,
-	isFunction,
-	isUndefined,
-	isObservable,
-	isPromise,
-	wrapIntoObservable,
-	useState,
-	getArgs,
-	klass,
-	CSS_SHEET_NOT_SUPPORTED
+const useState = (obj: jsonObject): [jsonObject, (obj: () => void | jsonObject) => void] => {
+  const initialState = obj;
+  const reducer = (fn) => {
+    let newState;
+    if (isFunction(fn)) {
+      newState = fn(initialState);
+    } else {
+      newState = fn;
+    }
+    Object.assign(initialState, newState);
+  };
+  return [initialState, reducer];
 };
 
+export {
+  isObject,
+  isFunction,
+  isUndefined,
+  isObservable,
+  isPromise,
+  wrapIntoObservable,
+  useState,
+  getArgs,
+  klass,
+  CSS_SHEET_NOT_SUPPORTED
+};

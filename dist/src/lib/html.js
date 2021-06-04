@@ -9,7 +9,7 @@ const createFragment = (markup) => {
     temp.innerHTML = markup;
     const frag = document.createDocumentFragment();
     const children = Array.prototype.slice.apply(temp.childNodes);
-    children.map(el => frag.appendChild(el));
+    children.map((el) => frag.appendChild(el));
     return frag;
 };
 const bindFragments = (fragment, values) => {
@@ -17,12 +17,12 @@ const bindFragments = (fragment, values) => {
     let node = elementsWalker.nextNode();
     while (node) {
         if (node.hasAttributes()) {
-            const customAttributes = Array.from(node.attributes).filter(attr => attributeRegex.test(attr.nodeName));
-            for (let { nodeName, nodeValue } of customAttributes) {
+            const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
+            for (const { nodeName, nodeValue } of customAttributes) {
                 const i = attributeRegex.exec(nodeName)[1];
                 switch (true) {
                     case /^on+/.test(nodeValue): {
-                        let eventName = nodeValue.slice(2).toLowerCase();
+                        const eventName = nodeValue.slice(2).toLowerCase();
                         node.removeEventListener(eventName, values[i]);
                         node.addEventListener(eventName, values[i]);
                         (node.eventListenersMap || (node.eventListenersMap = {}))[eventName] = values[i];
@@ -65,9 +65,7 @@ const replaceInsertNodeComments = (fragment, values) => {
     for (let i = 0; i < length; i++) {
         const node = commentNodes[i];
         if ((match = insertNodeRegex.exec(node.data))) {
-            const nodesList = Array.isArray(values[match[1]])
-                ? values[match[1]]
-                : [values[match[1]]];
+            const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
             node.replaceWith(...nodesList);
         }
     }
@@ -76,7 +74,7 @@ const html = (templates, ...values) => {
     let result = '';
     const { length } = templates;
     for (let i = 1; i < length; i++) {
-        let variable = values[i - 1];
+        const variable = values[i - 1];
         let isAttributePart = false;
         result += templates[i - 1];
         if (isAttributeRegex.test(result) && isNodeRegex.test(result)) {

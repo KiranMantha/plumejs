@@ -1,7 +1,5 @@
-const Injector = new class {
-    constructor() {
-        this._map = new Map();
-    }
+const Injector = new (class {
+    _map = new Map();
     register(serviceName, instance) {
         if (!this._map.get(serviceName)) {
             this._map.set(serviceName, instance);
@@ -11,7 +9,7 @@ const Injector = new class {
         }
     }
     getService(serviceName) {
-        let instance = this._map.get(serviceName);
+        const instance = this._map.get(serviceName);
         if (instance) {
             return instance;
         }
@@ -22,5 +20,5 @@ const Injector = new class {
     clear() {
         this._map = new Map();
     }
-};
+})();
 export { Injector };

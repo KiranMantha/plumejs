@@ -1,6 +1,6 @@
-import { jsonObject } from "./types";
+import { jsonObject } from './types';
 interface IInjector {
-    getService(serviceName: string): void | {};
+    getService(serviceName: string): jsonObject;
     register(name: string, instance: jsonObject): void;
     clear(): void;
 }

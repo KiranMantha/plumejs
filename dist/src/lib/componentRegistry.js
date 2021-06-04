@@ -1,19 +1,8 @@
-const componentRegistry = new class {
+const componentRegistry = new (class {
+    globalStyles;
+    style_registry;
+    isRootNodeSet;
     constructor() {
-        this.getComputedCss = (useShadow, styles = "") => {
-            let csoArray = [];
-            if (useShadow) {
-                let defaultStyles = new CSSStyleSheet();
-                defaultStyles.insertRule(`:host { display: block; }`);
-                csoArray = [this.globalStyles, defaultStyles];
-                if (styles) {
-                    let sheet = new CSSStyleSheet();
-                    sheet.replace(styles);
-                    csoArray.push(sheet);
-                }
-            }
-            return csoArray;
-        };
         try {
             this.globalStyles = new CSSStyleSheet();
         }
@@ -22,5 +11,19 @@ const componentRegistry = new class {
         }
         this.isRootNodeSet = false;
     }
-};
+    getComputedCss = (useShadow, styles = '') => {
+        let csoArray = [];
+        if (useShadow) {
+            const defaultStyles = new CSSStyleSheet();
+            defaultStyles.insertRule(`:host { display: block; }`);
+            csoArray = [this.globalStyles, defaultStyles];
+            if (styles) {
+                const sheet = new CSSStyleSheet();
+                sheet.replace(styles);
+                csoArray.push(sheet);
+            }
+        }
+        return csoArray;
+    };
+})();
 export { componentRegistry };

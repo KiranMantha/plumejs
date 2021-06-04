@@ -1,8 +1,8 @@
 import { Injector } from '../src/lib/service_resolver';
 
 export class TestBed {
-  static async MockComponent(target: Function) {
-    let appRoot = await _waitForComponentToRender(target.prototype.selector);
+  static async MockComponent(target: () => void) {
+    const appRoot = await _waitForComponentToRender(target.prototype.selector);
     return appRoot;
   }
 
@@ -17,9 +17,9 @@ export class TestBed {
 }
 
 async function _waitForComponentToRender(tag: string) {
-  let ele = document.createElement(tag);
+  const ele = document.createElement(tag);
   document.body.appendChild(ele);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     function requestComponent() {
       const element = document.querySelector(tag);
       if (element) {

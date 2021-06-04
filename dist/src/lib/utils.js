@@ -1,10 +1,10 @@
-import { from, of } from "rxjs";
-const klass = Symbol("klass");
-const isObject = (value) => value !== null && typeof value === "object";
-const isFunction = (value) => typeof value === "function";
-const isUndefined = (value) => typeof value == "undefined";
-const isObservable = (obj) => !!obj && typeof obj.subscribe === "function";
-const isPromise = (obj) => !!obj && typeof obj.then === "function";
+import { from, of } from 'rxjs';
+const klass = Symbol('klass');
+const isObject = (value) => value !== null && typeof value === 'object';
+const isFunction = (value) => typeof value === 'function';
+const isUndefined = (value) => typeof value == 'undefined';
+const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 const wrapIntoObservable = (value) => {
     if (isObservable(value)) {
         return value;
@@ -18,7 +18,7 @@ const wrapIntoObservable = (value) => {
 };
 const CSS_SHEET_NOT_SUPPORTED = (() => {
     try {
-        let k = new CSSStyleSheet();
+        new CSSStyleSheet();
         return false;
     }
     catch (e) {
@@ -38,8 +38,8 @@ function getArgs(func) {
         .filter(Boolean);
 }
 const useState = (obj) => {
-    let initialState = obj;
-    const reducer = fn => {
+    const initialState = obj;
+    const reducer = (fn) => {
         let newState;
         if (isFunction(fn)) {
             newState = fn(initialState);
