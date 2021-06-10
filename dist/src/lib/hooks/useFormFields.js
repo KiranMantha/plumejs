@@ -1,5 +1,5 @@
 import { useState } from '../utils';
-const getTargetValue = (target) => {
+const _getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
         case 'input':
@@ -39,7 +39,7 @@ const useFormFields = (initialValues) => {
     const [formFields, setFormFields] = useState(initialValues);
     const createChangeHandler = (key) => (e) => {
         const target = e.target;
-        const value = getTargetValue(target);
+        const value = _getTargetValue(target);
         setFormFields(() => {
             formFields[key] = value;
             return formFields;

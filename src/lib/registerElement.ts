@@ -38,9 +38,9 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
     class extends HTMLElement {
       render: () => void;
       [klass]: jsonObject;
-      private shadow: any;
-      private subscriptions: Subscription = new Subscription();
-      componentStyleTag: HTMLStyleElement = null;
+      private _shadow: any;
+      private _subscriptions: Subscription = new Subscription();
+      private _componentStyleTag: HTMLStyleElement = null;
       eventListenersMap: jsonObject;
 
       constructor() {
@@ -50,14 +50,14 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         if (!CSS_SHEET_NOT_SUPPORTED) {
           adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
           if (isNode) {
-            this.shadow = this;
+            this._shadow = this;
           } else {
-            this.shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
+            this._shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
           }
-          this.shadow.adoptedStyleSheets = adoptedStyleSheets;
+          this._shadow.adoptedStyleSheets = adoptedStyleSheets;
         } else {
           options.useShadow = false;
-          this.shadow = this;
+          this._shadow = this;
         }
       }
 
@@ -65,7 +65,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
           const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
           const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
-          this.componentStyleTag = createStyleTag(compiledCSS);
+          this._componentStyleTag = createStyleTag(compiledCSS);
           this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
         }
       }
@@ -74,13 +74,13 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         this.emulateComponent();
         const fn = Array.isArray(target) ? target : [target];
         this[klass] = instantiate(fn);
-        this[klass]['renderer'] = this.shadow;
+        this[klass]['renderer'] = this._shadow;
         this[klass]['emitEvent'] = this.emitEvent.bind(this);
         this[klass]['update'] = this.update.bind(this);
         this[klass].beforeMount && this[klass].beforeMount();
         this.update();
         this[klass].mount && this[klass].mount();
-        this.subscriptions.add(
+        this._subscriptions.add(
           fromEvent(window, 'onLanguageChange').subscribe(() => {
             this.update();
           })
@@ -88,7 +88,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
       }
 
       update() {
-        render(this.shadow, this[klass].render.bind(this[klass])());
+        render(this._shadow, this[klass].render.bind(this[klass])());
       }
 
       getModel() {
@@ -110,8 +110,8 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
       }
 
       disconnectedCallback() {
-        this.subscriptions.unsubscribe();
-        this.componentStyleTag && this.componentStyleTag.remove();
+        this._subscriptions.unsubscribe();
+        this._componentStyleTag && this._componentStyleTag.remove();
         this[klass].unmount && this[klass].unmount();
         if (this.eventListenersMap) {
           for (const [key, value] of Object.entries(this.eventListenersMap)) {

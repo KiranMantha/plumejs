@@ -1,7 +1,7 @@
 import { jsonObject } from '../types';
 import { useState } from '../utils';
 
-const getTargetValue = (target: HTMLElement) => {
+const _getTargetValue = (target: HTMLElement) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
     case 'input':
@@ -42,7 +42,7 @@ const useFormFields = (
   const [formFields, setFormFields] = useState(initialValues);
   const createChangeHandler = (key: string) => (e: Event) => {
     const target: any = e.target;
-    const value = getTargetValue(target);
+    const value = _getTargetValue(target);
     setFormFields(() => {
       formFields[key] = value;
       return formFields;

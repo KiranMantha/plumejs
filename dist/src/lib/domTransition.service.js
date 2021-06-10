@@ -1,11 +1,9 @@
+import { fromEvent } from 'rxjs';
 import { Injectable } from './decorators';
 export class DomTransition {
     transition = '';
     constructor() {
         this.whichTransitionEnd();
-    }
-    removeTransition(element, fn) {
-        element.removeEventListener(this.transition, fn, false);
     }
     whichTransitionEnd() {
         const element = document.createElement('div');
@@ -25,20 +23,19 @@ export class DomTransition {
     }
     onTransitionEnd(element, cb, duration) {
         let called = false;
+        let eventSubscription = null;
         const _fn = () => {
             if (!called) {
                 called = true;
                 cb && cb();
-                this.removeTransition(element, _fn);
+                eventSubscription.unsubscribe();
+                eventSubscription = null;
             }
         };
-        element.addEventListener(this.transition, () => {
+        eventSubscription = fromEvent(element, this.transition).subscribe(() => {
             _fn();
-        }, false);
-        const callback = () => {
-            _fn();
-        };
-        setTimeout(callback, duration);
+        });
+        setTimeout(_fn, duration);
     }
 }
 Injectable("DomTransition")([DomTransition]);

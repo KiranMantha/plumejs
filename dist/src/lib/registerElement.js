@@ -31,9 +31,9 @@ const registerElement = (options, target, isRoot) => {
     window.customElements.define(options.selector, class extends HTMLElement {
         render;
         [klass];
-        shadow;
-        subscriptions = new Subscription();
-        componentStyleTag = null;
+        _shadow;
+        _subscriptions = new Subscription();
+        _componentStyleTag = null;
         eventListenersMap;
         constructor() {
             super();
@@ -42,23 +42,23 @@ const registerElement = (options, target, isRoot) => {
             if (!CSS_SHEET_NOT_SUPPORTED) {
                 adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
                 if (isNode) {
-                    this.shadow = this;
+                    this._shadow = this;
                 }
                 else {
-                    this.shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
+                    this._shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
                 }
-                this.shadow.adoptedStyleSheets = adoptedStyleSheets;
+                this._shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
             else {
                 options.useShadow = false;
-                this.shadow = this;
+                this._shadow = this;
             }
         }
         emulateComponent() {
             if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
                 const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
                 const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
-                this.componentStyleTag = createStyleTag(compiledCSS);
+                this._componentStyleTag = createStyleTag(compiledCSS);
                 this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
             }
         }
@@ -66,18 +66,18 @@ const registerElement = (options, target, isRoot) => {
             this.emulateComponent();
             const fn = Array.isArray(target) ? target : [target];
             this[klass] = instantiate(fn);
-            this[klass]['renderer'] = this.shadow;
+            this[klass]['renderer'] = this._shadow;
             this[klass]['emitEvent'] = this.emitEvent.bind(this);
             this[klass]['update'] = this.update.bind(this);
             this[klass].beforeMount && this[klass].beforeMount();
             this.update();
             this[klass].mount && this[klass].mount();
-            this.subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
+            this._subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
                 this.update();
             }));
         }
         update() {
-            render(this.shadow, this[klass].render.bind(this[klass])());
+            render(this._shadow, this[klass].render.bind(this[klass])());
         }
         getModel() {
             return this[klass];
@@ -95,8 +95,8 @@ const registerElement = (options, target, isRoot) => {
             this.dispatchEvent(event);
         }
         disconnectedCallback() {
-            this.subscriptions.unsubscribe();
-            this.componentStyleTag && this.componentStyleTag.remove();
+            this._subscriptions.unsubscribe();
+            this._componentStyleTag && this._componentStyleTag.remove();
             this[klass].unmount && this[klass].unmount();
             if (this.eventListenersMap) {
                 for (const [key, value] of Object.entries(this.eventListenersMap)) {

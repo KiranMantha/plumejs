@@ -4,20 +4,20 @@ import { jsonObject } from './types';
 
 @Injectable()
 export class TranslationService {
-  private defaultLanguage = '';
+  private _defaultLanguage = '';
 
   setTranslate(i18n: jsonObject, lang: string) {
     setTranslate(i18n, lang);
   }
 
   setDefaultLanguage(language: string) {
-    this.defaultLanguage = language;
+    this._defaultLanguage = language;
     setDefaultLanguage(language);
-    const event = new CustomEvent<any>('onLanguageChange');
+    const event = new CustomEvent('onLanguageChange');
     window.dispatchEvent(event);
   }
 
   getCurrentLanguage() {
-    return this.defaultLanguage;
+    return this._defaultLanguage;
   }
 }

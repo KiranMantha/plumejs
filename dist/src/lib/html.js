@@ -4,7 +4,7 @@ const attributePrefix = 'attr';
 const attributeRegex = /^attr([^ ]+)/;
 const insertNodePrefix = 'insertNode';
 const insertNodeRegex = /^insertNode([^ ]+)/;
-const createFragment = (markup) => {
+const _createFragment = (markup) => {
     const temp = document.createElement('div');
     temp.innerHTML = markup;
     const frag = document.createDocumentFragment();
@@ -12,7 +12,7 @@ const createFragment = (markup) => {
     children.map((el) => frag.appendChild(el));
     return frag;
 };
-const bindFragments = (fragment, values) => {
+const _bindFragments = (fragment, values) => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode();
     while (node) {
@@ -54,7 +54,7 @@ const bindFragments = (fragment, values) => {
         node = elementsWalker.nextNode();
     }
 };
-const replaceInsertNodeComments = (fragment, values) => {
+const _replaceInsertNodeComments = (fragment, values) => {
     const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
     const commentNodes = [];
     let match;
@@ -91,9 +91,9 @@ const html = (templates, ...values) => {
         }
     }
     result += templates[length - 1];
-    const fragment = createFragment(result.trim());
-    bindFragments(fragment, values);
-    replaceInsertNodeComments(fragment, values);
+    const fragment = _createFragment(result.trim());
+    _bindFragments(fragment, values);
+    _replaceInsertNodeComments(fragment, values);
     return fragment;
 };
 const render = (where, what) => {

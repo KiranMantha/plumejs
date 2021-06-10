@@ -25,18 +25,6 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
         return true;
     }
 })();
-function getArgs(func) {
-    return Function.toString
-        .call(func)
-        .replace(/[/][/].*$/gm, '')
-        .replace(/\s+/g, '')
-        .replace(/[/][*][^/*]*[*][/]/g, '')
-        .split('){', 1)[0]
-        .replace(/^[^(]*[(]/, '')
-        .replace(/=[^,]+/g, '')
-        .split(',')
-        .filter(Boolean);
-}
 const useState = (obj) => {
     const initialState = obj;
     const reducer = (fn) => {
@@ -51,4 +39,4 @@ const useState = (obj) => {
     };
     return [initialState, reducer];
 };
-export { isObject, isFunction, isUndefined, isObservable, isPromise, wrapIntoObservable, useState, getArgs, klass, CSS_SHEET_NOT_SUPPORTED };
+export { isObject, isFunction, isUndefined, isObservable, isPromise, wrapIntoObservable, useState, klass, CSS_SHEET_NOT_SUPPORTED };

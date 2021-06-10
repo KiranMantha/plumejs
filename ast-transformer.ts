@@ -9,13 +9,23 @@ const enum DecoratorTypes {
 
 function containDecorators(decorators: string[], node: ts.Decorator) {
   if (decorators.length) {
-    return decorators.some(d => node.getFullText().trim().startsWith('@' + d))
+    return decorators.some((d) =>
+      node
+        .getFullText()
+        .trim()
+        .startsWith('@' + d)
+    );
   }
   return false;
 }
 
 function getDecoratorMetaData(decoratorName: string, node: ts.Node): { name: string; params: string } {
-  const [decorator] = node.decorators.filter(d => d.getFullText().trim().startsWith('@' + decoratorName));
+  const [decorator] = node.decorators.filter((d) =>
+    d
+      .getFullText()
+      .trim()
+      .startsWith('@' + decoratorName)
+  );
   if (decorator) {
     let params = null;
     if (ts.isCallExpression(decorator.expression)) {
@@ -25,19 +35,19 @@ function getDecoratorMetaData(decoratorName: string, node: ts.Node): { name: str
     return {
       name: decoratorName,
       params
-    }
+    };
   }
 }
 
 const getConstructorMethod = (node: ts.ClassDeclaration) => {
   const constructorMethod = node.members
-    .filter(node => ts.isConstructorDeclaration(node))
-    .map(node => node as ts.MethodDeclaration);
+    .filter((node) => ts.isConstructorDeclaration(node))
+    .map((node) => node as ts.MethodDeclaration);
   return constructorMethod.length && constructorMethod[0];
-}
+};
 
 const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.TransformationContext) => {
-  return sourceFile => {
+  return (sourceFile) => {
     const visitor: ts.Visitor = (node: ts.Node): ts.Node | ts.Node[] => {
       if (ts.isDecorator(node) && containDecorators([DecoratorTypes.COMPONENT, DecoratorTypes.INJECTABLE], node)) {
         return undefined;
@@ -51,42 +61,55 @@ const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.Transf
           let constructorParametersTypes = [];
           let decoratorStaticNode = undefined;
           if (constructor) {
-            constructorParametersTypes = constructor.parameters.map(param => param.type.getText());
+            constructorParametersTypes = constructor.parameters.map((param) => param.type.getText());
           }
 
           if (componentDecorator) {
-            decoratorStaticNode = factory.createExpressionStatement(factory.createCallExpression(
+            decoratorStaticNode = factory.createExpressionStatement(
               factory.createCallExpression(
-                factory.createIdentifier(componentDecorator.name),
+                factory.createCallExpression(factory.createIdentifier(componentDecorator.name), undefined, [
+                  factory.createIdentifier(componentDecorator.params)
+                ]),
                 undefined,
-                [factory.createIdentifier(componentDecorator.params)]
-              ),
-              undefined,
-              [factory.createArrayLiteralExpression(
                 [
-                  ...constructorParametersTypes.map(p => factory.createStringLiteral(p)),
-                  factory.createIdentifier(nodeName)
-                ],
-                false
-              )]
-            ));
+                  factory.createArrayLiteralExpression(
+                    [
+                      ...constructorParametersTypes.map((p) => factory.createStringLiteral(p)),
+                      factory.createIdentifier(nodeName)
+                    ],
+                    false
+                  )
+                ]
+              )
+            );
           } else if (injectableDecorator) {
-            decoratorStaticNode = factory.createExpressionStatement(factory.createCallExpression(
+            decoratorStaticNode = factory.createExpressionStatement(
               factory.createCallExpression(
-                factory.createIdentifier(injectableDecorator.name),
+                factory.createCallExpression(factory.createIdentifier(injectableDecorator.name), undefined, [
+                  factory.createStringLiteral(nodeName)
+                ]),
                 undefined,
-                [factory.createStringLiteral(nodeName)]
-              ),
-              undefined,
-              [factory.createArrayLiteralExpression([
-                ...constructorParametersTypes.map(p => factory.createStringLiteral(p)),
-                factory.createIdentifier(nodeName)
-              ],
-                false
-              )]
-            ));
+                [
+                  factory.createArrayLiteralExpression(
+                    [
+                      ...constructorParametersTypes.map((p) => factory.createStringLiteral(p)),
+                      factory.createIdentifier(nodeName)
+                    ],
+                    false
+                  )
+                ]
+              )
+            );
           }
-          const updatedClassNode = factory.updateClassDeclaration(node, undefined, node.modifiers, node.name, node.typeParameters, node.heritageClauses, node.members);
+          const updatedClassNode = factory.updateClassDeclaration(
+            node,
+            undefined,
+            node.modifiers,
+            node.name,
+            node.typeParameters,
+            node.heritageClauses,
+            node.members
+          );
           return [ts.visitEachChild(updatedClassNode, visitor, context), decoratorStaticNode];
         }
       }
@@ -94,6 +117,6 @@ const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.Transf
     };
     return ts.visitNode(sourceFile, visitor);
   };
-}
+};
 
 export default astTransformer;
