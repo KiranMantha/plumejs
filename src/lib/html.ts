@@ -41,8 +41,20 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
             values[i](node);
             break;
           }
-          case /^data-+/.test(nodeValue):
+          case /dataset/.test(nodeValue): {
+            const dataset = node.dataset;
+            const obj: { [key: string]: any } = values[i];
+            for (const [key, value] of Object.entries(obj)) {
+              dataset[key] = value;
+            }
+            break;
+          }
+          case /^data-+/.test(nodeValue): {
+            node.setAttribute(`data-${nodeValue}`, values[i]);
+            break;
+          }
           case /^attr-+/.test(nodeValue): {
+            node.setAttribute(`aria-${nodeValue}`, values[i]);
             break;
           }
           case /class/.test(nodeValue): {
@@ -54,7 +66,7 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
             break;
           }
           default: {
-            node[nodeValue] = values[i];
+            node.setAttribute(nodeValue, values[i]);
           }
         }
         node.removeAttribute(nodeName);
@@ -119,3 +131,4 @@ const render = (where: HTMLElement, what: DocumentFragment) => {
 };
 
 export { html, render };
+
