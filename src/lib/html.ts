@@ -77,19 +77,22 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
 };
 
 const _replaceInsertNodeComments = (fragment: DocumentFragment, values: Array<any>) => {
-  const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
-  const commentNodes = [];
+  const commentsWalker = document.createTreeWalker(
+    fragment,
+    NodeFilter.SHOW_COMMENT,
+    null
+  );
+  let node = commentsWalker.nextNode() as Comment;
   let match;
-  while (commentsWalker.nextNode()) {
-    commentNodes.push(commentsWalker.currentNode);
-  }
-  const { length } = commentNodes;
-  for (let i = 0; i < length; i++) {
-    const node = commentNodes[i];
+  while (node) {
     if ((match = insertNodeRegex.exec(node.data))) {
-      const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
+      const nodesList = Array.isArray(values[match[1]])
+        ? values[match[1]]
+        : [values[match[1]]];
       node.replaceWith(...nodesList);
+      commentsWalker.currentNode = fragment;
     }
+    node = commentsWalker.nextNode() as Comment;
   }
 };
 
