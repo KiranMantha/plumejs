@@ -25,4 +25,3 @@ interface ComponentRef<T> {
 type jsonObject = { [index: string]: any };
 
 export { DecoratorOptions, IHooks, jsonObject, Renderer, ComponentRef };
-

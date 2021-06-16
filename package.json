@@ -10,7 +10,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf dist && ttsc",
+    "build": "npm run lint && rimraf dist && ttsc",
     "eslint:init": "eslint --init",
     "lint": "eslint . --ext .ts --fix",
     "patch-update": "npm version patch",

@@ -27,7 +27,4 @@ const Injectable = (name) => (target) => {
         throw 'error: Requires name and (constructor or service names with constructor) to define service';
     }
 };
-const Input = (target, key) => {
-    target.prototype.inputProp = key;
-};
-export { Component, Injectable, Input };
+export { Component, Injectable };

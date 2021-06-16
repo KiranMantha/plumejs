@@ -31,8 +31,4 @@ const Injectable = (name?: string) => (target) => {
   }
 };
 
-const Input = (target: any, key: string) => {
-  target.prototype.inputProp = key;
-};
-
-export { Component, Injectable, Input };
+export { Component, Injectable };

@@ -137,4 +137,3 @@ const render = (where: HTMLElement, what: DocumentFragment) => {
 };
 
 export { html, render };
-
