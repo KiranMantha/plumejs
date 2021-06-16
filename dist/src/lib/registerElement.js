@@ -29,7 +29,6 @@ const registerElement = (options, target, isRoot) => {
         }
     }
     window.customElements.define(options.selector, class extends HTMLElement {
-        render;
         [klass];
         _shadow;
         _subscriptions = new Subscription();
@@ -53,6 +52,10 @@ const registerElement = (options, target, isRoot) => {
                 options.useShadow = false;
                 this._shadow = this;
             }
+            this.update = this.update.bind(this);
+            this.emitEvent = this.emitEvent.bind(this);
+            this.setProps = this.setProps.bind(this);
+            this.getInstance = this.getInstance.bind(this);
         }
         emulateComponent() {
             if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
@@ -66,9 +69,7 @@ const registerElement = (options, target, isRoot) => {
             this.emulateComponent();
             const fn = Array.isArray(target) ? target : [target];
             this[klass] = instantiate(fn);
-            this[klass]['renderer'] = this._shadow;
-            this[klass]['emitEvent'] = this.emitEvent.bind(this);
-            this[klass]['update'] = this.update.bind(this);
+            this[klass]['renderer'] = this;
             this[klass].beforeMount && this[klass].beforeMount();
             this.update();
             this[klass].mount && this[klass].mount();
@@ -79,20 +80,21 @@ const registerElement = (options, target, isRoot) => {
         update() {
             render(this._shadow, this[klass].render.bind(this[klass])());
         }
-        getModel() {
-            return this[klass];
-        }
-        setProps(propsObj) {
-            for (const [key, value] of Object.entries(propsObj)) {
-                this[klass][key] = value;
-            }
-            this.update();
-        }
         emitEvent(eventName, data) {
             const event = new CustomEvent(eventName, {
                 detail: data
             });
             this.dispatchEvent(event);
+        }
+        setProps(propsObj) {
+            for (const [key, value] of Object.entries(propsObj)) {
+                this[klass][key] = value;
+            }
+            this[klass].onPropsChanged && this[klass].onPropsChanged();
+            this.update();
+        }
+        getInstance() {
+            return this[klass];
         }
         disconnectedCallback() {
             this._subscriptions.unsubscribe();

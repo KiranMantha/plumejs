@@ -3,7 +3,7 @@ import { fromEvent, Subscription } from 'rxjs';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { DecoratorOptions, jsonObject } from './types';
+import { ComponentRef, DecoratorOptions, jsonObject, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
@@ -35,8 +35,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
 
   window.customElements.define(
     options.selector,
-    class extends HTMLElement {
-      render: () => void;
+    class extends HTMLElement implements Renderer, ComponentRef<any> {
       [klass]: jsonObject;
       private _shadow: any;
       private _subscriptions: Subscription = new Subscription();
@@ -59,6 +58,10 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
           options.useShadow = false;
           this._shadow = this;
         }
+        this.update = this.update.bind(this);
+        this.emitEvent = this.emitEvent.bind(this);
+        this.setProps = this.setProps.bind(this);
+        this.getInstance = this.getInstance.bind(this);
       }
 
       private emulateComponent() {
@@ -74,9 +77,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         this.emulateComponent();
         const fn = Array.isArray(target) ? target : [target];
         this[klass] = instantiate(fn);
-        this[klass]['renderer'] = this._shadow;
-        this[klass]['emitEvent'] = this.emitEvent.bind(this);
-        this[klass]['update'] = this.update.bind(this);
+        this[klass]['renderer'] = this;
         this[klass].beforeMount && this[klass].beforeMount();
         this.update();
         this[klass].mount && this[klass].mount();
@@ -91,22 +92,23 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         render(this._shadow, this[klass].render.bind(this[klass])());
       }
 
-      getModel() {
-        return this[klass];
+      emitEvent(eventName: string, data: any) {
+        const event = new CustomEvent(eventName, {
+          detail: data
+        });
+        this.dispatchEvent(event);
       }
 
       setProps(propsObj: jsonObject) {
         for (const [key, value] of Object.entries(propsObj)) {
           this[klass][key] = value;
         }
+        this[klass].onPropsChanged && this[klass].onPropsChanged();
         this.update();
       }
 
-      emitEvent(eventName: string, data: jsonObject) {
-        const event = new CustomEvent(eventName, {
-          detail: data
-        });
-        this.dispatchEvent(event);
+      getInstance() {
+        return this[klass];
       }
 
       disconnectedCallback() {
@@ -125,3 +127,4 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
 };
 
 export { registerElement };
+

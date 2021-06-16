@@ -58,11 +58,20 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
             break;
           }
           case /class/.test(nodeValue): {
-            node.classList.add(values[i]);
+            node.classList.add(...values[i].split(' '));
             break;
           }
           case /value/.test(nodeValue): {
             (node as any).value = values[i];
+            break;
+          }
+          case /disabled/.test(nodeValue):
+          case /checked/.test(nodeValue): {
+            if (values[i]) {
+              node.setAttribute(nodeValue, values[i]);
+            } else {
+              node.removeAttribute(nodeValue);
+            }
             break;
           }
           default: {
@@ -77,18 +86,12 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
 };
 
 const _replaceInsertNodeComments = (fragment: DocumentFragment, values: Array<any>) => {
-  const commentsWalker = document.createTreeWalker(
-    fragment,
-    NodeFilter.SHOW_COMMENT,
-    null
-  );
+  const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
   let node = commentsWalker.nextNode() as Comment;
   let match;
   while (node) {
     if ((match = insertNodeRegex.exec(node.data))) {
-      const nodesList = Array.isArray(values[match[1]])
-        ? values[match[1]]
-        : [values[match[1]]];
+      const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
       node.replaceWith(...nodesList);
       commentsWalker.currentNode = fragment;
     }

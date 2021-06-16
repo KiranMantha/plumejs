@@ -5,11 +5,20 @@ interface DecoratorOptions {
     useShadow?: boolean;
 }
 interface IHooks {
-    mount?: () => void;
-    unmount?: () => void;
-    update?: () => void;
+    beforeMount?(): any;
+    mount?(): any;
+    unmount?(): any;
+    onPropsChanged?(): any;
+}
+interface Renderer {
+    update(): any;
+    emitEvent(eventName: string, data?: any): any;
+}
+interface ComponentRef<T> {
+    setProps(propertiesObject: jsonObject): any;
+    getInstance(): T;
 }
 declare type jsonObject = {
     [index: string]: any;
 };
-export { DecoratorOptions, IHooks, jsonObject };
+export { DecoratorOptions, IHooks, jsonObject, Renderer, ComponentRef };

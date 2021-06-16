@@ -49,11 +49,21 @@ const _bindFragments = (fragment, values) => {
                         break;
                     }
                     case /class/.test(nodeValue): {
-                        node.classList.add(values[i]);
+                        node.classList.add(...values[i].split(' '));
                         break;
                     }
                     case /value/.test(nodeValue): {
                         node.value = values[i];
+                        break;
+                    }
+                    case /disabled/.test(nodeValue):
+                    case /checked/.test(nodeValue): {
+                        if (values[i]) {
+                            node.setAttribute(nodeValue, values[i]);
+                        }
+                        else {
+                            node.removeAttribute(nodeValue);
+                        }
                         break;
                     }
                     default: {
@@ -72,9 +82,7 @@ const _replaceInsertNodeComments = (fragment, values) => {
     let match;
     while (node) {
         if ((match = insertNodeRegex.exec(node.data))) {
-            const nodesList = Array.isArray(values[match[1]])
-                ? values[match[1]]
-                : [values[match[1]]];
+            const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
             node.replaceWith(...nodesList);
             commentsWalker.currentNode = fragment;
         }
