@@ -6,6 +6,7 @@ interface DecoratorOptions {
 }
 
 interface IHooks {
+  readonly ObservedProperties?;
   beforeMount?();
   mount?();
   unmount?();
@@ -17,14 +18,10 @@ interface Renderer {
   emitEvent(eventName: string, data?: any);
 }
 
-interface IObservedProperties {
-  readonly ObservedProperties;
-}
-
 interface ComponentRef<T> {
   setProps(
     propertiesObject: {
-      [K in Extract<T, IObservedProperties>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+      [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
     }
   ): void;
   getInstance(): T;
