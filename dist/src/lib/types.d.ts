@@ -17,10 +17,10 @@ interface Renderer {
 interface IObservedProperties {
     readonly ObservedProperties: any;
 }
-interface ComponentRef<T extends IObservedProperties> {
+interface ComponentRef<T> {
     setProps(propertiesObject: {
-        [K in T['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
-    }): any;
+        [K in Extract<T, IObservedProperties>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+    }): void;
     getInstance(): T;
 }
 declare type jsonObject = {

@@ -21,12 +21,15 @@ interface IObservedProperties {
   readonly ObservedProperties;
 }
 
-interface ComponentRef<T extends IObservedProperties> {
-  setProps(propertiesObject: { [K in T['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never });
+interface ComponentRef<T> {
+  setProps(
+    propertiesObject: {
+      [K in Extract<T, IObservedProperties>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+    }
+  ): void;
   getInstance(): T;
 }
 
 type jsonObject = { [index: string]: any };
 
 export { DecoratorOptions, IHooks, jsonObject, Renderer, ComponentRef };
-
