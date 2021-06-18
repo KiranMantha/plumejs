@@ -17,11 +17,16 @@ interface Renderer {
   emitEvent(eventName: string, data?: any);
 }
 
-interface ComponentRef<T> {
-  setProps(propertiesObject: jsonObject);
+interface IObservedProperties {
+  readonly ObservedProperties;
+}
+
+interface ComponentRef<T extends IObservedProperties> {
+  setProps(propertiesObject: { [K in T['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never });
   getInstance(): T;
 }
 
 type jsonObject = { [index: string]: any };
 
 export { DecoratorOptions, IHooks, jsonObject, Renderer, ComponentRef };
+

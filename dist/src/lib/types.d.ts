@@ -14,8 +14,13 @@ interface Renderer {
     update(): any;
     emitEvent(eventName: string, data?: any): any;
 }
-interface ComponentRef<T> {
-    setProps(propertiesObject: jsonObject): any;
+interface IObservedProperties {
+    readonly ObservedProperties: any;
+}
+interface ComponentRef<T extends IObservedProperties> {
+    setProps(propertiesObject: {
+        [K in T['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+    }): any;
     getInstance(): T;
 }
 declare type jsonObject = {
