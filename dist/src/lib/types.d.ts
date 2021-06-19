@@ -11,9 +11,10 @@ interface IHooks {
     unmount?(): any;
     onPropsChanged?(): any;
 }
-interface Renderer {
-    update(): any;
-    emitEvent(eventName: string, data?: any): any;
+declare class Renderer {
+    shadowRoot: ShadowRoot;
+    update: () => void;
+    emitEvent: (eventName: string, data?: any) => void;
 }
 interface ComponentRef<T> {
     setProps(propertiesObject: {

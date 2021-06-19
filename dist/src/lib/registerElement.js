@@ -3,7 +3,8 @@ import { fromEvent, Subscription } from 'rxjs';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { CSS_SHEET_NOT_SUPPORTED, isUndefined, klass } from './utils';
+import { Renderer } from './types';
+import { CSS_SHEET_NOT_SUPPORTED, isUndefined } from './utils';
 const COMPONENT_DATA_ATTR = 'data-compid';
 const createStyleTag = (content) => {
     const tag = document.createElement('style');
@@ -29,10 +30,10 @@ const registerElement = (options, target, isRoot) => {
         }
     }
     window.customElements.define(options.selector, class extends HTMLElement {
-        [klass];
-        _shadow;
-        _subscriptions = new Subscription();
-        _componentStyleTag = null;
+        #klass;
+        #shadow;
+        #subscriptions = new Subscription();
+        #componentStyleTag = null;
         eventListenersMap;
         constructor() {
             super();
@@ -41,16 +42,16 @@ const registerElement = (options, target, isRoot) => {
             if (!CSS_SHEET_NOT_SUPPORTED) {
                 adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
                 if (isNode) {
-                    this._shadow = this;
+                    this.#shadow = this;
                 }
                 else {
-                    this._shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
+                    this.#shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
                 }
-                this._shadow.adoptedStyleSheets = adoptedStyleSheets;
+                this.#shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
             else {
                 options.useShadow = false;
-                this._shadow = this;
+                this.#shadow = this;
             }
             this.update = this.update.bind(this);
             this.emitEvent = this.emitEvent.bind(this);
@@ -61,24 +62,26 @@ const registerElement = (options, target, isRoot) => {
             if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
                 const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
                 const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
-                this._componentStyleTag = createStyleTag(compiledCSS);
+                this.#componentStyleTag = createStyleTag(compiledCSS);
                 this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
             }
         }
         connectedCallback() {
             this.emulateComponent();
-            const fn = Array.isArray(target) ? target : [target];
-            this[klass] = instantiate(fn);
-            this[klass]['renderer'] = this;
-            this[klass].beforeMount && this[klass].beforeMount();
+            const rendererInstance = new Renderer();
+            rendererInstance.update = this.update;
+            rendererInstance.shadowRoot = this.#shadow;
+            rendererInstance.emitEvent = this.emitEvent;
+            this.#klass = instantiate(target, rendererInstance);
+            this.#klass.beforeMount && this.#klass.beforeMount();
             this.update();
-            this[klass].mount && this[klass].mount();
-            this._subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
+            this.#klass.mount && this.#klass.mount();
+            this.#subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
                 this.update();
             }));
         }
         update() {
-            render(this._shadow, this[klass].render.bind(this[klass])());
+            render(this.#shadow, this.#klass.render.bind(this.#klass)());
         }
         emitEvent(eventName, data) {
             const event = new CustomEvent(eventName, {
@@ -88,18 +91,18 @@ const registerElement = (options, target, isRoot) => {
         }
         setProps(propsObj) {
             for (const [key, value] of Object.entries(propsObj)) {
-                this[klass][key] = value;
+                this.#klass[key] = value;
             }
-            this[klass].onPropsChanged && this[klass].onPropsChanged();
+            this.#klass.onPropsChanged && this.#klass.onPropsChanged();
             this.update();
         }
         getInstance() {
-            return this[klass];
+            return this.#klass;
         }
         disconnectedCallback() {
-            this._subscriptions.unsubscribe();
-            this._componentStyleTag && this._componentStyleTag.remove();
-            this[klass].unmount && this[klass].unmount();
+            this.#subscriptions.unsubscribe();
+            this.#componentStyleTag && this.#componentStyleTag.remove();
+            this.#klass.unmount && this.#klass.unmount();
             if (this.eventListenersMap) {
                 for (const [key, value] of Object.entries(this.eventListenersMap)) {
                     this.removeEventListener(key, value);
