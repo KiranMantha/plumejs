@@ -1,16 +1,24 @@
-/**
- * Useful Links
- * https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
- * https://www.programmersought.com/article/9331587598/
- * https://medium.com/@trukrs/tagged-template-literal-for-html-templates-4820cf5538f9
- */
-
 const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
 const isNodeRegex = /<[a-z][^>]+$/i;
 const attributePrefix = 'attr';
 const attributeRegex = /^attr([^ ]+)/;
 const insertNodePrefix = 'insertNode';
 const insertNodeRegex = /^insertNode([^ ]+)/;
+
+const _sanitize = (data) => {
+  const tagsToReplace = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '(': '%28',
+    ')': '%29'
+  };
+  let str = JSON.stringify(data);
+  const replaceTag = (tag) => tagsToReplace[tag] || tag;
+  const safe_tags_replace = (str) => str.replace(/[&<>\(\)]/g, replaceTag);
+  str = safe_tags_replace(str);
+  return JSON.parse(str);
+};
 
 const _createFragment = (markup: string): DocumentFragment => {
   const temp = document.createElement('div');
@@ -50,11 +58,11 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
             break;
           }
           case /^data-+/.test(nodeValue): {
-            node.setAttribute(`data-${nodeValue}`, values[i]);
+            node.setAttribute(`data-${nodeValue}`, _sanitize(values[i]));
             break;
           }
           case /^attr-+/.test(nodeValue): {
-            node.setAttribute(`aria-${nodeValue}`, values[i]);
+            node.setAttribute(`aria-${nodeValue}`, _sanitize(values[i]));
             break;
           }
           case /class/.test(nodeValue): {
@@ -62,7 +70,7 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
             break;
           }
           case /value/.test(nodeValue): {
-            (node as any).value = values[i];
+            (node as any).value = _sanitize(values[i]);
             break;
           }
           case /disabled/.test(nodeValue):
@@ -75,7 +83,7 @@ const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
             break;
           }
           default: {
-            node.setAttribute(nodeValue, values[i]);
+            node.setAttribute(nodeValue, _sanitize(values[i]));
           }
         }
         node.removeAttribute(nodeName);

@@ -4,6 +4,20 @@ const attributePrefix = 'attr';
 const attributeRegex = /^attr([^ ]+)/;
 const insertNodePrefix = 'insertNode';
 const insertNodeRegex = /^insertNode([^ ]+)/;
+const _sanitize = (data) => {
+    const tagsToReplace = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '(': '%28',
+        ')': '%29'
+    };
+    let str = JSON.stringify(data);
+    const replaceTag = (tag) => tagsToReplace[tag] || tag;
+    const safe_tags_replace = (str) => str.replace(/[&<>\(\)]/g, replaceTag);
+    str = safe_tags_replace(str);
+    return JSON.parse(str);
+};
 const _createFragment = (markup) => {
     const temp = document.createElement('div');
     temp.innerHTML = markup;
@@ -41,11 +55,11 @@ const _bindFragments = (fragment, values) => {
                         break;
                     }
                     case /^data-+/.test(nodeValue): {
-                        node.setAttribute(`data-${nodeValue}`, values[i]);
+                        node.setAttribute(`data-${nodeValue}`, _sanitize(values[i]));
                         break;
                     }
                     case /^attr-+/.test(nodeValue): {
-                        node.setAttribute(`aria-${nodeValue}`, values[i]);
+                        node.setAttribute(`aria-${nodeValue}`, _sanitize(values[i]));
                         break;
                     }
                     case /class/.test(nodeValue): {
@@ -53,7 +67,7 @@ const _bindFragments = (fragment, values) => {
                         break;
                     }
                     case /value/.test(nodeValue): {
-                        node.value = values[i];
+                        node.value = _sanitize(values[i]);
                         break;
                     }
                     case /disabled/.test(nodeValue):
@@ -67,7 +81,7 @@ const _bindFragments = (fragment, values) => {
                         break;
                     }
                     default: {
-                        node.setAttribute(nodeValue, values[i]);
+                        node.setAttribute(nodeValue, _sanitize(values[i]));
                     }
                 }
                 node.removeAttribute(nodeName);
