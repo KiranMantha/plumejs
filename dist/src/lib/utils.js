@@ -25,18 +25,4 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
         return true;
     }
 })();
-const useState = (obj) => {
-    const initialState = obj;
-    const reducer = (fn) => {
-        let newState;
-        if (isFunction(fn)) {
-            newState = fn(initialState);
-        }
-        else {
-            newState = fn;
-        }
-        Object.assign(initialState, newState);
-    };
-    return [initialState, reducer];
-};
-export { isObject, isFunction, isUndefined, isObservable, isPromise, wrapIntoObservable, useState, klass, CSS_SHEET_NOT_SUPPORTED };
+export { isObject, isFunction, isUndefined, isObservable, isPromise, wrapIntoObservable, klass, CSS_SHEET_NOT_SUPPORTED };

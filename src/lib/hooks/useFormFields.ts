@@ -1,5 +1,5 @@
 import { jsonObject } from '../types';
-import { useState } from '../utils';
+import { useState } from './useState';
 
 const _getTargetValue = (target: HTMLElement) => {
   let targetValue;
@@ -36,11 +36,11 @@ const _getTargetValue = (target: HTMLElement) => {
   return targetValue;
 };
 
-const useFormFields = (
-  initialValues: jsonObject
-): { formFields: jsonObject; createChangeHandler: (key: string) => (e: Event) => void } => {
+const useFormFields = <T extends jsonObject>(
+  initialValues: T
+): { formFields: jsonObject; createChangeHandler: (key: keyof T) => (e: Event) => void } => {
   const [formFields, setFormFields] = useState(initialValues);
-  const createChangeHandler = (key: string) => (e: Event) => {
+  const createChangeHandler = (key: keyof T) => (e: Event) => {
     const target: any = e.target;
     const value = _getTargetValue(target);
     setFormFields(() => {

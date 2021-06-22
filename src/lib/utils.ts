@@ -1,5 +1,4 @@
 import { from, Observable, of } from 'rxjs';
-import { jsonObject } from './types';
 
 const klass = Symbol('klass');
 const isObject = (value: any) => value !== null && typeof value === 'object';
@@ -28,20 +27,6 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
   }
 })();
 
-const useState = (obj: jsonObject): [jsonObject, (obj: () => void | jsonObject) => void] => {
-  const initialState = obj;
-  const reducer = (fn) => {
-    let newState;
-    if (isFunction(fn)) {
-      newState = fn(initialState);
-    } else {
-      newState = fn;
-    }
-    Object.assign(initialState, newState);
-  };
-  return [initialState, reducer];
-};
-
 export {
   isObject,
   isFunction,
@@ -49,7 +34,6 @@ export {
   isObservable,
   isPromise,
   wrapIntoObservable,
-  useState,
   klass,
   CSS_SHEET_NOT_SUPPORTED
 };
