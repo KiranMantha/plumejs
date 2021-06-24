@@ -1,7 +1,7 @@
 import { Injector } from '../src/lib/service_resolver';
 
 export class TestBed {
-  static async MockComponent(target: () => void) {
+  static async MockComponent<T extends { prototype: any }>(target: T) {
     const appRoot = await _waitForComponentToRender(target.prototype.selector);
     return appRoot;
   }
