@@ -94,9 +94,10 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         render(this.#shadow, this.#klass.render.bind(this.#klass)());
       }
 
-      emitEvent(eventName: string, data: any) {
+      emitEvent(eventName: string, data: any, isBubbling = true) {
         const event = new CustomEvent(eventName, {
-          detail: data
+          detail: data,
+          bubbles: isBubbling
         });
         this.dispatchEvent(event);
       }

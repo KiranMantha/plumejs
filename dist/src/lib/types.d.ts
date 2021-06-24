@@ -14,7 +14,7 @@ interface IHooks {
 declare class Renderer {
     shadowRoot: ShadowRoot;
     update: () => void;
-    emitEvent: (eventName: string, data?: any) => void;
+    emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
 }
 interface ComponentRef<T> {
     setProps(propertiesObject: {

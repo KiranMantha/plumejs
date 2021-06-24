@@ -83,9 +83,10 @@ const registerElement = (options, target, isRoot) => {
         update() {
             render(this.#shadow, this.#klass.render.bind(this.#klass)());
         }
-        emitEvent(eventName, data) {
+        emitEvent(eventName, data, isBubbling = true) {
             const event = new CustomEvent(eventName, {
-                detail: data
+                detail: data,
+                bubbles: isBubbling
             });
             this.dispatchEvent(event);
         }
