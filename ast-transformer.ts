@@ -47,7 +47,7 @@ const getConstructorMethod = (node: ts.ClassDeclaration) => {
 };
 
 const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.TransformationContext) => {
-  return (sourceFile) => {
+  return (sourceFile: ts.SourceFile) => {
     const visitor: ts.Visitor = (node: ts.Node): ts.Node | ts.Node[] => {
       if (ts.isDecorator(node) && containDecorators([DecoratorTypes.COMPONENT, DecoratorTypes.INJECTABLE], node)) {
         return undefined;
@@ -59,7 +59,7 @@ const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.Transf
           const injectableDecorator = getDecoratorMetaData(DecoratorTypes.INJECTABLE, node);
           const nodeName = node.name.escapedText as string;
           let constructorParametersTypes = [];
-          let decoratorStaticNode = undefined;
+          let decoratorStaticNode: ts.Node = undefined;
           if (constructor) {
             constructorParametersTypes = constructor.parameters.map((param) => param.type.getText());
           }
@@ -101,20 +101,35 @@ const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.Transf
               )
             );
           }
-          const updatedClassNode = factory.updateClassDeclaration(
-            node,
-            undefined,
-            node.modifiers,
-            node.name,
-            node.typeParameters,
-            node.heritageClauses,
-            node.members
-          );
-          return [ts.visitEachChild(updatedClassNode, visitor, context), decoratorStaticNode];
+          if (decoratorStaticNode) {
+            const updatedClassNode = factory.updateClassDeclaration(
+              node,
+              undefined,
+              node.modifiers,
+              node.name,
+              node.typeParameters,
+              node.heritageClauses,
+              node.members
+            );
+            const newText = `${decoratorStaticNode}`;
+            console.log({ newText });
+            // const _node = sourceFile.update(decoratorStaticNode.getFullText(), {
+            //   newLength: decoratorStaticNode.getFullText().length,
+            //   span: {
+            //     start: node.getEnd(),
+            //     length: decoratorStaticNode.getFullText().length
+            //   }
+            // });
+            // console.log(_node.getText());
+            return [ts.visitEachChild(updatedClassNode, visitor, context), decoratorStaticNode];
+          } else {
+            return ts.visitEachChild(node, visitor, context);
+          }
         }
       }
       return ts.visitEachChild(node, visitor, context);
     };
+
     return ts.visitNode(sourceFile, visitor);
   };
 };
