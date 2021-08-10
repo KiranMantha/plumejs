@@ -1,3 +1,5 @@
+//https://stackoverflow.com/questions/49139601/how-to-bind-an-identifier-with-an-existing-symbol-on-a-compiler-transformer-in-t
+
 import * as ts from 'typescript';
 
 const factory = ts.factory;
