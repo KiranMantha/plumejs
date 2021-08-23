@@ -1,4 +1,5 @@
 //https://stackoverflow.com/questions/49139601/how-to-bind-an-identifier-with-an-existing-symbol-on-a-compiler-transformer-in-t
+//https://github.com/pedro-pedrosa/ts-expressions
 
 import * as ts from 'typescript';
 
