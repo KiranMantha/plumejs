@@ -19,12 +19,9 @@ const _sanitize = (data) => {
     return JSON.parse(str);
 };
 const _createFragment = (markup) => {
-    const temp = document.createElement('div');
+    const temp = document.createElement('template');
     temp.innerHTML = markup;
-    const frag = document.createDocumentFragment();
-    const children = Array.prototype.slice.apply(temp.childNodes);
-    children.map((el) => frag.appendChild(el));
-    return frag;
+    return temp.content;
 };
 const _bindFragments = (fragment, values) => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);

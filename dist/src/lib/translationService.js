@@ -1,6 +1,7 @@
+import { __decorate } from "tslib";
 import { setDefaultLanguage, setTranslate } from 'vanilla-i18n';
 import { Injectable } from './decorators';
-export class TranslationService {
+let TranslationService = class TranslationService {
     _defaultLanguage = '';
     setTranslate(i18n, lang) {
         setTranslate(i18n, lang);
@@ -14,5 +15,8 @@ export class TranslationService {
     getCurrentLanguage() {
         return this._defaultLanguage;
     }
-}
-Injectable("TranslationService")([TranslationService]);
+};
+TranslationService = __decorate([
+    Injectable()
+], TranslationService);
+export { TranslationService };
