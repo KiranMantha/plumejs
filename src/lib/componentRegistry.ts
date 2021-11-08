@@ -1,5 +1,6 @@
 interface IComponentRegistry {
   globalStyles: any;
+  globalStyleTag: Node;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
   getComputedCss: (useShadow: boolean, styles: string) => CSSStyleSheet[];
@@ -9,6 +10,7 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
   globalStyles: any;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
+  globalStyleTag: Node;
 
   constructor() {
     try {
@@ -18,6 +20,7 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
     }
 
     this.isRootNodeSet = false;
+    this.globalStyleTag = null;
   }
 
   getComputedCss = (useShadow: boolean, styles = '') => {

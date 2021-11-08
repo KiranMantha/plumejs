@@ -2,6 +2,7 @@ const componentRegistry = new (class {
     globalStyles;
     style_registry;
     isRootNodeSet;
+    globalStyleTag;
     constructor() {
         try {
             this.globalStyles = new CSSStyleSheet();
@@ -10,6 +11,7 @@ const componentRegistry = new (class {
             this.globalStyles = '';
         }
         this.isRootNodeSet = false;
+        this.globalStyleTag = null;
     }
     getComputedCss = (useShadow, styles = '') => {
         let csoArray = [];

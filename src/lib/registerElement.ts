@@ -8,10 +8,10 @@ import { CSS_SHEET_NOT_SUPPORTED, isUndefined } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
 
-const createStyleTag = (content: string) => {
+const createStyleTag = (content: string, where: Node = null) => {
   const tag = document.createElement('style');
   tag.innerHTML = content;
-  document.head.appendChild(tag);
+  where && where.appendChild(tag);
   return tag;
 };
 
@@ -23,11 +23,18 @@ const transformCSS = (styles: string, selector: string) => {
 };
 
 const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: boolean) => {
+  // setting defaults
+  options.root = options.root || false;
+  options.styles = (options.styles || '').toString();
+  options.useShadow = options.useShadow || true;
+
   if (!isNode) {
-    if (isRoot && !componentRegistry.isRootNodeSet && options.styles) {
+    if (isRoot && !componentRegistry.isRootNodeSet) {
       componentRegistry.isRootNodeSet = true;
-      createStyleTag(options.styles);
-      componentRegistry.globalStyles.replace((options.styles || '').toString());
+      if (options.styles) {
+        createStyleTag(options.styles);
+        componentRegistry.globalStyles.replace(options.styles);
+      }
     } else if (isRoot && componentRegistry.isRootNodeSet) {
       throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
     }
@@ -46,7 +53,10 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
         super();
         let adoptedStyleSheets = [];
         options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-        if (!CSS_SHEET_NOT_SUPPORTED) {
+        if (CSS_SHEET_NOT_SUPPORTED) {
+          options.useShadow = false;
+          this.#shadow = this;
+        } else {
           adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
           if (isNode) {
             this.#shadow = this;
@@ -54,9 +64,6 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
             this.#shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
           }
           this.#shadow.adoptedStyleSheets = adoptedStyleSheets;
-        } else {
-          options.useShadow = false;
-          this.#shadow = this;
         }
         this.update = this.update.bind(this);
         this.emitEvent = this.emitEvent.bind(this);
@@ -92,6 +99,9 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
 
       update() {
         render(this.#shadow, this.#klass.render.bind(this.#klass)());
+        if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
+          this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+        }
       }
 
       emitEvent(eventName: string, data: any, isBubbling = true) {
