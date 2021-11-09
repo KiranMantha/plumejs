@@ -51,13 +51,9 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
 
       constructor() {
         super();
-        let adoptedStyleSheets = [];
         options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          options.useShadow = false;
-          this.#shadow = this;
-        } else {
-          adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
+        if (!CSS_SHEET_NOT_SUPPORTED) {
+          const adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
           if (isNode) {
             this.#shadow = this;
           } else {
@@ -72,7 +68,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
       }
 
       private emulateComponent() {
-        if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
+        if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles) {
           const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
           const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
           this.#componentStyleTag = createStyleTag(compiledCSS);
@@ -99,8 +95,13 @@ const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: 
 
       update() {
         render(this.#shadow, this.#klass.render.bind(this.#klass)());
-        if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
-          this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+        if (CSS_SHEET_NOT_SUPPORTED) {
+          options.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+          componentRegistry.globalStyleTag &&
+            this.#shadow.insertBefore(
+              document.importNode(componentRegistry.globalStyleTag, true),
+              this.#shadow.childNodes[0]
+            );
         }
       }
 

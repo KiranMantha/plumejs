@@ -42,14 +42,9 @@ const registerElement = (options, target, isRoot) => {
         eventListenersMap;
         constructor() {
             super();
-            let adoptedStyleSheets = [];
             options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-            if (CSS_SHEET_NOT_SUPPORTED) {
-                options.useShadow = false;
-                this.#shadow = this;
-            }
-            else {
-                adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
+            if (!CSS_SHEET_NOT_SUPPORTED) {
+                const adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
                 if (isNode) {
                     this.#shadow = this;
                 }
@@ -64,7 +59,7 @@ const registerElement = (options, target, isRoot) => {
             this.getInstance = this.getInstance.bind(this);
         }
         emulateComponent() {
-            if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
+            if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles) {
                 const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
                 const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
                 this.#componentStyleTag = createStyleTag(compiledCSS);
@@ -87,8 +82,10 @@ const registerElement = (options, target, isRoot) => {
         }
         update() {
             render(this.#shadow, this.#klass.render.bind(this.#klass)());
-            if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
-                this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+            if (CSS_SHEET_NOT_SUPPORTED) {
+                options.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+                componentRegistry.globalStyleTag &&
+                    this.#shadow.insertBefore(document.importNode(componentRegistry.globalStyleTag, true), this.#shadow.childNodes[0]);
             }
         }
         emitEvent(eventName, data, isBubbling = true) {
