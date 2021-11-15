@@ -9,7 +9,7 @@ const Component = (options) => (target) => {
     if (!window.customElements.get(options.selector)) {
         const klass = target[target.length - 1];
         klass.prototype.selector = options.selector;
-        registerElement(options, target, options.root || false);
+        registerElement(options, target);
     }
 };
 const Injectable = (name) => (target) => {

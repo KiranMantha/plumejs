@@ -7,6 +7,12 @@ import { ComponentRef, DecoratorOptions, jsonObject, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
+const DEFAULT_COMPONENT_OPTIONS: DecoratorOptions = {
+  selector: '',
+  root: false,
+  styles: '',
+  useShadow: true
+};
 
 const createStyleTag = (content: string, where: Node = null) => {
   const tag = document.createElement('style');
@@ -22,20 +28,19 @@ const transformCSS = (styles: string, selector: string) => {
   return styles;
 };
 
-const registerElement = (options: DecoratorOptions, target: Array<any>, isRoot: boolean) => {
-  // setting defaults
-  options.root = options.root || false;
-  options.styles = (options.styles || '').toString();
-  options.useShadow = options.useShadow || true;
+const registerElement = (options: DecoratorOptions, target: Array<any>) => {
+  // mapping with defaults
+  options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
+  options.styles = options.styles.toString();
 
   if (!isNode) {
-    if (isRoot && !componentRegistry.isRootNodeSet) {
+    if (options.root && !componentRegistry.isRootNodeSet) {
       componentRegistry.isRootNodeSet = true;
       if (options.styles) {
         createStyleTag(options.styles);
         componentRegistry.globalStyles.replace(options.styles);
       }
-    } else if (isRoot && componentRegistry.isRootNodeSet) {
+    } else if (options.root && componentRegistry.isRootNodeSet) {
       throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
     }
   }

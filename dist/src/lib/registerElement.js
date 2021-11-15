@@ -6,6 +6,12 @@ import { instantiate } from './instance';
 import { Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined } from './utils';
 const COMPONENT_DATA_ATTR = 'data-compid';
+const DEFAULT_COMPONENT_OPTIONS = {
+    selector: '',
+    root: false,
+    styles: '',
+    useShadow: true
+};
 const createStyleTag = (content, where = null) => {
     const tag = document.createElement('style');
     tag.innerHTML = content;
@@ -18,19 +24,18 @@ const transformCSS = (styles, selector) => {
     }
     return styles;
 };
-const registerElement = (options, target, isRoot) => {
-    options.root = options.root || false;
-    options.styles = (options.styles || '').toString();
-    options.useShadow = options.useShadow || true;
+const registerElement = (options, target) => {
+    options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
+    options.styles = options.styles.toString();
     if (!isNode) {
-        if (isRoot && !componentRegistry.isRootNodeSet) {
+        if (options.root && !componentRegistry.isRootNodeSet) {
             componentRegistry.isRootNodeSet = true;
             if (options.styles) {
                 createStyleTag(options.styles);
                 componentRegistry.globalStyles.replace(options.styles);
             }
         }
-        else if (isRoot && componentRegistry.isRootNodeSet) {
+        else if (options.root && componentRegistry.isRootNodeSet) {
             throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
         }
     }

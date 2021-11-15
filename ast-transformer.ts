@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-function */
 //https://stackoverflow.com/questions/49139601/how-to-bind-an-identifier-with-an-existing-symbol-on-a-compiler-transformer-in-t
 //https://github.com/pedro-pedrosa/ts-expressions
 
@@ -8,6 +10,48 @@ const factory = ts.factory;
 const enum DecoratorTypes {
   COMPONENT = 'Component',
   INJECTABLE = 'Injectable'
+}
+
+/** extracted from ttypescript module */
+interface PluginConfig {
+  /**
+   * Language Server TypeScript Plugin name
+   */
+  name?: string;
+  /**
+   * Path to transformer or transformer module name
+   */
+  transform?: string;
+
+  /**
+   * The optional name of the exported transform plugin in the transform module.
+   */
+  import?: string;
+
+  /**
+   * Plugin entry point format type, default is program
+   */
+  type?: 'ls' | 'program' | 'config' | 'checker' | 'raw' | 'compilerOptions';
+
+  /**
+   * Should transformer applied after all ones
+   */
+  after?: boolean;
+
+  /**
+   * Should transformer applied for d.ts files, supports from TS2.9
+   */
+  afterDeclarations?: boolean;
+}
+
+let lexicalEnvironmentFlags;
+
+function setLexicalEnvironmentFlags(flags, value) {
+  lexicalEnvironmentFlags = value ? lexicalEnvironmentFlags | flags : lexicalEnvironmentFlags & ~flags;
+}
+
+function getLexicalEnvironmentFlags() {
+  return lexicalEnvironmentFlags;
 }
 
 function containDecorators(decorators: string[], node: ts.Decorator) {
@@ -49,8 +93,27 @@ const getConstructorMethod = (node: ts.ClassDeclaration) => {
   return constructorMethod.length && constructorMethod[0];
 };
 
-const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.TransformationContext) => {
+const astTransformer = (program: ts.Program, config?: PluginConfig) => (context: ts.TransformationContext) => {
   return (sourceFile: ts.SourceFile) => {
+    const empty = () => {};
+    // Dummy transformation context
+    const _context = context;
+    _context.startLexicalEnvironment = empty;
+    _context.suspendLexicalEnvironment = empty;
+    _context.resumeLexicalEnvironment = empty;
+    _context.endLexicalEnvironment = () => [];
+    _context.getCompilerOptions = () => program.getCompilerOptions();
+    _context.hoistFunctionDeclaration = empty;
+    _context.hoistVariableDeclaration = empty;
+    _context.readEmitHelpers = () => undefined;
+    _context.requestEmitHelper = empty;
+    _context.enableEmitNotification = empty;
+    _context.enableSubstitution = empty;
+    _context.isEmitNotificationEnabled = () => false;
+    _context.isSubstitutionEnabled = () => false;
+    _context.onEmitNode = empty;
+    _context.onSubstituteNode = (hint, node) => node;
+
     const visitor: ts.Visitor = (node: ts.Node): ts.Node | ts.Node[] => {
       if (ts.isDecorator(node) && containDecorators([DecoratorTypes.COMPONENT, DecoratorTypes.INJECTABLE], node)) {
         return undefined;
@@ -124,16 +187,18 @@ const astTransformer: ts.TransformerFactory<ts.SourceFile> = (context: ts.Transf
             //   }
             // });
             // console.log(_node.getText());
-            return [ts.visitEachChild(updatedClassNode, visitor, context), decoratorStaticNode];
+            return [ts.visitEachChild(updatedClassNode, visitor, _context), decoratorStaticNode];
           } else {
-            return ts.visitEachChild(node, visitor, context);
+            return ts.visitEachChild(node, visitor, _context);
           }
         }
       }
-      return ts.visitEachChild(node, visitor, context);
+      return ts.visitEachChild(node, visitor, _context);
     };
 
-    return ts.visitNode(sourceFile, visitor);
+    const file = ts.visitNode(sourceFile, visitor);
+    //ts.createSourceFile(file.fileName, file.getText())
+    return file;
   };
 };
 
