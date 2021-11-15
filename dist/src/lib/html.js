@@ -60,7 +60,12 @@ const _bindFragments = (fragment, values) => {
                         break;
                     }
                     case /class/.test(nodeValue): {
-                        node.classList.add(...values[i].split(' '));
+                        if (values[i]) {
+                            node.classList.add(...values[i].split(' '));
+                        }
+                        else {
+                            node.setAttribute('class', '');
+                        }
                         break;
                     }
                     case /value/.test(nodeValue): {
