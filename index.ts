@@ -7,7 +7,6 @@ export {
   IHooks,
   Injectable,
   Injector,
-  jsonObject,
   render,
   Renderer,
   TranslationService,

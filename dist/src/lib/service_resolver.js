@@ -1,15 +1,15 @@
 const Injector = new (class {
-    _map = new Map();
+    #weakMap = new WeakMap();
     register(serviceName, instance) {
-        if (!this._map.get(serviceName)) {
-            this._map.set(serviceName, instance);
+        if (!this.#weakMap.get({ key: serviceName })) {
+            this.#weakMap.set({ key: serviceName }, instance);
         }
         else {
             throw Error(`${serviceName} is not a registered service.`);
         }
     }
     getService(serviceName) {
-        const instance = this._map.get(serviceName);
+        const instance = this.#weakMap.get({ key: serviceName });
         if (instance) {
             return instance;
         }
@@ -18,7 +18,7 @@ const Injector = new (class {
         }
     }
     clear() {
-        this._map = new Map();
+        this.#weakMap = new WeakMap();
     }
 })();
 export { Injector };

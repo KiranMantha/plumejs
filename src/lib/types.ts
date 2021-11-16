@@ -6,11 +6,11 @@ interface DecoratorOptions {
 }
 
 interface IHooks {
-  readonly ObservedProperties?;
-  beforeMount?();
-  mount?();
-  unmount?();
-  onPropsChanged?();
+  readonly ObservedProperties?: string[];
+  beforeMount?: () => void;
+  mount?: () => void;
+  unmount?: () => void;
+  onPropsChanged?: () => void;
 }
 
 class Renderer {
@@ -28,6 +28,4 @@ interface ComponentRef<T> {
   getInstance(): T;
 }
 
-type jsonObject = { [index: string]: any };
-
-export { DecoratorOptions, IHooks, jsonObject, Renderer, ComponentRef };
+export { DecoratorOptions, IHooks, Renderer, ComponentRef };

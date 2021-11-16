@@ -45,6 +45,11 @@ const useFormFields = (initialValues) => {
             return formFields;
         });
     };
-    return { formFields, createChangeHandler };
+    const resetFormFields = () => {
+        for (const key of Object.keys(formFields)) {
+            formFields[key] = '';
+        }
+    };
+    return [formFields, createChangeHandler, resetFormFields];
 };
 export { useFormFields };

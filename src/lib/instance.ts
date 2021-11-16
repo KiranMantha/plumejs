@@ -1,7 +1,7 @@
 import { Injector } from './service_resolver';
-import { jsonObject, Renderer } from './types';
+import { Renderer } from './types';
 
-const instantiate = (fn: Array<any>, rendererInstance?: Renderer): jsonObject => {
+const instantiate = (fn: Array<any>, rendererInstance?: Renderer): Record<string, any> => {
   const controller = fn[fn.length - 1];
   const services = [];
   for (let i = 0; i < fn.length - 1; i++) {

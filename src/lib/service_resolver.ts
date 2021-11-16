@@ -1,24 +1,22 @@
-import { jsonObject } from './types';
-
 interface IInjector {
-  getService(serviceName: string): jsonObject;
-  register(name: string, instance: jsonObject): void;
+  getService(serviceName: string): Record<string, any>;
+  register(name: string, instance: Record<string, any>): void;
   clear(): void;
 }
 
 const Injector: IInjector = new (class implements IInjector {
-  private _map: Map<string, jsonObject> = new Map();
+  #weakMap: WeakMap<{ key: string }, Record<string, any>> = new WeakMap();
 
-  public register(serviceName: string, instance: jsonObject) {
-    if (!this._map.get(serviceName)) {
-      this._map.set(serviceName, instance);
+  public register(serviceName: string, instance: Record<string, any>) {
+    if (!this.#weakMap.get({ key: serviceName })) {
+      this.#weakMap.set({ key: serviceName }, instance);
     } else {
       throw Error(`${serviceName} is not a registered service.`);
     }
   }
 
-  public getService(serviceName: string): jsonObject {
-    const instance = this._map.get(serviceName);
+  public getService(serviceName: string): Record<string, any> {
+    const instance = this.#weakMap.get({ key: serviceName });
     if (instance) {
       return instance;
     } else {
@@ -27,7 +25,7 @@ const Injector: IInjector = new (class implements IInjector {
   }
 
   public clear(): void {
-    this._map = new Map();
+    this.#weakMap = new WeakMap();
   }
 })();
 

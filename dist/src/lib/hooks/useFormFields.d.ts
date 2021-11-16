@@ -1,6 +1,2 @@
-import { jsonObject } from '../types';
-declare const useFormFields: <T extends jsonObject>(initialValues: T) => {
-    formFields: jsonObject;
-    createChangeHandler: (key: keyof T) => (e: Event) => void;
-};
+declare const useFormFields: <T extends Record<string, any>>(initialValues: T) => [T, (key: keyof T) => (e: Event) => void, () => void];
 export { useFormFields };

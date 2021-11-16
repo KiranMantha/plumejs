@@ -3,7 +3,7 @@ import { fromEvent, Subscription } from 'rxjs';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentRef, DecoratorOptions, jsonObject, Renderer } from './types';
+import { ComponentRef, DecoratorOptions, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, isUndefined } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
@@ -48,11 +48,11 @@ const registerElement = (options: DecoratorOptions, target: Array<any>) => {
   window.customElements.define(
     options.selector,
     class extends HTMLElement implements Renderer, ComponentRef<any> {
-      #klass: jsonObject;
+      #klass: Record<string, any>;
       #shadow: any;
       #subscriptions: Subscription = new Subscription();
       #componentStyleTag: HTMLStyleElement = null;
-      eventListenersMap: jsonObject;
+      eventListenersMap: Record<string, any>;
 
       constructor() {
         super();
@@ -118,7 +118,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>) => {
         this.dispatchEvent(event);
       }
 
-      setProps(propsObj: jsonObject) {
+      setProps(propsObj: Record<string, any>) {
         for (const [key, value] of Object.entries(propsObj)) {
           this.#klass[key] = value;
         }

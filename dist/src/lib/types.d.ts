@@ -5,11 +5,11 @@ interface DecoratorOptions {
     useShadow?: boolean;
 }
 interface IHooks {
-    readonly ObservedProperties?: any;
-    beforeMount?(): any;
-    mount?(): any;
-    unmount?(): any;
-    onPropsChanged?(): any;
+    readonly ObservedProperties?: string[];
+    beforeMount?: () => void;
+    mount?: () => void;
+    unmount?: () => void;
+    onPropsChanged?: () => void;
 }
 declare class Renderer {
     shadowRoot: ShadowRoot;
@@ -22,7 +22,4 @@ interface ComponentRef<T> {
     }): void;
     getInstance(): T;
 }
-declare type jsonObject = {
-    [index: string]: any;
-};
-export { DecoratorOptions, IHooks, jsonObject, Renderer, ComponentRef };
+export { DecoratorOptions, IHooks, Renderer, ComponentRef };

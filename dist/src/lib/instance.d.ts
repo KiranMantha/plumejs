@@ -1,3 +1,3 @@
-import { jsonObject, Renderer } from './types';
-declare const instantiate: (fn: Array<any>, rendererInstance?: Renderer) => jsonObject;
+import { Renderer } from './types';
+declare const instantiate: (fn: Array<any>, rendererInstance?: Renderer) => Record<string, any>;
 export { instantiate };

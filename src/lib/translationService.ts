@@ -1,12 +1,11 @@
 import { setDefaultLanguage, setTranslate } from 'vanilla-i18n';
 import { Injectable } from './decorators';
-import { jsonObject } from './types';
 
 @Injectable()
 export class TranslationService {
   private _defaultLanguage = '';
 
-  setTranslate(i18n: jsonObject, lang: string) {
+  setTranslate(i18n: Record<string, string>, lang: string) {
     setTranslate(i18n, lang);
   }
 
