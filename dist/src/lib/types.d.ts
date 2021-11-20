@@ -5,7 +5,7 @@ interface DecoratorOptions {
     useShadow?: boolean;
 }
 interface IHooks {
-    readonly ObservedProperties?: string[];
+    readonly ObservedProperties?: any;
     beforeMount?: () => void;
     mount?: () => void;
     unmount?: () => void;
