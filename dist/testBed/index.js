@@ -12,7 +12,7 @@ class TestBed {
         return service_resolver_1.Injector.getService(name);
     }
     static RemoveComponent(node) {
-        document.removeChild(node);
+        document.body.removeChild(node);
     }
 }
 exports.TestBed = TestBed;
