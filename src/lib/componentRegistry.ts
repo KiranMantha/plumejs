@@ -3,7 +3,7 @@ interface IComponentRegistry {
   globalStyleTag: Node;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
-  getComputedCss: (useShadow: boolean, styles: string) => CSSStyleSheet[];
+  getComputedCss: (styles: string) => CSSStyleSheet[];
 }
 
 const componentRegistry: IComponentRegistry = new (class implements IComponentRegistry {
@@ -23,17 +23,15 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
     this.globalStyleTag = null;
   }
 
-  getComputedCss = (useShadow: boolean, styles = '') => {
+  getComputedCss = (styles = '') => {
     let csoArray = [];
-    if (useShadow) {
-      const defaultStyles = new CSSStyleSheet();
-      defaultStyles.insertRule(`:host { display: block; }`);
-      csoArray = [this.globalStyles, defaultStyles];
-      if (styles) {
-        const sheet: any = new CSSStyleSheet();
-        sheet.replace(styles);
-        csoArray.push(sheet);
-      }
+    const defaultStyles = new CSSStyleSheet();
+    defaultStyles.insertRule(`:host { display: block; }`);
+    csoArray = [this.globalStyles, defaultStyles];
+    if (styles) {
+      const sheet: any = new CSSStyleSheet();
+      sheet.replace(styles);
+      csoArray.push(sheet);
     }
     return csoArray;
   };

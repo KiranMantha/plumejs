@@ -14,4 +14,4 @@ export {
   useFormFields,
   wrapIntoObservable
 } from './src/plume';
-export { TestBed } from './testBed';
+export { TestBed, Fixture } from './testBed';

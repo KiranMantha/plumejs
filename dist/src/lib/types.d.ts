@@ -2,7 +2,6 @@ interface DecoratorOptions {
     selector: string;
     styles?: string;
     root?: boolean;
-    useShadow?: boolean;
 }
 interface IHooks {
     readonly ObservedProperties?: any;

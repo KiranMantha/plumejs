@@ -12,8 +12,7 @@ const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
-    styles: '',
-    useShadow: true
+    styles: ''
 };
 const createStyleTag = (content, where = null) => {
     const tag = document.createElement('style');
@@ -50,15 +49,9 @@ const registerElement = (options, target, dependencies) => {
         eventListenersMap;
         constructor() {
             super();
-            options.useShadow = (0, utils_1.isUndefined)(options.useShadow) ? true : options.useShadow;
+            this.#shadow = this.attachShadow({ mode: 'open' });
             if (!utils_1.CSS_SHEET_NOT_SUPPORTED) {
-                const adoptedStyleSheets = browser_or_node_1.isNode ? [] : componentRegistry_1.componentRegistry.getComputedCss(options.useShadow, options.styles);
-                if (browser_or_node_1.isNode) {
-                    this.#shadow = this;
-                }
-                else {
-                    this.#shadow = options.useShadow ? this.attachShadow({ mode: 'open' }) : this;
-                }
+                const adoptedStyleSheets = browser_or_node_1.isNode ? [] : componentRegistry_1.componentRegistry.getComputedCss(options.styles);
                 this.#shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
             this.update = this.update.bind(this);
@@ -67,7 +60,7 @@ const registerElement = (options, target, dependencies) => {
             this.getInstance = this.getInstance.bind(this);
         }
         emulateComponent() {
-            if (!browser_or_node_1.isNode && utils_1.CSS_SHEET_NOT_SUPPORTED && options.styles) {
+            if (utils_1.CSS_SHEET_NOT_SUPPORTED && options.styles) {
                 const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
                 const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
                 this.#componentStyleTag = createStyleTag(compiledCSS);

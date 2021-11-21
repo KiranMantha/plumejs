@@ -16,17 +16,15 @@ const componentRegistry = new (class {
         this.isRootNodeSet = false;
         this.globalStyleTag = null;
     }
-    getComputedCss = (useShadow, styles = '') => {
+    getComputedCss = (styles = '') => {
         let csoArray = [];
-        if (useShadow) {
-            const defaultStyles = new CSSStyleSheet();
-            defaultStyles.insertRule(`:host { display: block; }`);
-            csoArray = [this.globalStyles, defaultStyles];
-            if (styles) {
-                const sheet = new CSSStyleSheet();
-                sheet.replace(styles);
-                csoArray.push(sheet);
-            }
+        const defaultStyles = new CSSStyleSheet();
+        defaultStyles.insertRule(`:host { display: block; }`);
+        csoArray = [this.globalStyles, defaultStyles];
+        if (styles) {
+            const sheet = new CSSStyleSheet();
+            sheet.replace(styles);
+            csoArray.push(sheet);
         }
         return csoArray;
     };

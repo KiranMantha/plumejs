@@ -1,9 +1,14 @@
 import { Injector } from '../src/lib/service_resolver';
 
+export interface Fixture<T> {
+  componentInstance: T;
+  element: ShadowRoot;
+}
+
 export class TestBed {
-  static async MockComponent<T extends { prototype: any }>(target: T) {
-    const appRoot = await _waitForComponentToRender(target.prototype.selector);
-    return appRoot;
+  static async MockComponent<T>(target: ThisType<T>): Promise<Fixture<T>> {
+    const appRoot: any = await _waitForComponentToRender((target as any).prototype.selector);
+    return { componentInstance: appRoot.getInstance(), element: appRoot.shadowRoot };
   }
 
   static MockService(name: string, target: any) {
@@ -11,8 +16,8 @@ export class TestBed {
     return Injector.getService(name);
   }
 
-  static RemoveComponent(node: HTMLElement) {
-    document.body.removeChild(node);
+  static RemoveComponent<T>(fixture: Fixture<T>) {
+    document.body.removeChild(fixture.element.host);
   }
 }
 
