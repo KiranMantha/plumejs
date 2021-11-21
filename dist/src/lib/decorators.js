@@ -1,9 +1,12 @@
-import { Reflection as Reflect } from '@abraham/reflection';
-import { instantiate } from './instance';
-import { registerElement } from './registerElement';
-import { Injector } from './service_resolver';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.InjectionToken = exports.Injectable = exports.Component = void 0;
+const reflection_1 = require("@abraham/reflection");
+const instance_1 = require("./instance");
+const registerElement_1 = require("./registerElement");
+const service_resolver_1 = require("./service_resolver");
 const getDeps = (target) => {
-    const types = Reflect.getMetadata('design:paramtypes', target) || [];
+    const types = reflection_1.Reflection.getMetadata('design:paramtypes', target) || [];
     return types.map((a) => a.name);
 };
 const Component = (options) => (target) => {
@@ -13,15 +16,17 @@ const Component = (options) => (target) => {
     if (!window.customElements.get(options.selector)) {
         const deps = getDeps(target);
         target.prototype.selector = options.selector;
-        registerElement(options, target, deps);
+        (0, registerElement_1.registerElement)(options, target, deps);
     }
 };
+exports.Component = Component;
 const Injectable = () => (target) => {
     const deps = getDeps(target);
-    const instance = instantiate(target, deps);
-    Injector.register(target.name, instance);
+    const instance = (0, instance_1.instantiate)(target, deps);
+    service_resolver_1.Injector.register(target.name, instance);
 };
+exports.Injectable = Injectable;
 const InjectionToken = (name, target) => {
-    Injector.register(name, target);
+    service_resolver_1.Injector.register(name, target);
 };
-export { Component, Injectable, InjectionToken };
+exports.InjectionToken = InjectionToken;

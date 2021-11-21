@@ -1,4 +1,7 @@
-import { useState } from './useState';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useFormFields = void 0;
+const useState_1 = require("./useState");
 const _getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -36,7 +39,7 @@ const _getTargetValue = (target) => {
     return targetValue;
 };
 const useFormFields = (initialValues) => {
-    const [formFields, setFormFields] = useState(initialValues);
+    const [formFields, setFormFields] = (0, useState_1.useState)(initialValues);
     const createChangeHandler = (key) => (e) => {
         const target = e.target;
         const value = _getTargetValue(target);
@@ -52,4 +55,4 @@ const useFormFields = (initialValues) => {
     };
     return [formFields, createChangeHandler, resetFormFields];
 };
-export { useFormFields };
+exports.useFormFields = useFormFields;

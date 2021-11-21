@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const getValue = (obj, key) => {
     return obj[key] || null;
 };
@@ -37,4 +39,4 @@ const mo = (() => {
         destroy: _destroy
     };
 })();
-export default mo;
+exports.default = mo;

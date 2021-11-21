@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.render = exports.html = void 0;
 const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
 const isNodeRegex = /<[a-z][^>]+$/i;
 const attributePrefix = 'attr';
@@ -131,8 +134,9 @@ const html = (templates, ...values) => {
     _replaceInsertNodeComments(fragment, values);
     return fragment;
 };
+exports.html = html;
 const render = (where, what) => {
     where.textContent = '';
     where.appendChild(what);
 };
-export { html, render };
+exports.render = render;

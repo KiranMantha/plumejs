@@ -1,10 +1,13 @@
-import { isNode } from 'browser-or-node';
-import { fromEvent, Subscription } from 'rxjs';
-import { componentRegistry } from './componentRegistry';
-import { render } from './html';
-import { instantiate } from './instance';
-import { Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, isUndefined } from './utils';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.registerElement = void 0;
+const browser_or_node_1 = require("browser-or-node");
+const rxjs_1 = require("rxjs");
+const componentRegistry_1 = require("./componentRegistry");
+const html_1 = require("./html");
+const instance_1 = require("./instance");
+const types_1 = require("./types");
+const utils_1 = require("./utils");
 const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
@@ -27,30 +30,30 @@ const transformCSS = (styles, selector) => {
 const registerElement = (options, target, dependencies) => {
     options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
     options.styles = options.styles.toString();
-    if (!isNode) {
-        if (options.root && !componentRegistry.isRootNodeSet) {
-            componentRegistry.isRootNodeSet = true;
+    if (!browser_or_node_1.isNode) {
+        if (options.root && !componentRegistry_1.componentRegistry.isRootNodeSet) {
+            componentRegistry_1.componentRegistry.isRootNodeSet = true;
             if (options.styles) {
                 createStyleTag(options.styles);
-                componentRegistry.globalStyles.replace(options.styles);
+                componentRegistry_1.componentRegistry.globalStyles.replace(options.styles);
             }
         }
-        else if (options.root && componentRegistry.isRootNodeSet) {
+        else if (options.root && componentRegistry_1.componentRegistry.isRootNodeSet) {
             throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
         }
     }
     window.customElements.define(options.selector, class extends HTMLElement {
         #klass;
         #shadow;
-        #subscriptions = new Subscription();
+        #subscriptions = new rxjs_1.Subscription();
         #componentStyleTag = null;
         eventListenersMap;
         constructor() {
             super();
-            options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-            if (!CSS_SHEET_NOT_SUPPORTED) {
-                const adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
-                if (isNode) {
+            options.useShadow = (0, utils_1.isUndefined)(options.useShadow) ? true : options.useShadow;
+            if (!utils_1.CSS_SHEET_NOT_SUPPORTED) {
+                const adoptedStyleSheets = browser_or_node_1.isNode ? [] : componentRegistry_1.componentRegistry.getComputedCss(options.useShadow, options.styles);
+                if (browser_or_node_1.isNode) {
                     this.#shadow = this;
                 }
                 else {
@@ -64,7 +67,7 @@ const registerElement = (options, target, dependencies) => {
             this.getInstance = this.getInstance.bind(this);
         }
         emulateComponent() {
-            if (!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles) {
+            if (!browser_or_node_1.isNode && utils_1.CSS_SHEET_NOT_SUPPORTED && options.styles) {
                 const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
                 const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
                 this.#componentStyleTag = createStyleTag(compiledCSS);
@@ -73,24 +76,24 @@ const registerElement = (options, target, dependencies) => {
         }
         connectedCallback() {
             this.emulateComponent();
-            const rendererInstance = new Renderer();
+            const rendererInstance = new types_1.Renderer();
             rendererInstance.update = this.update;
             rendererInstance.shadowRoot = this.#shadow;
             rendererInstance.emitEvent = this.emitEvent;
-            this.#klass = instantiate(target, dependencies, rendererInstance);
+            this.#klass = (0, instance_1.instantiate)(target, dependencies, rendererInstance);
             this.#klass.beforeMount && this.#klass.beforeMount();
             this.update();
             this.#klass.mount && this.#klass.mount();
-            this.#subscriptions.add(fromEvent(window, 'onLanguageChange').subscribe(() => {
+            this.#subscriptions.add((0, rxjs_1.fromEvent)(window, 'onLanguageChange').subscribe(() => {
                 this.update();
             }));
         }
         update() {
-            render(this.#shadow, this.#klass.render.bind(this.#klass)());
-            if (CSS_SHEET_NOT_SUPPORTED) {
+            (0, html_1.render)(this.#shadow, this.#klass.render.bind(this.#klass)());
+            if (utils_1.CSS_SHEET_NOT_SUPPORTED) {
                 options.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
-                componentRegistry.globalStyleTag &&
-                    this.#shadow.insertBefore(document.importNode(componentRegistry.globalStyleTag, true), this.#shadow.childNodes[0]);
+                componentRegistry_1.componentRegistry.globalStyleTag &&
+                    this.#shadow.insertBefore(document.importNode(componentRegistry_1.componentRegistry.globalStyleTag, true), this.#shadow.childNodes[0]);
             }
         }
         emitEvent(eventName, data, isBubbling = true) {
@@ -123,4 +126,4 @@ const registerElement = (options, target, dependencies) => {
         }
     });
 };
-export { registerElement };
+exports.registerElement = registerElement;

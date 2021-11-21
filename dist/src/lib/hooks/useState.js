@@ -1,9 +1,12 @@
-import { isFunction } from '../utils';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.useState = void 0;
+const utils_1 = require("../utils");
 const useState = (obj) => {
     const initialState = obj;
     const reducer = (fn) => {
         let newState;
-        if (isFunction(fn)) {
+        if ((0, utils_1.isFunction)(fn)) {
             newState = fn(initialState);
         }
         else {
@@ -13,4 +16,4 @@ const useState = (obj) => {
     };
     return [initialState, reducer];
 };
-export { useState };
+exports.useState = useState;

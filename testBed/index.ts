@@ -12,7 +12,7 @@ export class TestBed {
   }
 
   static RemoveComponent(node: HTMLElement) {
-    document.removeChild(node);
+    document.body.removeChild(node);
   }
 }
 

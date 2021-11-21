@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Injector = void 0;
 const Injector = new (class {
     #map = new Map();
     register(serviceName, instance) {
@@ -21,4 +24,4 @@ const Injector = new (class {
         this.#map = new Map();
     }
 })();
-export { Injector };
+exports.Injector = Injector;

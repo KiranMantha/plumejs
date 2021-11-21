@@ -1,14 +1,17 @@
-import { __decorate } from "tslib";
-import { setDefaultLanguage, setTranslate } from 'vanilla-i18n';
-import { Injectable } from './decorators';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TranslationService = void 0;
+const tslib_1 = require("tslib");
+const vanilla_i18n_1 = require("vanilla-i18n");
+const decorators_1 = require("./decorators");
 let TranslationService = class TranslationService {
     _defaultLanguage = '';
     setTranslate(i18n, lang) {
-        setTranslate(i18n, lang);
+        (0, vanilla_i18n_1.setTranslate)(i18n, lang);
     }
     setDefaultLanguage(language) {
         this._defaultLanguage = language;
-        setDefaultLanguage(language);
+        (0, vanilla_i18n_1.setDefaultLanguage)(language);
         const event = new CustomEvent('onLanguageChange');
         window.dispatchEvent(event);
     }
@@ -16,7 +19,7 @@ let TranslationService = class TranslationService {
         return this._defaultLanguage;
     }
 };
-TranslationService = __decorate([
-    Injectable()
+TranslationService = (0, tslib_1.__decorate)([
+    (0, decorators_1.Injectable)()
 ], TranslationService);
-export { TranslationService };
+exports.TranslationService = TranslationService;

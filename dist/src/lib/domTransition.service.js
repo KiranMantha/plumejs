@@ -1,6 +1,9 @@
-import { __decorate, __metadata } from "tslib";
-import { fromEvent } from 'rxjs';
-import { Injectable } from './decorators';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DomTransition = void 0;
+const tslib_1 = require("tslib");
+const rxjs_1 = require("rxjs");
+const decorators_1 = require("./decorators");
 let DomTransition = class DomTransition {
     transition = '';
     constructor() {
@@ -33,14 +36,14 @@ let DomTransition = class DomTransition {
                 eventSubscription = null;
             }
         };
-        eventSubscription = fromEvent(element, this.transition).subscribe(() => {
+        eventSubscription = (0, rxjs_1.fromEvent)(element, this.transition).subscribe(() => {
             _fn();
         });
         setTimeout(_fn, duration);
     }
 };
-DomTransition = __decorate([
-    Injectable(),
-    __metadata("design:paramtypes", [])
+DomTransition = (0, tslib_1.__decorate)([
+    (0, decorators_1.Injectable)(),
+    (0, tslib_1.__metadata)("design:paramtypes", [])
 ], DomTransition);
-export { DomTransition };
+exports.DomTransition = DomTransition;
