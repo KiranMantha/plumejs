@@ -35,6 +35,7 @@
   "homepage": "https://github.com/KiranMantha/plumejs#readme",
   "license": "MIT",
   "dependencies": {
+    "@abraham/reflection": "^0.8.0",
     "@types/node": "^16.11.9",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "browser-or-node": "^2.0.0",

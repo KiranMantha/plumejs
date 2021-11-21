@@ -1,3 +1,3 @@
 import { Renderer } from './types';
-declare const instantiate: (fn: Array<any>, rendererInstance?: Renderer) => Record<string, any>;
+declare const instantiate: (klass: any, dependencies: string[], rendererInstance?: Renderer) => Record<string, any>;
 export { instantiate };

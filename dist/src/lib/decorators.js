@@ -1,30 +1,27 @@
+import { Reflection as Reflect } from '@abraham/reflection';
 import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
-import { isFunction, isObject } from './utils';
+const getDeps = (target) => {
+    const types = Reflect.getMetadata('design:paramtypes', target) || [];
+    return types.map((a) => a.name);
+};
 const Component = (options) => (target) => {
     if (options.selector.indexOf('-') <= 0) {
         throw new Error('You need at least 1 dash in the custom element name!');
     }
     if (!window.customElements.get(options.selector)) {
-        const klass = target[target.length - 1];
-        klass.prototype.selector = options.selector;
-        registerElement(options, target);
+        const deps = getDeps(target);
+        target.prototype.selector = options.selector;
+        registerElement(options, target, deps);
     }
 };
-const Injectable = (name) => (target) => {
-    if (name && target) {
-        if (isFunction(target) || Array.isArray(target)) {
-            const fn = Array.isArray(target) ? target : [target];
-            const instance = instantiate(fn);
-            Injector.register(name, instance);
-        }
-        else if (isObject(target)) {
-            Injector.register(name, target);
-        }
-    }
-    else {
-        throw 'error: Requires name and (constructor or service names with constructor) to define service';
-    }
+const Injectable = () => (target) => {
+    const deps = getDeps(target);
+    const instance = instantiate(target, deps);
+    Injector.register(target.name, instance);
 };
-export { Component, Injectable };
+const InjectionToken = (name, target) => {
+    Injector.register(name, target);
+};
+export { Component, Injectable, InjectionToken };

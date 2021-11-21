@@ -24,7 +24,7 @@ const transformCSS = (styles, selector) => {
     }
     return styles;
 };
-const registerElement = (options, target) => {
+const registerElement = (options, target, dependencies) => {
     options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
     options.styles = options.styles.toString();
     if (!isNode) {
@@ -77,7 +77,7 @@ const registerElement = (options, target) => {
             rendererInstance.update = this.update;
             rendererInstance.shadowRoot = this.#shadow;
             rendererInstance.emitEvent = this.emitEvent;
-            this.#klass = instantiate(target, rendererInstance);
+            this.#klass = instantiate(target, dependencies, rendererInstance);
             this.#klass.beforeMount && this.#klass.beforeMount();
             this.update();
             this.#klass.mount && this.#klass.mount();

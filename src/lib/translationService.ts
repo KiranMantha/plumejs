@@ -5,7 +5,7 @@ import { Injectable } from './decorators';
 export class TranslationService {
   private _defaultLanguage = '';
 
-  setTranslate(i18n: Record<string, string>, lang: string) {
+  setTranslate(i18n: Record<string, any>, lang: string) {
     setTranslate(i18n, lang);
   }
 

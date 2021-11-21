@@ -5,18 +5,18 @@ interface IInjector {
 }
 
 const Injector: IInjector = new (class implements IInjector {
-  #weakMap: WeakMap<{ key: string }, Record<string, any>> = new WeakMap();
+  #map = new Map();
 
-  public register(serviceName: string, instance: Record<string, any>) {
-    if (!this.#weakMap.get({ key: serviceName })) {
-      this.#weakMap.set({ key: serviceName }, instance);
+  public register<T>(serviceName: string, instance: Record<string, T>) {
+    if (!this.#map.get(serviceName)) {
+      this.#map.set(serviceName, instance);
     } else {
-      throw Error(`${serviceName} is not a registered service.`);
+      throw Error(`${serviceName} is already registered service.`);
     }
   }
 
-  public getService(serviceName: string): Record<string, any> {
-    const instance = this.#weakMap.get({ key: serviceName });
+  public getService<T>(serviceName: string): T {
+    const instance = this.#map.get(serviceName);
     if (instance) {
       return instance;
     } else {
@@ -25,7 +25,7 @@ const Injector: IInjector = new (class implements IInjector {
   }
 
   public clear(): void {
-    this.#weakMap = new WeakMap();
+    this.#map = new Map();
   }
 })();
 

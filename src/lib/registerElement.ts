@@ -28,7 +28,7 @@ const transformCSS = (styles: string, selector: string) => {
   return styles;
 };
 
-const registerElement = (options: DecoratorOptions, target: Array<any>) => {
+const registerElement = (options: DecoratorOptions, target, dependencies: string[]) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   options.styles = options.styles.toString();
@@ -87,7 +87,7 @@ const registerElement = (options: DecoratorOptions, target: Array<any>) => {
         rendererInstance.update = this.update;
         rendererInstance.shadowRoot = this.#shadow;
         rendererInstance.emitEvent = this.emitEvent;
-        this.#klass = instantiate(target, rendererInstance);
+        this.#klass = instantiate(target, dependencies, rendererInstance);
         this.#klass.beforeMount && this.#klass.beforeMount();
         this.update();
         this.#klass.mount && this.#klass.mount();
