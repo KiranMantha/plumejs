@@ -46,19 +46,11 @@ const _bindFragments = (fragment, values) => {
                         values[i](node);
                         break;
                     }
-                    case /dataset/.test(nodeValue): {
-                        const dataset = node.dataset;
-                        const obj = values[i];
-                        for (const [key, value] of Object.entries(obj)) {
-                            dataset[key] = value;
-                        }
-                        break;
-                    }
                     case /^data-+/.test(nodeValue): {
                         node.setAttribute(`data-${nodeValue}`, _sanitize(values[i]));
                         break;
                     }
-                    case /^attr-+/.test(nodeValue): {
+                    case /^aria-+/.test(nodeValue): {
                         node.setAttribute(`aria-${nodeValue}`, _sanitize(values[i]));
                         break;
                     }
