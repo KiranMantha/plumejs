@@ -1,4 +1,2 @@
-export declare function useFormFields<T>(initialValues: T): {
-    formFields: T;
-    createChangeHandler: (key: keyof T) => (e: Event) => void;
-};
+declare const useFormFields: <T extends Record<string, any>>(initialValues: T) => [T, (key: keyof T) => (e: Event) => void, () => void];
+export { useFormFields };

@@ -1,54 +1,46 @@
-import { Injectable } from "./decorators";
+import { fromEvent, Subscription } from 'rxjs';
+import { Injectable } from './decorators';
 
 @Injectable()
 export class DomTransition {
-	private transition: string = "";
+  private transition = '';
 
-	constructor() {
-		this.whichTransitionEnd();
-	}
+  constructor() {
+    this.whichTransitionEnd();
+  }
 
-	private removeTransition(element: HTMLElement) {
-		element.removeEventListener(this.transition, () => {}, false);
-	}
+  private whichTransitionEnd() {
+    const element = document.createElement('div');
+    const styleobj: any = element.style;
+    const transitions: { [key: string]: string } = {
+      transition: 'transitionend',
+      WebkitTransition: 'webkitTransitionEnd',
+      MozTransition: 'transitionend',
+      OTransition: 'otransitionend'
+    };
 
-	private whichTransitionEnd() {
-		let element = document.createElement("div");
-		let styleobj: any = element.style;
-		let transitions: { [key: string]: string } = {
-			transition: "transitionend",
-			WebkitTransition: "webkitTransitionEnd",
-			MozTransition: "transitionend",
-			OTransition: "otransitionend"
-		};
+    for (const t in transitions) {
+      if (typeof styleobj[t] !== 'undefined') {
+        this.transition = transitions[t];
+        break;
+      }
+    }
+  }
 
-		for (let t in transitions) {
-			if (typeof styleobj[t] !== "undefined") {
-				this.transition = transitions[t];
-				break;
-			}
-		}
-	}
-
-	onTransitionEnd(element: HTMLElement, cb: Function, duration: number) {
-		let called = false;
-		let _fn = () => {
-			if (!called) {
-				called = true;
-				cb && cb();
-				this.removeTransition(element);
-			}
-		};
-		element.addEventListener(
-			this.transition,
-			() => {
-				_fn();
-			},
-			false
-		);
-		let callback = () => {
-			_fn();
-		};
-		setTimeout(callback, duration);
-	}
+  onTransitionEnd(element: HTMLElement, cb: () => void, duration: number) {
+    let called = false;
+    let eventSubscription: Subscription = null;
+    const _fn = () => {
+      if (!called) {
+        called = true;
+        cb && cb();
+        eventSubscription.unsubscribe();
+        eventSubscription = null;
+      }
+    };
+    eventSubscription = fromEvent(element, this.transition).subscribe(() => {
+      _fn();
+    });
+    setTimeout(_fn, duration);
+  }
 }

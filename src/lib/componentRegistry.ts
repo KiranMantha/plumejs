@@ -1,34 +1,40 @@
-class _componentRegistry {
+interface IComponentRegistry {
+  globalStyles: any;
+  globalStyleTag: Node;
+  style_registry: Map<string, string>;
+  isRootNodeSet: boolean;
+  getComputedCss: (styles: string) => CSSStyleSheet[];
+}
+
+const componentRegistry: IComponentRegistry = new (class implements IComponentRegistry {
   globalStyles: any;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
+  globalStyleTag: Node;
 
-  constructor(){
+  constructor() {
     try {
       this.globalStyles = new CSSStyleSheet();
-    } catch(e) {
+    } catch (e) {
       this.globalStyles = '';
     }
-    
+
     this.isRootNodeSet = false;
+    this.globalStyleTag = null;
   }
 
-  getComputedCss = (useShadow: boolean, styles: string = "") => {
+  getComputedCss = (styles = '') => {
     let csoArray = [];
-    if(useShadow) {
-      let defaultStyles = new CSSStyleSheet();
-      defaultStyles.insertRule(`:host { display: block; }`);
-      csoArray = [this.globalStyles, defaultStyles];
-      if (styles) {
-        let sheet: any = new CSSStyleSheet();
-        sheet.replace(styles);
-        csoArray.push(sheet);
-      }
+    const defaultStyles = new CSSStyleSheet();
+    defaultStyles.insertRule(`:host { display: block; }`);
+    csoArray = [this.globalStyles, defaultStyles];
+    if (styles) {
+      const sheet: any = new CSSStyleSheet();
+      sheet.replace(styles);
+      csoArray.push(sheet);
     }
     return csoArray;
   };
-}
-
-const componentRegistry = new _componentRegistry();
+})();
 
 export { componentRegistry };

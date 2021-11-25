@@ -1,63 +1,32 @@
-import { instantiate } from "./instance";
-import { isFunction } from "./utils";
-import { isNode } from 'browser-or-node';
-
 interface IInjector {
-	getService(name: string): void | {};
-	registerService(
-		name: string,
-		fn: Function | Object,
-		deps?: Array<string>
-	): void;
-	clear():void;
+  getService(serviceName: string): Record<string, any>;
+  register(name: string, instance: Record<string, any>): void;
+  clear(): void;
 }
 
-const Injector = (() => {
-	class InternalInjector implements IInjector {
-		private _map: Map<string, any> = new Map();
-		private get: (key: string) => any;
-		private set: (key: string, value: object) => Map<any, any>;
-		constructor() {
-			this.get = this._map.get.bind(this._map);
-			this.set = this._map.set.bind(this._map);
-		}
+const Injector: IInjector = new (class implements IInjector {
+  #map = new Map();
 
-		public getService(name: string) {
-			let instance = this.get(name);
-			if (instance) {
-				return instance;
-			} else {
-				throw Error(`${name} is not a registered provider.`);
-			}
-		}
+  public register<T>(serviceName: string, instance: Record<string, T>) {
+    if (!this.#map.get(serviceName)) {
+      this.#map.set(serviceName, instance);
+    } else {
+      throw Error(`${serviceName} is already registered service.`);
+    }
+  }
 
-		public clear():void {
-			this._map = new Map();
-		}
+  public getService<T>(serviceName: string): T {
+    const instance = this.#map.get(serviceName);
+    if (instance) {
+      return instance;
+    } else {
+      throw Error(`${serviceName} is not a registered provider.`);
+    }
+  }
 
-		public registerService(name: string, fn: any, deps: Array<string> = []) {
-			if (name && fn) {
-				if (!this.get(name)) {
-					if (isFunction(fn)) {
-						let instance = instantiate(fn, deps);
-						this.set(name, instance);
-					} else {
-						this.set(name, fn);
-					}
-				}
-			} else {
-				throw "error: Requires name and constructor to define service";
-			}
-		}
-	}
-
-	const injectorInstance: IInjector = new InternalInjector();
-
-	return {
-		register: injectorInstance.registerService.bind(injectorInstance),
-		get: injectorInstance.getService.bind(injectorInstance),
-		clear: injectorInstance.clear.bind(injectorInstance)
-	};
+  public clear(): void {
+    this.#map = new Map();
+  }
 })();
 
 export { Injector };

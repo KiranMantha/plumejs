@@ -1,9 +1,9 @@
-declare class _componentRegistry {
+interface IComponentRegistry {
     globalStyles: any;
+    globalStyleTag: Node;
     style_registry: Map<string, string>;
     isRootNodeSet: boolean;
-    constructor();
-    getComputedCss: (useShadow: boolean, styles?: string) => any[];
+    getComputedCss: (styles: string) => CSSStyleSheet[];
 }
-declare const componentRegistry: _componentRegistry;
+declare const componentRegistry: IComponentRegistry;
 export { componentRegistry };

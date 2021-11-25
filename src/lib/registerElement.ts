@@ -1,130 +1,142 @@
-import { klass, INPUT_METADATA_KEY, CSS_SHEET_NOT_SUPPORTED, isUndefined } from "./utils";
-import { render } from "lighterhtml";
-import { watch, unwatch } from "./watchObject";
-import { instantiate } from "./instance";
-import { DecoratorOptions, jsonObject } from "./types";
-import { InternalTranslationService } from "./internalTranslationService";
-import { augmentor } from "augmentor";
 import { isNode } from 'browser-or-node';
+import { fromEvent, Subscription } from 'rxjs';
 import { componentRegistry } from './componentRegistry';
+import { render } from './html';
+import { instantiate } from './instance';
+import { ComponentRef, DecoratorOptions, Renderer } from './types';
+import { CSS_SHEET_NOT_SUPPORTED } from './utils';
 
-const wrapper = (fn: Function, deps: Array<string>, props: any) => () => instantiate(fn, deps, props);
+const COMPONENT_DATA_ATTR = 'data-compid';
+const DEFAULT_COMPONENT_OPTIONS: DecoratorOptions = {
+  selector: '',
+  root: false,
+  styles: ''
+};
 
-const createSTyleTag = (content: string) => { 
-	let tag = document.createElement('style');
-	tag.innerHTML = content;
-	document.head.appendChild(tag);
-	return tag;
-}
+const createStyleTag = (content: string, where: Node = null) => {
+  const tag = document.createElement('style');
+  tag.innerHTML = content;
+  where && where.appendChild(tag);
+  return tag;
+};
 
 const transformCSS = (styles: string, selector: string) => {
-	if(styles) {
-		styles = selector + ' ' + styles.toString().replace('}', ` } ${selector} `);
-	}
-	return styles;
-}
+  if (styles) {
+    styles = selector + ' ' + styles.toString().replace('}', ` } ${selector} `);
+  }
+  return styles;
+};
 
-const registerElement = (
-	options: DecoratorOptions,
-	target: Function,
-	providers: Array<string>,
-	isRoot: boolean
-) => {
-	if (!isNode) {
-		if (isRoot && ! componentRegistry.isRootNodeSet && options.styles) {
-			componentRegistry.isRootNodeSet = true;
-			createSTyleTag(options.styles);
-			componentRegistry.globalStyles.replace((options.styles || "").toString());
-		} else if (isRoot && componentRegistry.isRootNodeSet) {
-			throw Error(
-				"Cannot register duplicate root component in " +
-				options.selector +
-				" component"
-			);
-		}
-	}
+const registerElement = (options: DecoratorOptions, target, dependencies: string[]) => {
+  // mapping with defaults
+  options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
+  options.styles = options.styles.toString();
 
-	window.customElements.define(
-		options.selector,
-		class extends HTMLElement {
-			render: Function;
-			[klass]: jsonObject;
-			private shadow: any;
-			_inputprop: string;
-			componentStyleTag:HTMLStyleElement = null;
+  if (!isNode) {
+    if (options.root && !componentRegistry.isRootNodeSet) {
+      componentRegistry.isRootNodeSet = true;
+      if (options.styles) {
+        createStyleTag(options.styles);
+        componentRegistry.globalStyles.replace(options.styles);
+      }
+    } else if (options.root && componentRegistry.isRootNodeSet) {
+      throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
+    }
+  }
 
-			constructor() {
-				super();
-				let adoptedStyleSheets = [];
-				options.useShadow = isUndefined(options.useShadow) ? true : options.useShadow;
-				if(!CSS_SHEET_NOT_SUPPORTED) {
-					adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.useShadow, options.styles);
-					if (isNode) {
-						this.shadow = this;
-					} else {
-						this.shadow = options.useShadow ? this.attachShadow({ mode: "open" }) : this;
-					}
-					this.shadow.adoptedStyleSheets = adoptedStyleSheets;
-				} else {
-					options.useShadow = false;
-					this.shadow = this;
-				}
-				this._inputprop = Reflect.getMetadata(INPUT_METADATA_KEY, target);
-				if (this._inputprop) {
-					watch(this, this._inputprop, (oldvalue: any, newvalue: any) => {
-						let joldval = JSON.stringify(oldvalue);
-						let jnewval = JSON.stringify(newvalue);
-						if (joldval !== jnewval) {
-							if (this[klass] && this[klass][this._inputprop]) {
-								this[klass][this._inputprop] = (this as any)[this._inputprop];
-								this[klass].inputChanged && this[klass].inputChanged(oldvalue, newvalue);
-								this.update();
-							}
-						}
-					});
-				}
-			}
+  window.customElements.define(
+    options.selector,
+    class extends HTMLElement implements Renderer, ComponentRef<any> {
+      #klass: Record<string, any>;
+      #shadow: any;
+      #subscriptions: Subscription = new Subscription();
+      #componentStyleTag: HTMLStyleElement = null;
+      eventListenersMap: Record<string, any>;
 
-			private init() {
-				let _returnfn = this[klass].render.bind(this[klass]);
-				render.bind(this[klass], this.shadow, _returnfn)();
-			}
+      constructor() {
+        super();
+        this.#shadow = this.attachShadow({ mode: 'open' });
+        if (!CSS_SHEET_NOT_SUPPORTED) {
+          const adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.styles);
+          this.#shadow.adoptedStyleSheets = adoptedStyleSheets;
+        }
+        this.update = this.update.bind(this);
+        this.emitEvent = this.emitEvent.bind(this);
+        this.setProps = this.setProps.bind(this);
+        this.getInstance = this.getInstance.bind(this);
+      }
 
-			private emulateComponent() {
-				if(!isNode && CSS_SHEET_NOT_SUPPORTED && options.styles && !options.root) {
-					let id = new Date().getTime() + Math.floor((Math.random() * 1000) + 1);
-					let compiledCSS = transformCSS(options.styles, `[data-cid="${id.toString()}"]`);
-					this.componentStyleTag = createSTyleTag(compiledCSS);
-					this.setAttribute('data-cid', id.toString());					
-				}
-			}
+      private emulateComponent() {
+        if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
+          const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
+          const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
+          this.#componentStyleTag = createStyleTag(compiledCSS);
+          this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
+        }
+      }
 
-			connectedCallback() {
-				this.emulateComponent();
-				this[klass] = augmentor(wrapper(target, providers, (this as any)[this._inputprop]))();
-				this[klass]["element"] = this.shadow;
-				this[klass].beforeMount && this[klass].beforeMount();
-				this.init();
-				this[klass]["update"] = this.update.bind(this);
-				this[klass].mount && this[klass].mount();
-				InternalTranslationService.translationComponents.set(this, options.selector);
-			}
+      connectedCallback() {
+        this.emulateComponent();
+        const rendererInstance = new Renderer();
+        rendererInstance.update = this.update;
+        rendererInstance.shadowRoot = this.#shadow;
+        rendererInstance.emitEvent = this.emitEvent;
+        this.#klass = instantiate(target, dependencies, rendererInstance);
+        this.#klass.beforeMount && this.#klass.beforeMount();
+        this.update();
+        this.#klass.mount && this.#klass.mount();
+        this.#subscriptions.add(
+          fromEvent(window, 'onLanguageChange').subscribe(() => {
+            this.update();
+          })
+        );
+      }
 
-			update = () => {
-				this.init();
-			};
+      update() {
+        render(this.#shadow, this.#klass.render.bind(this.#klass)());
+        if (CSS_SHEET_NOT_SUPPORTED) {
+          options.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+          componentRegistry.globalStyleTag &&
+            this.#shadow.insertBefore(
+              document.importNode(componentRegistry.globalStyleTag, true),
+              this.#shadow.childNodes[0]
+            );
+        }
+      }
 
-			getModel = () => {
-				return this[klass];
-			};
+      emitEvent(eventName: string, data: any, isBubbling = true) {
+        const event = new CustomEvent(eventName, {
+          detail: data,
+          bubbles: isBubbling
+        });
+        this.dispatchEvent(event);
+      }
 
-			disconnectedCallback() {
-				this.componentStyleTag && this.componentStyleTag.remove();
-				InternalTranslationService.translationComponents.delete(this);
-				this._inputprop && unwatch(this);
-				this[klass].unmount && this[klass].unmount();
-			}
-		});
+      setProps(propsObj: Record<string, any>) {
+        for (const [key, value] of Object.entries(propsObj)) {
+          this.#klass[key] = value;
+        }
+        this.#klass.onPropsChanged && this.#klass.onPropsChanged();
+        this.update();
+      }
+
+      getInstance() {
+        return this.#klass;
+      }
+
+      disconnectedCallback() {
+        this.#subscriptions.unsubscribe();
+        this.#componentStyleTag && this.#componentStyleTag.remove();
+        this.#klass.unmount && this.#klass.unmount();
+        if (this.eventListenersMap) {
+          for (const [key, value] of Object.entries(this.eventListenersMap)) {
+            this.removeEventListener(key, value);
+          }
+        }
+        this.eventListenersMap = null;
+      }
+    }
+  );
 };
 
 export { registerElement };

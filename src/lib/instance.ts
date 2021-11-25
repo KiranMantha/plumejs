@@ -1,17 +1,20 @@
-import { setDI } from './di';
-import { augmentor } from "augmentor";
+import { Injector } from './service_resolver';
+import { Renderer } from './types';
 
-
-
-function instantiate(fn:Function, deps:Array<string> = [], props:any = {}) {
-  let $deps = setDI(fn, deps, props), instance;
-    if ($deps[1].length > 0) {
-      //es5 for spread operator: (deps[0].bind.apply(deps[0], [void 0].concat(deps[1])));
-      instance = new $deps[0](...$deps[1]);
+const instantiate = (klass, dependencies: string[], rendererInstance?: Renderer): Record<string, any> => {
+  const services = [];
+  for (let i = 0; i < dependencies.length; i++) {
+    if (dependencies[i] !== 'Renderer') {
+      services.push(Injector.getService(dependencies[i]));
     } else {
-      instance = new $deps[0]();
+      services.push(rendererInstance);
     }
-    return instance;
-}
+  }
+  if (services.length > 0) {
+    return new klass(...services);
+  } else {
+    return new klass();
+  }
+};
 
 export { instantiate };

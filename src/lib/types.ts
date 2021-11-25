@@ -1,46 +1,28 @@
-import { Observable } from 'rxjs';
-
 interface DecoratorOptions {
-	selector: string;
-	styles?: string;
-	root?: boolean;
-	useShadow?: boolean;
-}
-
-interface RouteItem {
-	Params: any;
-	Url: string;
-	Template: string;
-	ParamCount: number;
-}
-
-interface Route {
-	path: string;
-	template?: string;
-	templatePath?: () => Promise<any>;
-	redirectTo?: string;
-	canActivate?: () => Observable<boolean> | Promise<boolean> | boolean;
-}
-
-interface ICurrentRoute {
-	params: { [key: string]: string | number | boolean };
-}
-
-interface InternalRouteItem extends RouteItem {
-	IsRegistered?: boolean;
-	TemplatePath?: () => Promise<any>;
-	redirectTo?: string;
-	canActivate: () => Observable<boolean> | Promise<boolean> | boolean;
+  selector: string;
+  styles?: string;
+  root?: boolean;
 }
 
 interface IHooks {
-	mount?: () => void;
-	unmount?: () => void;
-	inputChanged?: (oldValue: any, newValue: any) => void;
-	update?: () => void;
+  readonly ObservedProperties?;
+  beforeMount?: () => void;
+  mount?: () => void;
+  unmount?: () => void;
+  onPropsChanged?: () => void;
 }
 
-type Ref<T> = { current: T };
-type jsonObject = { [index: string]: any };
+class Renderer {
+  shadowRoot: ShadowRoot;
+  update: () => void;
+  emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+}
 
-export { DecoratorOptions, RouteItem, Route,InternalRouteItem, Ref, jsonObject, ICurrentRoute, IHooks };
+interface ComponentRef<T> {
+  setProps(propertiesObject: {
+    [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+  }): void;
+  getInstance(): T;
+}
+
+export { DecoratorOptions, IHooks, Renderer, ComponentRef };

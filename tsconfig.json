@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "target": "ESNext",
     "module": "commonjs",
-    "lib": ["dom", "es2015", "es2015.promise"],
+    "lib": ["DOM", "ESNext"],
     "moduleResolution": "node",
     "declaration": true,
-    "inlineSourceMap": true,
+    "inlineSourceMap": false,
+    "importHelpers": true,
     "declarationDir": "dist",
     "outDir": "dist",
     "rootDir": "./",
@@ -13,12 +14,15 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "importHelpers": true,
     "noEmitOnError": true,
-    "typeRoots": [
-      "@types",
-      "node_modules/@types"
+    "typeRoots": ["@types", "node_modules/@types"],
+    "plugins": [
+      {
+        "transform": "./ast-transformer.ts",
+        "type": "raw",
+        "after": false
+      }
     ]
   },
-  "exclude": ["__tests__","dist", "node_modules"]
+  "exclude": ["__tests__", "dist", "node_modules", "./ast-transformer.ts"]
 }
