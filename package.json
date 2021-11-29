@@ -1,6 +1,6 @@
 {
   "name": "@plumejs/core",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A light weight web-components based typescript framework to build single page applications.",
   "files": [
     "dist/**/*"
