@@ -39,6 +39,7 @@ const _getTargetValue = (target) => {
     return targetValue;
 };
 const useFormFields = (initialValues) => {
+    const clone = { ...initialValues };
     const [formFields, setFormFields] = (0, useState_1.useState)(initialValues);
     const createChangeHandler = (key) => (e) => {
         const target = e.target;
@@ -49,9 +50,7 @@ const useFormFields = (initialValues) => {
         });
     };
     const resetFormFields = () => {
-        for (const key of Object.keys(formFields)) {
-            formFields[key] = '';
-        }
+        Object.assign(formFields, clone);
     };
     return [formFields, createChangeHandler, resetFormFields];
 };

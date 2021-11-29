@@ -38,6 +38,7 @@ const _getTargetValue = (target: HTMLElement) => {
 const useFormFields = <T extends Record<string, any>>(
   initialValues: T
 ): [T, (key: keyof T) => (e: Event) => void, () => void] => {
+  const clone: Record<string, any> = { ...initialValues };
   const [formFields, setFormFields] = useState(initialValues);
   const createChangeHandler = (key: keyof T) => (e: Event) => {
     const target: any = e.target;
@@ -48,9 +49,7 @@ const useFormFields = <T extends Record<string, any>>(
     });
   };
   const resetFormFields = () => {
-    for (const key of Object.keys(formFields)) {
-      (formFields as Record<string, any>)[key] = '';
-    }
+    Object.assign(formFields, clone);
   };
   return [formFields, createChangeHandler, resetFormFields];
 };
