@@ -56,7 +56,7 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
 
 There is a breaking change in component declaration. Check below:
 
-```
+```typescript
 import { Component } from '@plumejs/core';
 // import stylesheet in ts file
 import componentStyles from './styles.scss';
@@ -79,7 +79,7 @@ The above implementation will break existing unit tests. To fix them,
 1. run `npm i -D jest-transform-stub`
 2. add
 
-```
+```javascript
 {
   ...
   moduleFileExtensions: ['ts', 'html', 'js', 'json'],
@@ -101,27 +101,26 @@ Creating component is a non-hectic task.
 
 1. import `Component, html` functions and create component as follows
 
-```
-  import { Component, html } from '@plumejs/core';
-  import testEleStyles from './test-ele.scss';
+```typescript
+import { Component, html } from '@plumejs/core';
+import testEleStyles from './test-ele.scss';
 
-  @Component({
-    selector: 'test-ele',
-    styleUrl: testEleStyles,
-    root: true
-  })
-  class TestEle {
-    test:string;
+@Component({
+  selector: 'test-ele',
+  styleUrl: testEleStyles,
+  root: true
+})
+class TestEle {
+  test: string;
 
-    constructor(){
-      this.text = 'hello world!'
-    }
-
-    render(){
-      return html`<div>${this.text}</div>`;
-    }
+  constructor() {
+    this.text = 'hello world!';
   }
 
+  render() {
+    return html`<div>${this.text}</div>`;
+  }
+}
 ```
 
 Note: Through out the entire application there will be only one root component. Adding more than one root component will not render the page and throw duplicate root component error.
@@ -136,44 +135,54 @@ For styling one can use css or scss formats. but scss is the most preferred one.
 
 It is used to perform model data initialization as follows:
 
-```
+```typescript
 import { Component, html, IHooks } from '@plumejs/core';
 
 @Component({
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
-  data:Array<string> = [];
+  data: Array<string> = [];
 
-  constructor(){}
+  constructor() {}
 
-  mount(){
-    fetch('persons-api').then(res => res.json()).then(data => {
-      this.data = data;
-      this.update(); // triggers change detection and update view
-    })
+  mount() {
+    fetch('persons-api')
+      .then((res) => res.json())
+      .then((data) => {
+        this.data = data;
+        this.update(); // triggers change detection and update view
+      });
   }
 
-  alertName(name:string){
+  alertName(name: string) {
     alert(name);
   }
 
-  render(){
+  render() {
     return html`<div>
-      <ul>${
-        this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
-      }</ul>
+      <ul>
+        ${this.data.map(
+          (item: string) =>
+            html`<li
+              onclick=${() => {
+                this.alertname(item);
+              }}
+            >
+              ${item}
+            </li>`
+        )}
+      </ul>
     </div>`;
   }
 }
-
 ```
 
 ### umount Hook
 
 It is used to execute any pendending subscriptions as follows:
 
-```
+```typescript
 import { Component, html, IHooks } from '@plumejs/core';
 import { from, Observable } from 'rxjs';
 
@@ -181,15 +190,15 @@ import { from, Observable } from 'rxjs';
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
-  data:Array<string> = [];
+  data: Array<string> = [];
   mySubscription: Observable;
 
-  constructor(){}
+  constructor() {}
 
-  mount(){
-    this.mySubscription = from(fetch('persons-api').then(res => res.json()));
+  mount() {
+    this.mySubscription = from(fetch('persons-api').then((res) => res.json()));
 
-    this.mySubscription.subscribe(data => {
+    this.mySubscription.subscribe((data) => {
       this.data = data;
       this.update(); // triggers change detection and update view
     });
@@ -199,28 +208,34 @@ class PersonsList implements IHooks {
     this.mySubscription.unsubscribe();
   }
 
-  alertName(name:string){
+  alertName(name: string) {
     alert(name);
   }
 
-  render(){
+  render() {
     return html`<div>
       <ul>
-      ${
-        this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
-      }
+        ${this.data.map(
+          (item: string) =>
+            html`<li
+              onclick=${() => {
+                this.alertname(item);
+              }}
+            >
+              ${item}
+            </li>`
+        )}
       </ul>
     </div>`;
   }
 }
-
 ```
 
 ### onPropsChanged Hook with ObservedProperties
 
 It is called when ever the parent component called `setProps` on child component.
 
-```
+```typescript
 import { Component, html, ComponentRef, IHooks } from '@plumejs/core';
 
 @Component({
@@ -268,7 +283,7 @@ class PersonsList implements IHooks {
 
 We can even share data between two components as below:
 
-```
+```typescript
   import { Component, html, ComponentRef, Renderer, IHooks } from '@plumejs/core';
 
   @Component({
@@ -330,28 +345,40 @@ We can even share data between two components as below:
 
 `UseRef` is deprecated. instead follow:
 
-```
-import { Component, Ref, useRef } from '@plumejs/core';
+```typescript
+import { Component } from '@plumejs/core';
 
 @Component({
   selector: 'sample-comp'
 })
 class SampleComp {
-	inputField:Ref<HTMLElement> = useRef(null); // deprecated
+  inputField: Ref<HTMLElement> = useRef(null); // deprecated
   inputField: HTMLElement;
 
-	getRef(){
-		console.log(this.inputField);
-	}
+  getRef() {
+    console.log(this.inputField);
+  }
 
   render() {
     return html`
-     <div>
-      <input type='text' ref=${this.inputField} /> // don't use this way
-			<input type='text' ref=${(node) => { this.inputField = node; }} /> // use ref like this
-      <button onclick=${()=>{ this.getRef() }}>click</button>
-    </div>
-    `
+      <div>
+        <input type="text" ref=${this.inputField} /> // don't use this way
+        <input
+          type="text"
+          ref=${(node) => {
+            this.inputField = node;
+          }}
+        />
+        // use ref like this
+        <button
+          onclick=${() => {
+            this.getRef();
+          }}
+        >
+          click
+        </button>
+      </div>
+    `;
   }
 }
 ```
@@ -361,7 +388,7 @@ class SampleComp {
 Partial attributes implementation like conditional css class modification is a breeze.
 Examples:
 
-```
+```javascript
 // THE FOLLOWING IS OK 👍
 html`<div class=${`foo ${mayBar ? 'bar' : ''}`}>Foo bar?</div>`;
 html`<div class=${'foo' + (mayBar ? ' bar' : '')}>Foo bar?</div>`;
@@ -370,7 +397,7 @@ html`<div style=${`top:${top}; left:${left};`}>x</div>`;
 
 // THE FOLLOWING BREAKS ⚠️
 html`<div style="top:${top}; left:${left};">x</div>`;
-html`<div class="foo ${ mayBar ? 'bar' : '' }">x</div>`; // this may work in browser but will fail in unit tests
+html`<div class="foo ${mayBar ? 'bar' : ''}">x</div>`; // this may work in browser but will fail in unit tests
 ```
 
 For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
@@ -383,7 +410,7 @@ For more documentation check [here](https://viperhtml.js.org/hyperhtml/documenta
 
 example:
 
-```
+```typescript
 import { Component, html, useFormFields } from '@plumejs/core';
 import { IMultiSelectOptions, registerMultiSelectComponent } from '@plumejs/ui';
 
@@ -511,7 +538,7 @@ class SampleForm {
 
 Creating service is as simple as creating a component
 
-```
+```typescript
   import { Injectable } from '@plumejs/core';
 
   @Injectable()
@@ -564,7 +591,7 @@ src
 
 2. add translation files to i18n folder
 
-```
+```typescript
 in i18n/en.ts
 
 const locale_en = {
@@ -586,7 +613,7 @@ export default locale_fr;
 
 3. import translation files in root component and pass them to translation service
 
-```
+```typescript
 import { Component, TranslationService } from '@plumejs/core';
 import locale_en from '<folder-i18n>/en';
 import locale_fr from '<folder-i18n>/fr';
@@ -607,16 +634,18 @@ class AppComponent {
 
 5. To pass html from translations, no need to follow special ways:
 
-```
-<div>${{ html: 'html-translation'.translate() }}</div> // previously
-<div>${ 'html-translation'.translate() }</div> // with new version just like normal translation
+```html
+<div>${{ html: 'html-translation'.translate() }}</div>
+// previously
+<div>${ 'html-translation'.translate() }</div>
+// with new version just like normal translation
 ```
 
 The above object inside template literal contains 'html' key which properly allow compiler to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
 
 For normal text translations:
 
-```
+```html
 <div>${ 'text-translation'.translate() }</div>
 ```
 
@@ -624,23 +653,22 @@ For normal text translations:
 
 1. sample component unit test:
 
-```
+```typescript
 import { TestBed, Fixture } from '@plumejs/core';
 import { AppComponent } from 'src';
 
-describe("Plumejs Component", () => {
-
-  let appRoot:Fixture<AppComponent>;
+describe('Plumejs Component', () => {
+  let appRoot: Fixture<AppComponent>;
   let model: AppComponent;
 
-	beforeAll(async () => {
+  beforeAll(async () => {
     appRoot = await TestBed.MockComponent(AppComponent);
     model = appRoot.componentInstance;
   });
 
   it('should render h1 element', () => {
-    const h1:any = appRoot.element.querySelector('h1');
-    expect(h1.innerHTML).toBe("Hello World");
+    const h1: any = appRoot.element.querySelector('h1');
+    expect(h1.innerHTML).toBe('Hello World');
   });
 
   it('should return "hello" on button click', () => {
@@ -650,49 +678,49 @@ describe("Plumejs Component", () => {
     expect(span.innerHTML).toContain('hello');
   });
 
-  afterAll(()=>{
+  afterAll(() => {
     TestBed.RemoveComponent(appRoot);
   });
 });
-
 ```
 
 2. sample service unit test:
 
-```
+```typescript
 class SampleService {
+  data: any = {};
 
-	data: any = {};
-
-	callApi() {
-		return fetch("https://jsonplaceholder.typicode.com/users").then((res:any) => res.json()).then((res: any) => {
-			this.data = res;
-		});
-	}
+  callApi() {
+    return fetch('https://jsonplaceholder.typicode.com/users')
+      .then((res: any) => res.json())
+      .then((res: any) => {
+        this.data = res;
+      });
+  }
 }
 
-describe("Plumejs Service", () => {
+describe('Plumejs Service', () => {
+  let servc: SampleService;
+  let _fetch: any = fetch;
 
-	let servc: SampleService;
-	let _fetch: any = fetch;
+  beforeAll(() => {
+    servc = new SampleService();
+  });
 
-	beforeAll(() => {
-		servc = new SampleService();
-	});
+  beforeEach(() => {
+    _fetch.resetMocks();
+  });
 
-	beforeEach(() => {
-		_fetch.resetMocks();
-	});
-
-	it("should work",async () => {
-    _fetch.mockResponseOnce(JSON.stringify({
-      animals: ["cow", "goat", "lion"]
-    }));
-		await servc.callApi();
-		expect(servc.data.animals.length).toBe(3);
-	});
+  it('should work', async () => {
+    _fetch.mockResponseOnce(
+      JSON.stringify({
+        animals: ['cow', 'goat', 'lion']
+      })
+    );
+    await servc.callApi();
+    expect(servc.data.animals.length).toBe(3);
+  });
 });
-
 ```
 
 # Routing
