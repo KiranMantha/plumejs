@@ -1,6 +1,6 @@
-[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://GitHub.com/KiranMantha/plumejs/pulls)
 
-[![npm](https://img.shields.io/npm/dw/plumejs)](https://www.npmjs.com/package/plumejs)  [![npm](https://img.shields.io/npm/v/plumejs)](https://www.npmjs.com/package/plumejs)
+[![npm](https://img.shields.io/npm/dw/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core) [![npm](https://img.shields.io/npm/v/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core)
 
 <p align="center">
   <img alt="PlumeJs logo" src="./logo.jpg">  
@@ -12,7 +12,7 @@ Example [repo](https://github.com/KiranMantha/plumejs-example-repo/)
 
 PlumeJs is a very light weight typescript framework to build spa's. It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
 
-PlumeJs is a conceptual combination of angularjs and react. just like angular one can register services, components, life-cycle hooks, `Input` for passing data from one component to another and like react `update` function to update the view after modal updations and a render function to render the component.
+PlumeJs is a conceptual combination of angularjs and react. just like angular one can register services, components, life-cycle hooks, `setProps` for passing data from one component to another and like react `update` function to update the view after modal updations and a render function to render the component.
 
 PlumeJs has very few syntaxes enabling faster learning curve.
 
@@ -33,9 +33,24 @@ Plumejs has yeoman generator which provides the entire scaffolding for your proj
 
 Plumejs is now moving to scoped packages, deprecating older versions. In the process it shed 50% in size and dependencies compared to its previous versions. The `core aka @plumejs/core` scope is now only ~50KB and acts more as a library instead of a framework. So the devs can plugin `router aka @plumejs/router` scope for routing, `ui aka @plumejs/ui` scope for built in controls and more to come.
 
+The new version adds a new `Renderer` api which, on dependency injected in component constructor, will provide `update` function to update a component, `emitEvent` function to emit an output event to pass data from child to parent and `shadowRoot` to query dom nodes.
+
+It also adds a new `ComponentRef` api which takes a component class as generic type and
+
+1. expose `setProps` function which is used to set input properties of a child component which are declared as `ObservedProperties` and
+2. `getInstance` function to get current instance of child component.
+
+`useFormFields` now returns an array instead of object. This change makes it in-line with `useState`. This helps in assigning values directly in array instead of creating new variables and reassigning them. Now `useFormFields` also provides a `resetFormFields` function which resets all form values. for example:
+
+```
+  [this.formFields, this.createChangeHandler, this.resetFormFields] = useFormFields({...});
+```
+
 ## Breaking change in 3.0.0 version
 
-The usage of `Input` decorator is changed from `@Input() property` to `@Input property`. 
+1. `Input` decorator is removed in favor of `setProps` for better type safe of props.
+2. Inorder to update a component previously dev need to declare `update` property and call it as a function. But now dev needs to inject `Renderer` and call `renderer.update()` in the component. This helps linters to not throw error for usage of uninitialized variables and usage of `any`.
+3. `useRef` is deprecated. instead use `<input ref=${(node) => { this.ref = node; }}/>`. this prevents additional chaining like `this.ref.current.<do-some-operation>` instead user can do `this.ref.<do-some-operation>` which is more meaningful.
 
 ## Breaking change from 2.2.2 version
 
@@ -52,15 +67,18 @@ import componentStyles from './styles.scss';
 })
 ...
 ```
+
 The above change enable watch on stylesheets which is not available in older versions.
 
 Documentation will be updated after testing and after release of new version.
 
 If you want to change scss to css/less, check your typings.d.ts file and update module `*.scss` to `*.css/less`.
 
-The above implementation will break existing unit tests. To fix them, 
+The above implementation will break existing unit tests. To fix them,
+
 1. run `npm i -D jest-transform-stub`
-2. add 
+2. add
+
 ```
 {
   ...
@@ -70,9 +88,11 @@ The above implementation will break existing unit tests. To fix them,
   }
 }
 ```
+
 to your `jest.config.js`
 
 # Documentation
+
 Here is a sneak peak into bultins:
 
 ## Creating Components
@@ -110,11 +130,11 @@ For styling one can use css or scss formats. but scss is the most preferred one.
 
 ## Lifecycle Hooks
 
-`IHooks` interface provides `mount, unmount, inputChanged` lifecycle hooks.
+`IHooks` interface provides `mount, unmount, onPropsChanged & ObservedProperties` lifecycle hooks.
 
 ### mount Hook
 
- It is used to perform model data initialization as follows:
+It is used to perform model data initialization as follows:
 
 ```
 import { Component, html, IHooks } from '@plumejs/core';
@@ -151,7 +171,7 @@ class PersonsList implements IHooks {
 
 ### umount Hook
 
- It is used to execute any pendending subscriptions as follows:
+It is used to execute any pendending subscriptions as follows:
 
 ```
 import { Component, html, IHooks } from '@plumejs/core';
@@ -196,33 +216,30 @@ class PersonsList implements IHooks {
 
 ```
 
-### inputChanged Hook
+### onPropsChanged Hook with ObservedProperties
 
-It is called when there is any change in `@Input` property
+It is called when ever the parent component called `setProps` on child component.
 
 ```
-import { Component, html, Input, IHooks } from '@plumejs/core';
+import { Component, html, ComponentRef, IHooks } from '@plumejs/core';
 
 @Component({
   selector: 'app-root'
 })
 class App {
   persons: IPersonsData;
-
-  constructor() {
-    this.updatePersons = this.updatePersons.bind(this);
-  }
+  personsListRef: ComponentRef<PersonsList>;
 
   updatePersons() {
     // directly updating persons array will not update UI. so creating new array.
-    this.persons = [...this.persons, new person record]; 
-    this.update();
+    this.persons = [...this.persons, new person record];
+    this.personsListRef.setProps({ personsData: this.persons });
   }
 
   render() {
     return html`
-      <button onclick=${this.updatePersons}>Update persons</button>
-      <person-list personsData=${ this.persons }></person-list>
+      <button onclick=${() => { this.updatePersons(); }}>Update persons</button>
+      <person-list ref=${(node) => { this.personsListRef = node; }}></person-list>
     `;
   }
 }
@@ -231,11 +248,13 @@ class App {
   selector: 'person-list'
 })
 class PersonsList implements IHooks {
-  @Input personsData: IPersonsData = null;
+  readonly ObservedProperties = <const>['personsData'];
 
-  inputChanged(oldValue: IPersonsData, newValue: IPersonsData) {
+  personsData: IPersonsData;
+
+  onPropsChanged(oldValue: IPersonsData, newValue: IPersonsData) {
     // do your operation here.
-    // no need to call `this.update()` here. It may cause undesired results.
+    // no need to call `this.renderer.update()` here. It may cause undesired results.
     // dont have any return value.
   }
 
@@ -250,27 +269,28 @@ class PersonsList implements IHooks {
 We can even share data between two components as below:
 
 ```
-  import { Component, html, Input, IHooks } from '@plumejs/core';
+  import { Component, html, ComponentRef, Renderer, IHooks } from '@plumejs/core';
 
   @Component({
     selector: 'person-list'
   })
   class PersonsList implements IHooks {
     data:Array<string> = [];
-    persondetails:any = {};
+    persondetails:{ name: string; } = { name: '' };
+    personDetailsRef: ComponentRef<PersonDetails>;
 
-    constructor(){}
+    constructor(private renderer: Renderer){}
 
     mount(){
       fetch('persons-api').then(res => res.json()).then(data => {
         this.data = data;
-        this.update(); // triggers change detection and update view
+        this.renderer.update(); // triggers change detection and update view
       })
     }
 
     alertName(name:string){
       this.persondetails.name = name;
-      this.update();
+      this.personDetailsRef.setProps({ userdetails: this.persondetails }); // update the child component
     }
 
     render(){
@@ -278,7 +298,7 @@ We can even share data between two components as below:
         <ul>${
           this.data.map((item:string) => html`<li onclick=${()=>{ this.alertname(item); }}>${item}</li>`)
         }</ul>
-        <person-details userdetails=${this.persondetails}></person-details>
+        <person-details ref=${(node) => { this.personDetailsRef = node; }}></person-details>
       </div>`
     }
   }
@@ -287,24 +307,28 @@ We can even share data between two components as below:
     selector: 'person-details'
   })
   export class PersonDetails implements IHooks {
+    readonly ObservedProperties = <const>['userDetails'];
+    userDetails: { name: string; };
 
-    @Input userdetails:any = {};
-
-    inputChanged(oldValue: any, newValue: any) {
+    onPropsChanged(oldValue: any, newValue: any) {
       console.log('oldvalue: ', oldValue);
       console.log('newvalue: ', newValue);
     }
 
     render(){
-      return html`${
-        <div>${this.userdetails.name}</div>
-      }`
+      if (this.userDetails && this.userDetails.name) {
+        return html`${
+          <div>${this.userdetails.name}</div>
+        }`
+      } else {
+        return html`<div></div>`
+      }
     }
   }
 
 ```
 
-Just like react, PlumeJs provides `useRef` as references. example:
+`UseRef` is deprecated. instead follow:
 
 ```
 import { Component, Ref, useRef } from '@plumejs/core';
@@ -313,8 +337,9 @@ import { Component, Ref, useRef } from '@plumejs/core';
   selector: 'sample-comp'
 })
 class SampleComp {
-	inputField:Ref<HTMLElement> = useRef(null);
-	
+	inputField:Ref<HTMLElement> = useRef(null); // deprecated
+  inputField: HTMLElement;
+
 	getRef(){
 		console.log(this.inputField);
 	}
@@ -322,7 +347,8 @@ class SampleComp {
   render() {
     return html`
      <div>
-			<input type='text' ref=${this.inputField} />
+      <input type='text' ref=${this.inputField} /> // don't use this way
+			<input type='text' ref=${(node) => { this.inputField = node; }} /> // use ref like this
       <button onclick=${()=>{ this.getRef() }}>click</button>
     </div>
     `
@@ -334,13 +360,14 @@ class SampleComp {
 
 Partial attributes implementation like conditional css class modification is a breeze.
 Examples:
+
 ```
 // THE FOLLOWING IS OK 👍
 html`<div class=${`foo ${mayBar ? 'bar' : ''}`}>Foo bar?</div>`;
 html`<div class=${'foo' + (mayBar ? ' bar' : '')}>Foo bar?</div>`;
 html`<div class=${['foo', mayBar ? 'bar' : ''].join(' ')}>Foo bar?</div>`;
 html`<div style=${`top:${top}; left:${left};`}>x</div>`;
- 
+
 // THE FOLLOWING BREAKS ⚠️
 html`<div style="top:${top}; left:${left};">x</div>`;
 html`<div class="foo ${ mayBar ? 'bar' : '' }">x</div>`; // this may work in browser but will fail in unit tests
@@ -348,13 +375,14 @@ html`<div class="foo ${ mayBar ? 'bar' : '' }">x</div>`; // this may work in bro
 
 For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
 
-
 ## Hooks
+
 ### useFormFields
 
 `useFormFields` is very helpful to build forms and retrive form data.
 
 example:
+
 ```
 import { Component, html, useFormFields } from '@plumejs/core';
 import { IMultiSelectOptions, registerMultiSelectComponent } from '@plumejs/ui';
@@ -374,17 +402,18 @@ interface IFormFields {
 class SampleForm {
   sampleformFields: IFormFields;
 	createChangeHandler: any;
+  resetFormFields: any;
 	multiSelectChangehandler: any;
   multiSelectOptions: IMultiSelectOptions = {
 		data: ['option1', 'option2', 'option3', 'option4'],
 		multiple: true,
 		onchange: (optionsArr: string[]) => {
 			this.multiSelectChangehandler({
-				target: { 
+				target: {
 					value: optionsArr
 				}
 			});
-		},		
+		},
 		buttonText: (options:Array<string>) => {
 			if (options.length === 0) {
 				return 'None selected';
@@ -398,15 +427,13 @@ class SampleForm {
 	}
 
   constructor() {
-    const { formFields, createChangeHandler } = useFormFields<IFormFields>({
+    [ this.sampleformFields, this.createChangeHandler, this.resetFormFields ] = useFormFields<IFormFields>({
 			email: "",
 			checkme: false,
 			option: '',
 			options: [],
 			gender: "",
 		});
-		this.sampleformFields = formFields;
-		this.createChangeHandler = createChangeHandler;
 		this.multiSelectChangehandler = this.createChangeHandler('options');
 		this.submitForm = this.submitForm.bind(this);
   }
@@ -532,10 +559,11 @@ Adding translations in PlumeJS is a breeze. Checkout below for implementation:
 ```
 src
  |- i18n
- 
+
 ```
 
 2. add translation files to i18n folder
+
 ```
 in i18n/en.ts
 
@@ -557,6 +585,7 @@ export default locale_fr;
 ```
 
 3. import translation files in root component and pass them to translation service
+
 ```
 import { Component, TranslationService } from '@plumejs/core';
 import locale_en from '<folder-i18n>/en';
@@ -573,12 +602,14 @@ class AppComponent {
   }
 }
 ```
-4. now translations are setup for english and french languages. 
 
-5. To pass html from translations:
+4. now translations are setup for english and french languages.
+
+5. To pass html from translations, no need to follow special ways:
 
 ```
-<div>${{ html: 'html-translation'.translate() }}</div>
+<div>${{ html: 'html-translation'.translate() }}</div> // previously
+<div>${ 'html-translation'.translate() }</div> // with new version just like normal translation
 ```
 
 The above object inside template literal contains 'html' key which properly allow compiler to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
@@ -592,6 +623,7 @@ For normal text translations:
 ## Unit Tests
 
 1. sample component unit test:
+
 ```
 import { TestBed } from '@plumejs/core';
 import { AppComponent } from 'src';
@@ -603,13 +635,13 @@ describe("Plumejs Component", () => {
 	beforeAll(async () => {
     appRoot = await TestBed.MockComponent(AppComponent);
   });
-  
+
   it('should render h1 element', () => {
     const h1:any = appRoot.querySelector('h1');
     expect(h1.innerHTML).toBe("Hello World");
   });
 
-  it('should return "hello" on button click', () => { 
+  it('should return "hello" on button click', () => {
     let span = appRoot.querySelector('span');
     const model:AppComponent = appRoot.getModel();
     expect(span.innerHTML).not.toContain('hello');
@@ -623,7 +655,9 @@ describe("Plumejs Component", () => {
 });
 
 ```
+
 2. sample service unit test:
+
 ```
 class SampleService {
 
@@ -667,7 +701,6 @@ As a scoped package one can install `@plumejs/router` for routing. For documenta
 # UI Components
 
 As an additional provision, `@plumejs/ui` npm module exposes a comprehensive set of useful ui components like modal dialog, notifications, multi select dropdown, toggle. You can check the documentaion [plumejs ui repo](https://github.com/KiranMantha/plumejs-ui).
-
 
 An example repo can be found [here](https://github.com/KiranMantha/plumejs-example-repo) for reference.
 
