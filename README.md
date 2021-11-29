@@ -625,25 +625,26 @@ For normal text translations:
 1. sample component unit test:
 
 ```
-import { TestBed } from '@plumejs/core';
+import { TestBed, Fixture } from '@plumejs/core';
 import { AppComponent } from 'src';
 
 describe("Plumejs Component", () => {
 
-  let appRoot:any;
+  let appRoot:Fixture<AppComponent>;
+  let model: AppComponent;
 
 	beforeAll(async () => {
     appRoot = await TestBed.MockComponent(AppComponent);
+    model = appRoot.componentInstance;
   });
 
   it('should render h1 element', () => {
-    const h1:any = appRoot.querySelector('h1');
+    const h1:any = appRoot.element.querySelector('h1');
     expect(h1.innerHTML).toBe("Hello World");
   });
 
   it('should return "hello" on button click', () => {
-    let span = appRoot.querySelector('span');
-    const model:AppComponent = appRoot.getModel();
+    let span = appRoot.element.querySelector('span');
     expect(span.innerHTML).not.toContain('hello');
     model.greet();
     expect(span.innerHTML).toContain('hello');
