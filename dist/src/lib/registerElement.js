@@ -33,7 +33,7 @@ const registerElement = (options, target, dependencies) => {
         if (options.root && !componentRegistry_1.componentRegistry.isRootNodeSet) {
             componentRegistry_1.componentRegistry.isRootNodeSet = true;
             if (options.styles) {
-                createStyleTag(options.styles);
+                createStyleTag(options.styles, document.head);
                 componentRegistry_1.componentRegistry.globalStyles.replace(options.styles);
             }
         }

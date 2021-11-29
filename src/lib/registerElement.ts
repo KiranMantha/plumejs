@@ -36,7 +36,7 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
     if (options.root && !componentRegistry.isRootNodeSet) {
       componentRegistry.isRootNodeSet = true;
       if (options.styles) {
-        createStyleTag(options.styles);
+        createStyleTag(options.styles, document.head);
         componentRegistry.globalStyles.replace(options.styles);
       }
     } else if (options.root && componentRegistry.isRootNodeSet) {
