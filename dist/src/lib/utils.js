@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CSS_SHEET_NOT_SUPPORTED = exports.klass = exports.wrapIntoObservable = exports.isPromise = exports.isObservable = exports.isUndefined = exports.isFunction = exports.isObject = void 0;
+exports.fromEvent = exports.CSS_SHEET_NOT_SUPPORTED = exports.klass = exports.wrapIntoObservable = exports.isPromise = exports.isObservable = exports.isUndefined = exports.isFunction = exports.isObject = void 0;
 const rxjs_1 = require("rxjs");
 const klass = Symbol('klass');
 exports.klass = klass;
@@ -36,3 +36,11 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
     }
 })();
 exports.CSS_SHEET_NOT_SUPPORTED = CSS_SHEET_NOT_SUPPORTED;
+const fromEvent = (target, eventName, onNext, options = false) => {
+    target.addEventListener(eventName, onNext, options);
+    const unsubscribe = () => {
+        target.removeEventListener(eventName, onNext, options);
+    };
+    return unsubscribe;
+};
+exports.fromEvent = fromEvent;

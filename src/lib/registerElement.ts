@@ -51,7 +51,7 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
       #shadow: any;
       #subscriptions: Subscription = new Subscription();
       #componentStyleTag: HTMLStyleElement = null;
-      eventListenersMap: Record<string, any>;
+      subscriptions: (() => void)[];
 
       constructor() {
         super();
@@ -128,12 +128,11 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
         this.#subscriptions.unsubscribe();
         this.#componentStyleTag && this.#componentStyleTag.remove();
         this.#klass.unmount && this.#klass.unmount();
-        if (this.eventListenersMap) {
-          for (const [key, value] of Object.entries(this.eventListenersMap)) {
-            this.removeEventListener(key, value);
+        if (this.subscriptions.length) {
+          for (const unsubscribe of this.subscriptions) {
+            unsubscribe();
           }
         }
-        this.eventListenersMap = null;
       }
     }
   );

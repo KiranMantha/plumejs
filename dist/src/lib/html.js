@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.render = exports.html = void 0;
+const utils_1 = require("./utils");
 const { html, render } = (() => {
     const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
     const isNodeRegex = /<[a-z][^>]+$/i;
@@ -31,6 +32,7 @@ const { html, render } = (() => {
         const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
         let node = elementsWalker.nextNode();
         while (node) {
+            node.subscriptions = [];
             if (node.hasAttributes()) {
                 const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
                 for (const { nodeName, nodeValue } of customAttributes) {
@@ -38,9 +40,8 @@ const { html, render } = (() => {
                     switch (true) {
                         case /^on+/.test(nodeValue): {
                             const eventName = nodeValue.slice(2).toLowerCase();
-                            node.removeEventListener(eventName, values[i]);
-                            node.addEventListener(eventName, values[i]);
-                            (node.eventListenersMap || (node.eventListenersMap = {}))[eventName] = values[i];
+                            const unsubscribe = (0, utils_1.fromEvent)(node, eventName, values[i]);
+                            node.subscriptions.push(unsubscribe);
                             break;
                         }
                         case /ref/.test(nodeValue): {

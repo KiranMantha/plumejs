@@ -46,7 +46,7 @@ const registerElement = (options, target, dependencies) => {
         #shadow;
         #subscriptions = new rxjs_1.Subscription();
         #componentStyleTag = null;
-        eventListenersMap;
+        subscriptions;
         constructor() {
             super();
             this.#shadow = this.attachShadow({ mode: 'open' });
@@ -110,12 +110,11 @@ const registerElement = (options, target, dependencies) => {
             this.#subscriptions.unsubscribe();
             this.#componentStyleTag && this.#componentStyleTag.remove();
             this.#klass.unmount && this.#klass.unmount();
-            if (this.eventListenersMap) {
-                for (const [key, value] of Object.entries(this.eventListenersMap)) {
-                    this.removeEventListener(key, value);
+            if (this.subscriptions.length) {
+                for (const unsubscribe of this.subscriptions) {
+                    unsubscribe();
                 }
             }
-            this.eventListenersMap = null;
         }
     });
 };

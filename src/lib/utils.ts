@@ -27,6 +27,19 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
   }
 })();
 
+const fromEvent = (
+  target: HTMLElement,
+  eventName: string,
+  onNext: EventListenerOrEventListenerObject,
+  options = false
+): (() => void) => {
+  target.addEventListener(eventName, onNext, options);
+  const unsubscribe = () => {
+    target.removeEventListener(eventName, onNext, options);
+  };
+  return unsubscribe;
+};
+
 export {
   isObject,
   isFunction,
@@ -35,5 +48,6 @@ export {
   isPromise,
   wrapIntoObservable,
   klass,
-  CSS_SHEET_NOT_SUPPORTED
+  CSS_SHEET_NOT_SUPPORTED,
+  fromEvent
 };
