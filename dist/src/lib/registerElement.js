@@ -110,7 +110,7 @@ const registerElement = (options, target, dependencies) => {
             this.#subscriptions.unsubscribe();
             this.#componentStyleTag && this.#componentStyleTag.remove();
             this.#klass.unmount && this.#klass.unmount();
-            if (this.subscriptions.length) {
+            if (this.subscriptions?.length) {
                 for (const unsubscribe of this.subscriptions) {
                     unsubscribe();
                 }
