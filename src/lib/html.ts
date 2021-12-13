@@ -33,7 +33,7 @@ const { html, render } = (() => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode() as unknown as HTMLElement;
     while (node) {
-      (node as any).subscriptions = [];
+      (node as any).eventSubscriptions = [];
       if (node.hasAttributes()) {
         const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
         for (const { nodeName, nodeValue } of customAttributes) {
@@ -42,7 +42,7 @@ const { html, render } = (() => {
             case /^on+/.test(nodeValue): {
               const eventName = nodeValue.slice(2).toLowerCase();
               const unsubscribe = fromEvent(node, eventName, values[i]);
-              (node as any).subscriptions.push(unsubscribe);
+              (node as any).eventSubscriptions.push(unsubscribe);
               break;
             }
             case /ref/.test(nodeValue): {

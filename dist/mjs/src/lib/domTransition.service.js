@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DomTransition = void 0;
-const tslib_1 = require("tslib");
-const rxjs_1 = require("rxjs");
-const decorators_1 = require("./decorators");
+import { __decorate, __metadata } from "tslib";
+import { fromEvent } from 'rxjs';
+import { Injectable } from './decorators';
 let DomTransition = class DomTransition {
     transition = '';
     constructor() {
@@ -36,14 +33,14 @@ let DomTransition = class DomTransition {
                 eventSubscription = null;
             }
         };
-        eventSubscription = (0, rxjs_1.fromEvent)(element, this.transition).subscribe(() => {
+        eventSubscription = fromEvent(element, this.transition).subscribe(() => {
             _fn();
         });
         setTimeout(_fn, duration);
     }
 };
-DomTransition = (0, tslib_1.__decorate)([
-    (0, decorators_1.Injectable)(),
-    (0, tslib_1.__metadata)("design:paramtypes", [])
+DomTransition = __decorate([
+    Injectable(),
+    __metadata("design:paramtypes", [])
 ], DomTransition);
-exports.DomTransition = DomTransition;
+export { DomTransition };

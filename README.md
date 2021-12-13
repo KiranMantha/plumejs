@@ -10,6 +10,8 @@ Demo [here](https://kiranmantha.github.io/plumejs-example-repo/). Check console 
 
 Example [repo](https://github.com/KiranMantha/plumejs-example-repo/)
 
+Intro for dual packages [here](https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html)
+
 PlumeJs is a very light weight typescript framework to build spa's. It is build on more accessable web components, typescript and lighterhtml. It comes with features like change detection during async operations, data-sharing via factories and props, dependency injection.
 
 PlumeJs is a conceptual combination of angularjs and react. just like angular one can register services, components, life-cycle hooks, `setProps` for passing data from one component to another and like react `update` function to update the view after modal updations and a render function to render the component.

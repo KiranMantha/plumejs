@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.componentRegistry = void 0;
 const componentRegistry = new (class {
     globalStyles;
     style_registry;
@@ -29,4 +26,4 @@ const componentRegistry = new (class {
         return csoArray;
     };
 })();
-exports.componentRegistry = componentRegistry;
+export { componentRegistry };

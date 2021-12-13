@@ -5,18 +5,18 @@ interface IInjector {
 }
 
 const Injector: IInjector = new (class implements IInjector {
-  #map = new Map();
+  private map = new Map();
 
   public register<T>(serviceName: string, instance: Record<string, T>) {
-    if (!this.#map.get(serviceName)) {
-      this.#map.set(serviceName, instance);
+    if (!this.map.get(serviceName)) {
+      this.map.set(serviceName, instance);
     } else {
       throw Error(`${serviceName} is already registered service.`);
     }
   }
 
   public getService<T>(serviceName: string): T {
-    const instance = this.#map.get(serviceName);
+    const instance = this.map.get(serviceName);
     if (instance) {
       return instance;
     } else {
@@ -25,7 +25,7 @@ const Injector: IInjector = new (class implements IInjector {
   }
 
   public clear(): void {
-    this.#map = new Map();
+    this.map = new Map();
   }
 })();
 

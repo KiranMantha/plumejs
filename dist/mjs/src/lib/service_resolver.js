@@ -1,18 +1,15 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Injector = void 0;
 const Injector = new (class {
-    #map = new Map();
+    map = new Map();
     register(serviceName, instance) {
-        if (!this.#map.get(serviceName)) {
-            this.#map.set(serviceName, instance);
+        if (!this.map.get(serviceName)) {
+            this.map.set(serviceName, instance);
         }
         else {
             throw Error(`${serviceName} is already registered service.`);
         }
     }
     getService(serviceName) {
-        const instance = this.#map.get(serviceName);
+        const instance = this.map.get(serviceName);
         if (instance) {
             return instance;
         }
@@ -21,7 +18,7 @@ const Injector = new (class {
         }
     }
     clear() {
-        this.#map = new Map();
+        this.map = new Map();
     }
 })();
-exports.Injector = Injector;
+export { Injector };
