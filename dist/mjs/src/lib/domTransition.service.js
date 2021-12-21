@@ -1,6 +1,6 @@
 import { __decorate, __metadata } from "tslib";
-import { fromEvent } from 'rxjs';
 import { Injectable } from './decorators';
+import { fromEvent } from './utils';
 let DomTransition = class DomTransition {
     transition = '';
     constructor() {
@@ -24,16 +24,16 @@ let DomTransition = class DomTransition {
     }
     onTransitionEnd(element, cb, duration) {
         let called = false;
-        let eventSubscription = null;
+        let unSubscribeEvent = null;
         const _fn = () => {
             if (!called) {
                 called = true;
                 cb && cb();
-                eventSubscription.unsubscribe();
-                eventSubscription = null;
+                unSubscribeEvent();
+                unSubscribeEvent = null;
             }
         };
-        eventSubscription = fromEvent(element, this.transition).subscribe(() => {
+        unSubscribeEvent = fromEvent(element, this.transition, () => {
             _fn();
         });
         setTimeout(_fn, duration);

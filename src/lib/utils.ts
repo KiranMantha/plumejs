@@ -28,7 +28,7 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
 })();
 
 const fromEvent = (
-  target: HTMLElement,
+  target: HTMLElement | Window,
   eventName: string,
   onNext: EventListenerOrEventListenerObject,
   options = false

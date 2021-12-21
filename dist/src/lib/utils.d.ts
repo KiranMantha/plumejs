@@ -7,5 +7,5 @@ declare const isObservable: (obj: any | Observable<any>) => obj is Observable<an
 declare const isPromise: (obj: any) => obj is Promise<any>;
 declare const wrapIntoObservable: <T>(value: T | Promise<T> | Observable<T>) => Observable<T>;
 declare const CSS_SHEET_NOT_SUPPORTED: boolean;
-declare const fromEvent: (target: HTMLElement, eventName: string, onNext: EventListenerOrEventListenerObject, options?: boolean) => (() => void);
+declare const fromEvent: (target: HTMLElement | Window, eventName: string, onNext: EventListenerOrEventListenerObject, options?: boolean) => (() => void);
 export { isObject, isFunction, isUndefined, isObservable, isPromise, wrapIntoObservable, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent };

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DomTransition = void 0;
 const tslib_1 = require("tslib");
-const rxjs_1 = require("rxjs");
 const decorators_1 = require("./decorators");
+const utils_1 = require("./utils");
 let DomTransition = class DomTransition {
     constructor() {
         this.transition = '';
@@ -27,16 +27,16 @@ let DomTransition = class DomTransition {
     }
     onTransitionEnd(element, cb, duration) {
         let called = false;
-        let eventSubscription = null;
+        let unSubscribeEvent = null;
         const _fn = () => {
             if (!called) {
                 called = true;
                 cb && cb();
-                eventSubscription.unsubscribe();
-                eventSubscription = null;
+                unSubscribeEvent();
+                unSubscribeEvent = null;
             }
         };
-        eventSubscription = (0, rxjs_1.fromEvent)(element, this.transition).subscribe(() => {
+        unSubscribeEvent = (0, utils_1.fromEvent)(element, this.transition, () => {
             _fn();
         });
         setTimeout(_fn, duration);

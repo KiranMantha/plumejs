@@ -1,10 +1,9 @@
 import { isNode } from 'browser-or-node';
-import { fromEvent, Subscription } from 'rxjs';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { ComponentRef, DecoratorOptions, Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS: DecoratorOptions = {
@@ -49,7 +48,6 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
     class extends HTMLElement implements Renderer, ComponentRef<any> {
       private klass: Record<string, any>;
       private shadow: any;
-      private subscriptions: Subscription = new Subscription();
       private componentStyleTag: HTMLStyleElement = null;
       eventSubscriptions: (() => void)[];
 
@@ -85,8 +83,8 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();
-        this.subscriptions.add(
-          fromEvent(window, 'onLanguageChange').subscribe(() => {
+        this.eventSubscriptions.push(
+          fromEvent(window, 'onLanguageChange', () => {
             this.update();
           })
         );
@@ -104,10 +102,10 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
         }
       }
 
-      emitEvent(eventName: string, data: any, isBubbling = true) {
+      emitEvent(eventName: string, data: any, allowBubbling = true) {
         const event = new CustomEvent(eventName, {
           detail: data,
-          bubbles: isBubbling
+          bubbles: allowBubbling
         });
         this.dispatchEvent(event);
       }
@@ -125,7 +123,6 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
       }
 
       disconnectedCallback() {
-        this.subscriptions.unsubscribe();
         this.componentStyleTag && this.componentStyleTag.remove();
         this.klass.unmount && this.klass.unmount();
         if (this.eventSubscriptions?.length) {
