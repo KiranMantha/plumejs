@@ -26,10 +26,11 @@ const { html, render } = (() => {
   const _setValueForDropdown = (node: HTMLSelectElement, value) => {
     if (node.nodeName.toLowerCase() !== 'select') return;
 
-    let optionSet, option;
     const options = node.options,
       values = Array.isArray(value) ? value : [value];
-    let i = options.length;
+    let optionSet,
+      option,
+      i = options.length;
 
     while (i--) {
       option = options[i];

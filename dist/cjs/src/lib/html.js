@@ -27,9 +27,8 @@ const { html, render } = (() => {
         var _a;
         if (node.nodeName.toLowerCase() !== 'select')
             return;
-        let optionSet, option;
         const options = node.options, values = Array.isArray(value) ? value : [value];
-        let i = options.length;
+        let optionSet, option, i = options.length;
         while (i--) {
             option = options[i];
             const value = (_a = option.getAttribute('value')) !== null && _a !== void 0 ? _a : (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
