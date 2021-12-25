@@ -23,6 +23,30 @@ const { html, render } = (() => {
     return JSON.parse(str);
   };
 
+  const _setValueForDropdown = (node: HTMLSelectElement, value) => {
+    if (node.nodeName.toLowerCase() !== 'select') return;
+
+    let optionSet, option;
+    const options = node.options,
+      values = Array.isArray(value) ? value : [value];
+    let i = options.length;
+
+    while (i--) {
+      option = options[i];
+      const value = option.getAttribute('value') ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
+
+      if ((option.selected = values.indexOf(value) > -1)) {
+        optionSet = true;
+      }
+    }
+
+    // Force browsers to behave consistently when non-matching value is set
+    if (!optionSet) {
+      node.selectedIndex = -1;
+    }
+    return values;
+  };
+
   const _createFragment = (markup: string): DocumentFragment => {
     const temp = document.createElement('template');
     temp.innerHTML = markup;
@@ -66,7 +90,8 @@ const { html, render } = (() => {
               break;
             }
             case /value/.test(nodeValue): {
-              (node as any).value = _sanitize(values[i]);
+              const val = _setValueForDropdown(node as any, values[i]);
+              !val && ((node as any).value = _sanitize(values[i]));
               break;
             }
             case /disabled/.test(nodeValue):

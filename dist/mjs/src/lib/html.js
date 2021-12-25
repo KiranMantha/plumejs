@@ -20,6 +20,24 @@ const { html, render } = (() => {
         str = safe_tags_replace(str);
         return JSON.parse(str);
     };
+    const _setValueForDropdown = (node, value) => {
+        if (node.nodeName.toLowerCase() !== 'select')
+            return;
+        let optionSet, option;
+        const options = node.options, values = Array.isArray(value) ? value : [value];
+        let i = options.length;
+        while (i--) {
+            option = options[i];
+            const value = option.getAttribute('value') ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
+            if ((option.selected = values.indexOf(value) > -1)) {
+                optionSet = true;
+            }
+        }
+        if (!optionSet) {
+            node.selectedIndex = -1;
+        }
+        return values;
+    };
     const _createFragment = (markup) => {
         const temp = document.createElement('template');
         temp.innerHTML = markup;
@@ -63,7 +81,8 @@ const { html, render } = (() => {
                             break;
                         }
                         case /value/.test(nodeValue): {
-                            node.value = _sanitize(values[i]);
+                            const val = _setValueForDropdown(node, values[i]);
+                            !val && (node.value = _sanitize(values[i]));
                             break;
                         }
                         case /disabled/.test(nodeValue):
