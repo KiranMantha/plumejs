@@ -19,13 +19,11 @@ const _getTargetValue = (target) => {
         }
         case 'select': {
             const one = target.type === 'select-one';
-            if (one) {
-                targetValue = target.value;
-            }
-            else {
-                const options = Array.from(target.options);
-                targetValue = [...options].filter((option) => option.selected).map((option) => option.value);
-            }
+            const options = Array.from(target.options);
+            const value = [...options]
+                .filter((option) => option.selected)
+                .map((option) => option.value ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' '));
+            targetValue = one ? value[0] : value;
             break;
         }
         default: {

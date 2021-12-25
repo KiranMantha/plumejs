@@ -23,9 +23,7 @@ const { html, render } = (() => {
     return JSON.parse(str);
   };
 
-  const _setValueForDropdown = (node: HTMLSelectElement, value) => {
-    if (node.nodeName.toLowerCase() !== 'select') return;
-
+  const _setValuesForDropdown = (node: HTMLSelectElement, value) => {
     const options = node.options,
       values = Array.isArray(value) ? value : [value];
     let optionSet,
@@ -35,7 +33,6 @@ const { html, render } = (() => {
     while (i--) {
       option = options[i];
       const value = option.getAttribute('value') ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
-
       if ((option.selected = values.indexOf(value) > -1)) {
         optionSet = true;
       }
@@ -45,7 +42,6 @@ const { html, render } = (() => {
     if (!optionSet) {
       node.selectedIndex = -1;
     }
-    return values;
   };
 
   const _createFragment = (markup: string): DocumentFragment => {
@@ -91,8 +87,11 @@ const { html, render } = (() => {
               break;
             }
             case /value/.test(nodeValue): {
-              const val = _setValueForDropdown(node as any, values[i]);
-              !val && ((node as any).value = _sanitize(values[i]));
+              if (node.nodeName.toLowerCase() === 'select') {
+                _setValuesForDropdown(node as any, values[i]);
+              } else {
+                (node as any).value = _sanitize(values[i]);
+              }
               break;
             }
             case /disabled/.test(nodeValue):
