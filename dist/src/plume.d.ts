@@ -5,4 +5,3 @@ export { html, render } from './lib/html';
 export { Injector } from './lib/service_resolver';
 export { TranslationService } from './lib/translationService';
 export { ComponentRef, DecoratorOptions, IHooks, Renderer } from './lib/types';
-export { wrapIntoObservable } from './lib/utils';

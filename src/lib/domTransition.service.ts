@@ -1,5 +1,5 @@
 import { Injectable } from './decorators';
-import { fromEvent } from './utils';
+import { fromVanillaEvent } from './utils';
 
 @Injectable()
 export class DomTransition {
@@ -38,7 +38,7 @@ export class DomTransition {
         unSubscribeEvent = null;
       }
     };
-    unSubscribeEvent = fromEvent(element, this.transition, () => {
+    unSubscribeEvent = fromVanillaEvent(element, this.transition, () => {
       _fn();
     });
     setTimeout(_fn, duration);

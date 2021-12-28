@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.render = exports.html = void 0;
-const utils_1 = require("./utils");
 const { html, render } = (() => {
     const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
     const isNodeRegex = /<[a-z][^>]+$/i;
@@ -55,8 +54,8 @@ const { html, render } = (() => {
                     switch (true) {
                         case /^on+/.test(nodeValue): {
                             const eventName = nodeValue.slice(2).toLowerCase();
-                            const unsubscribe = (0, utils_1.fromEvent)(node, eventName, values[i]);
-                            node.eventSubscriptions.push(unsubscribe);
+                            node.removeEventListener(eventName, values[i]);
+                            node.addEventListener(eventName, values[i]);
                             break;
                         }
                         case /ref/.test(nodeValue): {

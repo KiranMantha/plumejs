@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerElement = void 0;
-const browser_or_node_1 = require("browser-or-node");
 const componentRegistry_1 = require("./componentRegistry");
 const html_1 = require("./html");
 const instance_1 = require("./instance");
@@ -28,25 +27,24 @@ const transformCSS = (styles, selector) => {
 const registerElement = (options, target, dependencies) => {
     options = Object.assign(Object.assign({}, DEFAULT_COMPONENT_OPTIONS), options);
     options.styles = options.styles.toString();
-    if (!browser_or_node_1.isNode) {
-        if (options.root && !componentRegistry_1.componentRegistry.isRootNodeSet) {
-            componentRegistry_1.componentRegistry.isRootNodeSet = true;
-            if (options.styles) {
-                createStyleTag(options.styles, document.head);
-                componentRegistry_1.componentRegistry.globalStyles.replace(options.styles);
-            }
+    if (options.root && !componentRegistry_1.componentRegistry.isRootNodeSet) {
+        componentRegistry_1.componentRegistry.isRootNodeSet = true;
+        if (options.styles) {
+            createStyleTag(options.styles, document.head);
+            componentRegistry_1.componentRegistry.globalStyles.replace(options.styles);
         }
-        else if (options.root && componentRegistry_1.componentRegistry.isRootNodeSet) {
-            throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
-        }
+    }
+    else if (options.root && componentRegistry_1.componentRegistry.isRootNodeSet) {
+        throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
     }
     window.customElements.define(options.selector, class extends HTMLElement {
         constructor() {
             super();
             this.componentStyleTag = null;
+            this.eventSubscriptions = [];
             this.shadow = this.attachShadow({ mode: 'open' });
             if (!utils_1.CSS_SHEET_NOT_SUPPORTED) {
-                const adoptedStyleSheets = browser_or_node_1.isNode ? [] : componentRegistry_1.componentRegistry.getComputedCss(options.styles);
+                const adoptedStyleSheets = componentRegistry_1.componentRegistry.getComputedCss(options.styles);
                 this.shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
             this.update = this.update.bind(this);
@@ -72,7 +70,7 @@ const registerElement = (options, target, dependencies) => {
             this.klass.beforeMount && this.klass.beforeMount();
             this.update();
             this.klass.mount && this.klass.mount();
-            this.eventSubscriptions.push((0, utils_1.fromEvent)(window, 'onLanguageChange', () => {
+            this.eventSubscriptions.push((0, utils_1.fromVanillaEvent)(window, 'onLanguageChange', () => {
                 this.update();
             }));
         }

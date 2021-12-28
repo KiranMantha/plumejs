@@ -1,9 +1,8 @@
-import { isNode } from 'browser-or-node';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { ComponentRef, DecoratorOptions, Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromEvent } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS: DecoratorOptions = {
@@ -31,16 +30,14 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   options.styles = options.styles.toString();
 
-  if (!isNode) {
-    if (options.root && !componentRegistry.isRootNodeSet) {
-      componentRegistry.isRootNodeSet = true;
-      if (options.styles) {
-        createStyleTag(options.styles, document.head);
-        componentRegistry.globalStyles.replace(options.styles);
-      }
-    } else if (options.root && componentRegistry.isRootNodeSet) {
-      throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
+  if (options.root && !componentRegistry.isRootNodeSet) {
+    componentRegistry.isRootNodeSet = true;
+    if (options.styles) {
+      createStyleTag(options.styles, document.head);
+      componentRegistry.globalStyles.replace(options.styles);
     }
+  } else if (options.root && componentRegistry.isRootNodeSet) {
+    throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
   }
 
   window.customElements.define(
@@ -49,13 +46,13 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
       private klass: Record<string, any>;
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
-      eventSubscriptions: (() => void)[];
+      eventSubscriptions: (() => void)[] = [];
 
       constructor() {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
         if (!CSS_SHEET_NOT_SUPPORTED) {
-          const adoptedStyleSheets = isNode ? [] : componentRegistry.getComputedCss(options.styles);
+          const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles);
           this.shadow.adoptedStyleSheets = adoptedStyleSheets;
         }
         this.update = this.update.bind(this);
@@ -84,7 +81,7 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
         this.update();
         this.klass.mount && this.klass.mount();
         this.eventSubscriptions.push(
-          fromEvent(window, 'onLanguageChange', () => {
+          fromVanillaEvent(window, 'onLanguageChange', () => {
             this.update();
           })
         );

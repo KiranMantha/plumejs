@@ -36,7 +36,7 @@ let DomTransition = class DomTransition {
                 unSubscribeEvent = null;
             }
         };
-        unSubscribeEvent = (0, utils_1.fromEvent)(element, this.transition, () => {
+        unSubscribeEvent = (0, utils_1.fromVanillaEvent)(element, this.transition, () => {
             _fn();
         });
         setTimeout(_fn, duration);
