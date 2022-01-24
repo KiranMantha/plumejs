@@ -5,21 +5,22 @@ const Injector = new (class {
     constructor() {
         this.map = new Map();
     }
-    register(serviceName, instance) {
-        if (!this.map.get(serviceName)) {
-            this.map.set(serviceName, instance);
+    register(metadata, instance) {
+        if (!this.map.get(metadata.name)) {
+            this.map.set(metadata.name, instance);
         }
         else {
-            throw Error(`${serviceName} is already registered service.`);
+            throw Error(`${metadata.name} is already registered service.`);
         }
     }
-    getService(serviceName) {
-        const instance = this.map.get(serviceName);
+    getService(klass) {
+        const metadata = klass.prototype.__metadata__;
+        const instance = this.map.get(metadata.name);
         if (instance) {
             return instance;
         }
         else {
-            throw Error(`${serviceName} is not a registered provider.`);
+            throw Error(`${metadata.name} is not a registered provider.`);
         }
     }
     clear() {

@@ -1,7 +1,7 @@
 import { setDefaultLanguage, setTranslate } from 'vanilla-i18n';
 import { Injectable } from './decorators';
 
-@Injectable()
+@Injectable({ name: 'TranslationService' })
 export class TranslationService {
   private _defaultLanguage = '';
 

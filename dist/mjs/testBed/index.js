@@ -5,7 +5,7 @@ export class TestBed {
         return { componentInstance: appRoot.getInstance(), element: appRoot.shadowRoot };
     }
     static MockService(name, target) {
-        Injector.register(name, target);
+        Injector.register({ name }, target);
         return Injector.getService(name);
     }
     static RemoveComponent(fixture) {

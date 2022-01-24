@@ -1,15 +1,15 @@
 import { Injector } from './service_resolver';
 const instantiate = (klass, dependencies, rendererInstance) => {
-    const services = [];
-    for (let i = 0; i < dependencies.length; i++) {
-        if (dependencies[i] !== 'Renderer') {
-            services.push(Injector.getService(dependencies[i]));
+    if (dependencies.length) {
+        const services = [];
+        for (const dependency of dependencies) {
+            if (!dependency.__metadata__) {
+                services.push(Injector.getService(dependency));
+            }
+            else {
+                services.push(rendererInstance);
+            }
         }
-        else {
-            services.push(rendererInstance);
-        }
-    }
-    if (services.length > 0) {
         return new klass(...services);
     }
     else {

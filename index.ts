@@ -1,7 +1,8 @@
 export {
   Component,
   ComponentRef,
-  DecoratorOptions,
+  ComponentDecoratorOptions,
+  ServiceDecoratorOptions,
   DomTransition,
   html,
   IHooks,

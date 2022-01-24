@@ -43,7 +43,6 @@
   "homepage": "https://github.com/KiranMantha/plumejs#readme",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@abraham/reflection": "^0.8.0",
     "@types/node": "^16.11.9",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "vanilla-i18n": "^1.0.8"

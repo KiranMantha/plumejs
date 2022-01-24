@@ -1,3 +1,3 @@
-import { DecoratorOptions } from './types';
-declare const registerElement: (options: DecoratorOptions, target: any, dependencies: string[]) => void;
+import { ComponentDecoratorOptions } from './types';
+declare const registerElement: (options: ComponentDecoratorOptions, target: any) => void;
 export { registerElement };

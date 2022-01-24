@@ -17,6 +17,6 @@ let TranslationService = class TranslationService {
     }
 };
 TranslationService = __decorate([
-    Injectable()
+    Injectable({ name: 'TranslationService' })
 ], TranslationService);
 export { TranslationService };

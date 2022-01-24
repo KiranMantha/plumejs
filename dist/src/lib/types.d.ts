@@ -1,7 +1,15 @@
-interface DecoratorOptions {
+declare type ConstructorType<T extends {
+    new (...args: any[]): T;
+}> = T;
+interface ComponentDecoratorOptions {
     selector: string;
     styles?: string;
     root?: boolean;
+    deps?: ConstructorType<any>[];
+}
+interface ServiceDecoratorOptions {
+    name: string;
+    deps?: ConstructorType<any>[];
 }
 interface IHooks {
     readonly ObservedProperties?: any;
@@ -14,6 +22,9 @@ declare class Renderer {
     shadowRoot: ShadowRoot;
     update: () => void;
     emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+    static get __metadata__(): {
+        name: string;
+    };
 }
 interface ComponentRef<T> {
     setProps(propertiesObject: {
@@ -21,4 +32,4 @@ interface ComponentRef<T> {
     }): void;
     getInstance(): T;
 }
-export { DecoratorOptions, IHooks, Renderer, ComponentRef };
+export { ComponentDecoratorOptions, ServiceDecoratorOptions, IHooks, Renderer, ComponentRef, ConstructorType };

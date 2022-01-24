@@ -11,7 +11,7 @@ class TestBed {
         });
     }
     static MockService(name, target) {
-        service_resolver_1.Injector.register(name, target);
+        service_resolver_1.Injector.register({ name }, target);
         return service_resolver_1.Injector.getService(name);
     }
     static RemoveComponent(fixture) {

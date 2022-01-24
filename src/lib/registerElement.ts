@@ -1,14 +1,15 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentRef, DecoratorOptions, Renderer } from './types';
+import { ComponentRef, ComponentDecoratorOptions, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
 
 const COMPONENT_DATA_ATTR = 'data-compid';
-const DEFAULT_COMPONENT_OPTIONS: DecoratorOptions = {
+const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
   root: false,
-  styles: ''
+  styles: '',
+  deps: []
 };
 
 const createStyleTag = (content: string, where: Node = null) => {
@@ -25,7 +26,7 @@ const transformCSS = (styles: string, selector: string) => {
   return styles;
 };
 
-const registerElement = (options: DecoratorOptions, target, dependencies: string[]) => {
+const registerElement = (options: ComponentDecoratorOptions, target) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   options.styles = options.styles.toString();
@@ -76,7 +77,7 @@ const registerElement = (options: DecoratorOptions, target, dependencies: string
         rendererInstance.update = this.update;
         rendererInstance.shadowRoot = this.shadow;
         rendererInstance.emitEvent = this.emitEvent;
-        this.klass = instantiate(target, dependencies, rendererInstance);
+        this.klass = instantiate(target, options.deps, rendererInstance);
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();

@@ -7,7 +7,8 @@ const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
-    styles: ''
+    styles: '',
+    deps: []
 };
 const createStyleTag = (content, where = null) => {
     const tag = document.createElement('style');
@@ -21,7 +22,7 @@ const transformCSS = (styles, selector) => {
     }
     return styles;
 };
-const registerElement = (options, target, dependencies) => {
+const registerElement = (options, target) => {
     options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
     options.styles = options.styles.toString();
     if (options.root && !componentRegistry.isRootNodeSet) {
@@ -65,7 +66,7 @@ const registerElement = (options, target, dependencies) => {
             rendererInstance.update = this.update;
             rendererInstance.shadowRoot = this.shadow;
             rendererInstance.emitEvent = this.emitEvent;
-            this.klass = instantiate(target, dependencies, rendererInstance);
+            this.klass = instantiate(target, options.deps, rendererInstance);
             this.klass.beforeMount && this.klass.beforeMount();
             this.update();
             this.klass.mount && this.klass.mount();

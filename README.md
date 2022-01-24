@@ -48,6 +48,10 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
   [this.formFields, this.createChangeHandler, this.resetFormFields] = useFormFields({...});
 ```
 
+## Upcoming breaking change in next version
+
+Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`. 
+
 ## Breaking change in 3.0.0 version
 
 1. `Input` decorator is removed in favor of `setProps` for better type safe of props.
@@ -289,7 +293,8 @@ We can even share data between two components as below:
   import { Component, html, ComponentRef, Renderer, IHooks } from '@plumejs/core';
 
   @Component({
-    selector: 'person-list'
+    selector: 'person-list',
+    deps: [Renderer]
   })
   class PersonsList implements IHooks {
     data:Array<string> = [];
@@ -543,10 +548,18 @@ Creating service is as simple as creating a component
 ```typescript
   import { Injectable } from '@plumejs/core';
 
-  @Injectable()
-  export class PersonService {
-    getPersons() {
+  @Injectable({ name: 'SampleService' }) 
+  export class SampleService {
+    getData() {
       return fetch('persons-api').then(res => res.json());
+    }
+  }
+
+  @Injectable({ name: 'PersonService', deps: [SampleService] })
+  export class PersonService {
+    constructor(private sampleService: SampleService) {}
+    getPersons() {
+      return this.sampleService.getData();
     }
   }
 
@@ -554,7 +567,8 @@ Creating service is as simple as creating a component
   import { Component, IHooks } from '@plumejs/core';
 
   @Component({
-    selector: 'test-ele'
+    selector: 'test-ele',
+    deps: [PersonService]
   })
   class TestEle implementing IHooks {
     test:string;
@@ -577,7 +591,6 @@ Creating service is as simple as creating a component
 
 Services in PlumeJs are singleton
 
-Note: The constructor arguments are strictly typed and should not be native types or 'any'. Else they will return undefined.
 
 ## Setting up Internationalization
 

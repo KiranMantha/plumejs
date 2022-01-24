@@ -40,7 +40,7 @@ let DomTransition = class DomTransition {
     }
 };
 DomTransition = __decorate([
-    Injectable(),
+    Injectable({ name: 'DomTransition' }),
     __metadata("design:paramtypes", [])
 ], DomTransition);
 export { DomTransition };

@@ -22,6 +22,6 @@ let TranslationService = class TranslationService {
     }
 };
 TranslationService = (0, tslib_1.__decorate)([
-    (0, decorators_1.Injectable)()
+    (0, decorators_1.Injectable)({ name: 'TranslationService' })
 ], TranslationService);
 exports.TranslationService = TranslationService;
