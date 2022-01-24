@@ -20,13 +20,8 @@ const Component = (options) => (target) => {
 };
 const Injectable = (options) => (target) => {
     options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
-    Object.defineProperty(target.prototype, '__metadata__', {
-        get() {
-            return { name: options.name };
-        }
-    });
     const instance = instantiate(target, options.deps);
-    Injector.register(target.prototype.__metadata__, instance);
+    Injector.register(target, instance);
 };
 const InjectionToken = (name, target) => {
     Injector.register({ name }, target);

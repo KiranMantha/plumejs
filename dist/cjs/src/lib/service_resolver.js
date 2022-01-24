@@ -3,28 +3,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Injector = void 0;
 const Injector = new (class {
     constructor() {
-        this.map = new Map();
+        this.map = new WeakMap();
     }
-    register(metadata, instance) {
-        if (!this.map.get(metadata.name)) {
-            this.map.set(metadata.name, instance);
+    register(klass, instance) {
+        if (!this.map.get(klass)) {
+            this.map.set(klass, instance);
         }
         else {
-            throw Error(`${metadata.name} is already registered service.`);
+            throw Error(`${klass} is already registered service.`);
         }
     }
     getService(klass) {
-        const metadata = klass.prototype.__metadata__;
-        const instance = this.map.get(metadata.name);
+        const instance = this.map.get(klass);
         if (instance) {
             return instance;
         }
         else {
-            throw Error(`${metadata.name} is not a registered provider.`);
+            throw Error(`${klass} is not a registered provider.`);
         }
     }
     clear() {
-        this.map = new Map();
+        this.map = new WeakMap();
     }
 })();
 exports.Injector = Injector;

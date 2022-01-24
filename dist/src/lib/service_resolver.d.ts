@@ -1,9 +1,7 @@
 import { ConstructorType } from './types';
 interface IInjector {
     getService(klass: ConstructorType<any>): Record<string, any>;
-    register(metadata: {
-        name: string;
-    }, instance: Record<string, any>): void;
+    register(klass: any, instance: ConstructorType<any>): void;
     clear(): void;
 }
 declare const Injector: IInjector;

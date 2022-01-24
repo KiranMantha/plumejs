@@ -26,13 +26,8 @@ const Component = (options: ComponentDecoratorOptions) => (target) => {
 
 const Injectable = (options: ServiceDecoratorOptions) => (target) => {
   options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
-  Object.defineProperty(target.prototype, '__metadata__', {
-    get() {
-      return { name: options.name };
-    }
-  });
   const instance = instantiate(target, options.deps);
-  Injector.register(target.prototype.__metadata__, instance);
+  Injector.register(target, instance);
 };
 
 const InjectionToken = (name: string, target: Record<string, any>) => {
