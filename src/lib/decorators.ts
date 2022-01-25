@@ -6,7 +6,6 @@ import { Injector } from './service_resolver';
 import { ComponentDecoratorOptions, ServiceDecoratorOptions } from './types';
 
 const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
-  name: '',
   deps: []
 };
 
@@ -24,11 +23,13 @@ const Component = (options: ComponentDecoratorOptions) => (target) => {
   }
 };
 
-const Injectable = (options: ServiceDecoratorOptions) => (target) => {
-  options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
-  const instance = instantiate(target, options.deps);
-  Injector.register(target, instance);
-};
+const Injectable =
+  (options: ServiceDecoratorOptions = {}) =>
+  (target) => {
+    options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
+    const instance = instantiate(target, options.deps);
+    Injector.register(target, instance);
+  };
 
 const InjectionToken = (name: string, target: Record<string, any>) => {
   Injector.register({ name }, target);

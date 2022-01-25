@@ -1,7 +1,7 @@
 import { Injectable } from './decorators';
 import { fromVanillaEvent } from './utils';
 
-@Injectable({ name: 'DomTransition' })
+@Injectable()
 export class DomTransition {
   private transition = '';
 

@@ -2,7 +2,6 @@ import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
 const SERVICE_OPTIONS_DEFAULTS = {
-    name: '',
     deps: []
 };
 const Component = (options) => (target) => {
@@ -18,7 +17,7 @@ const Component = (options) => (target) => {
         registerElement(options, target);
     }
 };
-const Injectable = (options) => (target) => {
+const Injectable = (options = {}) => (target) => {
     options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
     const instance = instantiate(target, options.deps);
     Injector.register(target, instance);

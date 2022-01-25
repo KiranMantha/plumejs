@@ -43,7 +43,7 @@ let DomTransition = class DomTransition {
     }
 };
 DomTransition = (0, tslib_1.__decorate)([
-    (0, decorators_1.Injectable)({ name: 'DomTransition' }),
+    (0, decorators_1.Injectable)(),
     (0, tslib_1.__metadata)("design:paramtypes", [])
 ], DomTransition);
 exports.DomTransition = DomTransition;

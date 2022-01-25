@@ -5,7 +5,6 @@ const instance_1 = require("./instance");
 const registerElement_1 = require("./registerElement");
 const service_resolver_1 = require("./service_resolver");
 const SERVICE_OPTIONS_DEFAULTS = {
-    name: '',
     deps: []
 };
 const Component = (options) => (target) => {
@@ -22,7 +21,7 @@ const Component = (options) => (target) => {
     }
 };
 exports.Component = Component;
-const Injectable = (options) => (target) => {
+const Injectable = (options = {}) => (target) => {
     options = Object.assign(Object.assign({}, SERVICE_OPTIONS_DEFAULTS), options);
     const instance = (0, instance_1.instantiate)(target, options.deps);
     service_resolver_1.Injector.register(target, instance);

@@ -8,7 +8,6 @@ interface ComponentDecoratorOptions {
 }
 
 interface ServiceDecoratorOptions {
-  name: string;
   deps?: ConstructorType<any>[];
 }
 
