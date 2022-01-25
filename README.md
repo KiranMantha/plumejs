@@ -564,24 +564,24 @@ Creating service is as simple as creating a component
   }
 
   // in component
-  import { Component, IHooks } from '@plumejs/core';
+  import { Component, IHooks, Renderer } from '@plumejs/core';
 
   @Component({
     selector: 'test-ele',
-    deps: [PersonService]
+    deps: [PersonService, Renderer]
   })
   class TestEle implementing IHooks {
     test:string;
     data:Array<string> = [];
 
-    constructor(private personSrvc:PersonService){
+    constructor(private personSrvc:PersonService, private renderer: Renderer){
       this.text = 'hello world!'
     }
 
     mount(){
       this.personSrvc.getPersons().then(data => {
         this.data = data;
-        this.update(); // triggers change detection and update view
+        this.renderer.update(); // triggers change detection and update view
       })
     }
 
