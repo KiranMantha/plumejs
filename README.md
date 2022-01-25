@@ -548,14 +548,14 @@ Creating service is as simple as creating a component
 ```typescript
   import { Injectable } from '@plumejs/core';
 
-  @Injectable({ name: 'SampleService' }) 
+  @Injectable() 
   export class SampleService {
     getData() {
       return fetch('persons-api').then(res => res.json());
     }
   }
 
-  @Injectable({ name: 'PersonService', deps: [SampleService] })
+  @Injectable({ deps: [SampleService] })
   export class PersonService {
     constructor(private sampleService: SampleService) {}
     getPersons() {
