@@ -748,4 +748,12 @@ As an additional provision, `@plumejs/ui` npm module exposes a comprehensive set
 
 An example repo can be found [here](https://github.com/KiranMantha/plumejs-example-repo) for reference.
 
+If you don't want to use typescript but still want to use plumejs? no problem i got you  covered. You can refer [plumejs-esnext](https://github.com/KiranMantha/plumejs-esnext) and use any format from `dist` folder. 
+
+1. The `plumejs-es.js` weigh ~23kb
+2. The `plumejs-umd.js` weigh ~11.1kb
+3. The `plumejs-iife.js` weigh ~11kb
+
+Use any of the above dist files and consume them as `PlumeJs.Component`/ `PlumeJS.Service` etc..
+
 In the memory of my beloved cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)
