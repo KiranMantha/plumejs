@@ -71,6 +71,7 @@ const registerElement = (options, target) => {
             this.klass.beforeMount && this.klass.beforeMount();
             this.update();
             this.klass.mount && this.klass.mount();
+            this.emitEvent('bindprops', { setProps: this.setProps }, false);
             this.eventSubscriptions.push((0, utils_1.fromVanillaEvent)(window, 'onLanguageChange', () => {
                 this.update();
             }));

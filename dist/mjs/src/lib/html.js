@@ -51,7 +51,14 @@ const { html, render } = (() => {
                         case /^on+/.test(nodeValue): {
                             const eventName = nodeValue.slice(2).toLowerCase();
                             node.removeEventListener(eventName, values[i]);
-                            node.addEventListener(eventName, values[i]);
+                            if (eventName !== 'bindprops') {
+                                node.addEventListener(eventName, values[i]);
+                            }
+                            else {
+                                node.addEventListener(eventName, (event) => {
+                                    event.detail.setProps(values[i]());
+                                });
+                            }
                             break;
                         }
                         case /ref/.test(nodeValue): {

@@ -50,7 +50,7 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
 
 ## Upcoming breaking change in next version
 
-Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`. 
+Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`.
 
 ## Breaking change in 3.0.0 version
 
@@ -287,7 +287,12 @@ class PersonsList implements IHooks {
 
 ## Data Sharing
 
-We can even share data between two components as below:
+We can even share data between two components in two ways:
+
+1. read the rendered component as `ComponentRef` and call setprops. this is more helpful if component props depends on api.
+2. use `onbindprops` event on component. this is more helpful incase of loops.
+
+### 1. Passing data using ComponentRef
 
 ```typescript
   import { Component, html, ComponentRef, Renderer, IHooks } from '@plumejs/core';
@@ -348,6 +353,101 @@ We can even share data between two components as below:
     }
   }
 
+```
+
+### 2. Passing data using onbindprops
+
+```typescript
+import { Component, html, ComponentRef, Renderer, IHooks } from '@plumejs/core';
+
+  @Component({
+    selector: 'person-list',
+    deps: [Renderer]
+  })
+  class PersonsList implements IHooks {
+    data:Array<string> = [];
+    persondetails:{ name: string; } = { name: '' };
+    personDetailsRef: ComponentRef<PersonDetails>;
+
+    constructor(private renderer: Renderer){}
+
+    mount(){
+      fetch('persons-api').then(res => res.json()).then(data => {
+        this.data = data;
+        this.renderer.update(); // triggers change detection and update view
+      })
+    }
+
+    alertName(name:string){
+      this.persondetails.name = name;
+      this.personDetailsRef.setProps({ userdetails: this.persondetails }); // update the child component
+    }
+
+    render(){
+      return html`<div>
+        <ul>${
+          this.data.map((item) => {
+            return html`
+              <person-list-item onbindprops=${(): InputProps<PersonListItem> => ({ person: item })} 
+                onpersonclick=${(e) => {
+                  this.alertname(e.detail.person);
+                }}
+              >
+              </person-list-item>
+            `
+          })
+        }</ul>
+        <person-details ref=${(node) => { this.personDetailsRef = node; }}></person-details>
+      </div>`
+    }
+  }
+
+  @Component({
+    selector: 'person-list-item',
+    styles: `
+      :host {
+        display: list-item;
+      }
+    `,
+    deps: [Renderer]
+  })
+  class PersonListItem implements IHooks {
+    readonly ObservedProperties = <const>['person'];
+    person: string;
+
+    constructor(renderer: Renderer) {}
+
+    render() {
+      return html`
+        <div onclick=${() => {
+          this.renderer.emitEvent('personclick', {name: person})
+        }}>${this.person}</div>
+      `
+    }
+  }
+
+  @Component({
+    selector: 'person-details'
+  })
+  export class PersonDetails implements IHooks {
+    readonly ObservedProperties = <const>['userDetails'];
+    userDetails: { name: string; };
+
+    onPropsChanged(oldValue: any, newValue: any) {
+      console.log('oldvalue: ', oldValue);
+      console.log('newvalue: ', newValue);
+    }
+
+    render(){
+      if (this.userDetails && this.userDetails.name) {
+        return html`${
+          <div>${this.userdetails.name}</div>
+        }`
+      } else {
+        return html`<div></div>`
+      }
+    }
+  }
 ```
 
 `UseRef` is deprecated. instead follow:
@@ -548,7 +648,7 @@ Creating service is as simple as creating a component
 ```typescript
   import { Injectable } from '@plumejs/core';
 
-  @Injectable() 
+  @Injectable()
   export class SampleService {
     getData() {
       return fetch('persons-api').then(res => res.json());
@@ -590,7 +690,6 @@ Creating service is as simple as creating a component
 ```
 
 Services in PlumeJs are singleton
-
 
 ## Setting up Internationalization
 
@@ -748,7 +847,7 @@ As an additional provision, `@plumejs/ui` npm module exposes a comprehensive set
 
 An example repo can be found [here](https://github.com/KiranMantha/plumejs-example-repo) for reference.
 
-If you don't want to use typescript but still want to use plumejs? no problem it got you  covered. You can refer [plumejs-esnext](https://github.com/KiranMantha/plumejs-esnext) and use any of below formats from `dist` folder: 
+If you don't want to use typescript but still want to use plumejs? no problem it got you covered. You can refer [plumejs-esnext](https://github.com/KiranMantha/plumejs-esnext) and use any of below formats from `dist` folder:
 
 1. The `plumejs-es.js` weigh ~23kb
 2. The `plumejs-umd.js` weigh ~11.1kb

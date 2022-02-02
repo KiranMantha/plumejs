@@ -81,6 +81,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();
+        this.emitEvent('bindprops', { setProps: this.setProps }, false);
         this.eventSubscriptions.push(
           fromVanillaEvent(window, 'onLanguageChange', () => {
             this.update();

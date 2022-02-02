@@ -25,10 +25,11 @@ declare class Renderer {
         name: string;
     };
 }
+declare type InputProps<T> = {
+    [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+};
 interface ComponentRef<T> {
-    setProps(propertiesObject: {
-        [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
-    }): void;
+    setProps(propertiesObject: InputProps<T>): void;
     getInstance(): T;
 }
-export { ComponentDecoratorOptions, ServiceDecoratorOptions, IHooks, Renderer, ComponentRef, ConstructorType };
+export { ComponentDecoratorOptions, ServiceDecoratorOptions, IHooks, Renderer, ComponentRef, ConstructorType, InputProps };
