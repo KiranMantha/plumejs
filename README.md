@@ -49,16 +49,19 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
 ```
 
 ## Upcoming breaking change in next version
+---
 
 Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`.
 
 ## Breaking change in 3.0.0 version
+---
 
 1. `Input` decorator is removed in favor of `setProps` for better type safe of props.
 2. Inorder to update a component previously dev need to declare `update` property and call it as a function. But now dev needs to inject `Renderer` and call `renderer.update()` in the component. This helps linters to not throw error for usage of uninitialized variables and usage of `any`.
 3. `useRef` is deprecated. instead use `<input ref=${(node) => { this.ref = node; }}/>`. this prevents additional chaining like `this.ref.current.<do-some-operation>` instead user can do `this.ref.<do-some-operation>` which is more meaningful.
 
 ## Breaking change from 2.2.2 version
+---
 
 There is a breaking change in component declaration. Check below:
 
@@ -102,6 +105,7 @@ to your `jest.config.js`
 Here is a sneak peak into bultins:
 
 ## Creating Components
+---
 
 Creating component is a non-hectic task.
 
@@ -134,6 +138,7 @@ Note: Through out the entire application there will be only one root component. 
 For styling one can use css or scss formats. but scss is the most preferred one. By default all plumejs components are render as block elements. They internally have `:host { display: block; }` property.
 
 ## Lifecycle Hooks
+---
 
 `IHooks` interface provides `mount, unmount, onPropsChanged & ObservedProperties` lifecycle hooks.
 
@@ -286,11 +291,12 @@ class PersonsList implements IHooks {
 ```
 
 ## Data Sharing
+---
 
-We can even share data between two components in two ways:
+A prent component can pass data to children in two ways:
 
-1. read the rendered component as `ComponentRef` and call setprops. this is more helpful if component props depends on api.
-2. use `onbindprops` event on component. this is more helpful incase of loops.
+1. Read the rendered component as `ComponentRef` and call setprops. this is more helpful if component props depends on api.
+2. Use `onbindprops` event on component. this is more helpful incase of loops.
 
 ### 1. Passing data using ComponentRef
 
@@ -491,6 +497,7 @@ class SampleComp {
 ```
 
 ## Partial attributes
+---
 
 Partial attributes implementation like conditional css class modification is a breeze.
 Examples:
@@ -510,6 +517,7 @@ html`<div class="foo ${mayBar ? 'bar' : ''}">x</div>`; // this may work in brows
 For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
 
 ## Hooks
+---
 
 ### useFormFields
 
@@ -642,6 +650,7 @@ class SampleForm {
 ```
 
 ## Creating Services
+---
 
 Creating service is as simple as creating a component
 
@@ -692,6 +701,7 @@ Creating service is as simple as creating a component
 Services in PlumeJs are singleton
 
 ## Setting up Internationalization
+---
 
 Adding translations in PlumeJS is a breeze. Checkout below for implementation:
 
@@ -764,6 +774,7 @@ For normal text translations:
 ```
 
 ## Unit Tests
+---
 
 1. sample component unit test:
 
@@ -847,12 +858,16 @@ As an additional provision, `@plumejs/ui` npm module exposes a comprehensive set
 
 An example repo can be found [here](https://github.com/KiranMantha/plumejs-example-repo) for reference.
 
+# Usage in VanillaJS
+
 If you don't want to use typescript but still want to use plumejs? no problem it got you covered. You can refer [plumejs-esnext](https://github.com/KiranMantha/plumejs-esnext) and use any of below formats from `dist` folder:
 
-1. The `plumejs-es.js` weigh ~23kb
-2. The `plumejs-umd.js` weigh ~11.1kb
-3. The `plumejs-iife.js` weigh ~11kb
+```cmd
+plume.es.js   24.08 KiB / gzip: 6.39 KiB
+plume.umd.js   11.30 KiB / gzip: 4.63 KiB
+plume.iife.js   11.11 KiB / gzip: 4.56 KiB
+```
 
-And consume them as `PlumeJs.Component`/ `PlumeJS.Service` etc..
+The apis are same and consume them as `PlumeJs.Component` / `PlumeJS.Service` etc..(albeit without decorators)
 
-In the memory of my beloved cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)
+> In the memory of my beloved late cousin :heartbeat: :heartbeat: :heartbeat: [Pushpak Ganti](https://www.linkedin.com/in/pushpak-ganti-3919aa10/)
