@@ -358,7 +358,7 @@ We can even share data between two components in two ways:
 ### 2. Passing data using onbindprops
 
 ```typescript
-import { Component, html, ComponentRef, Renderer, IHooks } from '@plumejs/core';
+import { Component, html, ComponentRef, Renderer, IHooks, InputProps } from '@plumejs/core';
 
   @Component({
     selector: 'person-list',
