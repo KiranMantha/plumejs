@@ -33,7 +33,7 @@ Plumejs has yeoman generator which provides the entire scaffolding for your proj
 
 # Starter templates
 
-If you want to use either with webpack or vite specifically then please check 
+If you don't want to start with `yo plumejs` and need to use either with webpack or vite specifically then please check 
 
 1. [PlumeJS webpack template](https://github.com/KiranMantha/plumejs-webpack-template)
 2. [PlumeJS vite template](https://github.com/KiranMantha/plumejs-vite-template)
