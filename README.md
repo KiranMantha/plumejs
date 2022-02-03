@@ -4,6 +4,10 @@
 
 ![](./logo.svg)
 
+<p align="center">
+  <img src="./logo.jpg" style="background-color:white;padding:20px;"/>  
+</p>
+
 Demo [here](https://kiranmantha.github.io/plumejs-example-repo/). Check console logs for further details.
 
 Example [repo](https://github.com/KiranMantha/plumejs-example-repo/)
