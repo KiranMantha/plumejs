@@ -31,6 +31,13 @@ Plumejs has yeoman generator which provides the entire scaffolding for your proj
 3. After completing installation run `yo plumejs` in your destination folder. This will ask you about your project name and description and will install all your required dependencies.
 4. After all the dependencies were installed, you can run application using command `npm start`.
 
+# Starter templates
+
+If you want to use either with webpack or vite specifically then please check 
+
+1. [PlumeJS webpack template](https://github.com/KiranMantha/plumejs-webpack-template)
+2. [PlumeJS vite template](https://github.com/KiranMantha/plumejs-vite-template)
+
 # Whats new in 3.0.0 version
 
 Plumejs is now moving to scoped packages, deprecating older versions. In the process it shed 50% in size and dependencies compared to its previous versions. The `core aka @plumejs/core` scope is now only ~50KB and acts more as a library instead of a framework. So the devs can plugin `router aka @plumejs/router` scope for routing, `ui aka @plumejs/ui` scope for built in controls and more to come.
@@ -49,19 +56,16 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
 ```
 
 ## Upcoming breaking change in next version
----
 
 Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`.
 
 ## Breaking change in 3.0.0 version
----
 
 1. `Input` decorator is removed in favor of `setProps` for better type safe of props.
 2. Inorder to update a component previously dev need to declare `update` property and call it as a function. But now dev needs to inject `Renderer` and call `renderer.update()` in the component. This helps linters to not throw error for usage of uninitialized variables and usage of `any`.
 3. `useRef` is deprecated. instead use `<input ref=${(node) => { this.ref = node; }}/>`. this prevents additional chaining like `this.ref.current.<do-some-operation>` instead user can do `this.ref.<do-some-operation>` which is more meaningful.
 
 ## Breaking change from 2.2.2 version
----
 
 There is a breaking change in component declaration. Check below:
 
@@ -105,7 +109,6 @@ to your `jest.config.js`
 Here is a sneak peak into bultins:
 
 ## Creating Components
----
 
 Creating component is a non-hectic task.
 
@@ -138,7 +141,6 @@ Note: Through out the entire application there will be only one root component. 
 For styling one can use css or scss formats. but scss is the most preferred one. By default all plumejs components are render as block elements. They internally have `:host { display: block; }` property.
 
 ## Lifecycle Hooks
----
 
 `IHooks` interface provides `mount, unmount, onPropsChanged & ObservedProperties` lifecycle hooks.
 
@@ -291,7 +293,6 @@ class PersonsList implements IHooks {
 ```
 
 ## Data Sharing
----
 
 A prent component can pass data to children in two ways:
 
@@ -497,7 +498,6 @@ class SampleComp {
 ```
 
 ## Partial attributes
----
 
 Partial attributes implementation like conditional css class modification is a breeze.
 Examples:
@@ -517,7 +517,6 @@ html`<div class="foo ${mayBar ? 'bar' : ''}">x</div>`; // this may work in brows
 For more documentation check [here](https://viperhtml.js.org/hyperhtml/documentation/#essentials-7)
 
 ## Hooks
----
 
 ### useFormFields
 
@@ -650,7 +649,6 @@ class SampleForm {
 ```
 
 ## Creating Services
----
 
 Creating service is as simple as creating a component
 
@@ -701,7 +699,6 @@ Creating service is as simple as creating a component
 Services in PlumeJs are singleton
 
 ## Setting up Internationalization
----
 
 Adding translations in PlumeJS is a breeze. Checkout below for implementation:
 
@@ -774,7 +771,6 @@ For normal text translations:
 ```
 
 ## Unit Tests
----
 
 1. sample component unit test:
 
