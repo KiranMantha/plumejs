@@ -2,9 +2,7 @@
 
 [![npm](https://img.shields.io/npm/dw/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core) [![npm](https://img.shields.io/npm/v/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core)
 
-<p style="background-color: #fff; text-align: center;">
-  <img alt="PlumeJs logo" src="./logo.jpg">  
-</p>
+![](./logo.svg)
 
 Demo [here](https://kiranmantha.github.io/plumejs-example-repo/). Check console logs for further details.
 
