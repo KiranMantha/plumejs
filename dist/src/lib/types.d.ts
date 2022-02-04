@@ -11,7 +11,7 @@ interface ServiceDecoratorOptions {
     deps?: ConstructorType<any>[];
 }
 interface IHooks {
-    readonly ObservedProperties?: any;
+    ObservedProperties?: readonly string[];
     beforeMount?: () => void;
     mount?: () => void;
     unmount?: () => void;

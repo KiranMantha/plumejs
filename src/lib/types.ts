@@ -12,7 +12,7 @@ interface ServiceDecoratorOptions {
 }
 
 interface IHooks {
-  readonly ObservedProperties?;
+  ObservedProperties?: readonly string[];
   beforeMount?: () => void;
   mount?: () => void;
   unmount?: () => void;

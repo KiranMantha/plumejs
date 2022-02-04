@@ -696,6 +696,8 @@ Creating service is as simple as creating a component
 
 Services in PlumeJs are singleton
 
+> :warning: Always make sure that the order of deps and constructor arguments is same. The system won't check for types at compile time which will cause defects at runtime.
+
 ## Setting up Internationalization
 
 Adding translations in PlumeJS is a breeze. Checkout below for implementation:
