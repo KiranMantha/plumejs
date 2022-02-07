@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.wrapIntoObservable = exports.Renderer = exports.TranslationService = exports.Injector = exports.render = exports.html = exports.useFormFields = exports.DomTransition = exports.InjectionToken = exports.Injectable = exports.Component = void 0;
+exports.Renderer = exports.TranslationService = exports.Injector = exports.render = exports.html = exports.useFormFields = exports.useState = exports.DomTransition = exports.InjectionToken = exports.Injectable = exports.Component = void 0;
 var decorators_1 = require("./lib/decorators");
 Object.defineProperty(exports, "Component", { enumerable: true, get: function () { return decorators_1.Component; } });
 Object.defineProperty(exports, "Injectable", { enumerable: true, get: function () { return decorators_1.Injectable; } });
@@ -8,6 +8,7 @@ Object.defineProperty(exports, "InjectionToken", { enumerable: true, get: functi
 var domTransition_service_1 = require("./lib/domTransition.service");
 Object.defineProperty(exports, "DomTransition", { enumerable: true, get: function () { return domTransition_service_1.DomTransition; } });
 var hooks_1 = require("./lib/hooks");
+Object.defineProperty(exports, "useState", { enumerable: true, get: function () { return hooks_1.useState; } });
 Object.defineProperty(exports, "useFormFields", { enumerable: true, get: function () { return hooks_1.useFormFields; } });
 var html_1 = require("./lib/html");
 Object.defineProperty(exports, "html", { enumerable: true, get: function () { return html_1.html; } });
@@ -18,5 +19,3 @@ var translationService_1 = require("./lib/translationService");
 Object.defineProperty(exports, "TranslationService", { enumerable: true, get: function () { return translationService_1.TranslationService; } });
 var types_1 = require("./lib/types");
 Object.defineProperty(exports, "Renderer", { enumerable: true, get: function () { return types_1.Renderer; } });
-var utils_1 = require("./lib/utils");
-Object.defineProperty(exports, "wrapIntoObservable", { enumerable: true, get: function () { return utils_1.wrapIntoObservable; } });

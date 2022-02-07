@@ -1,16 +1,16 @@
 import { Injector } from './service_resolver';
-import { Renderer } from './types';
+import { Renderer, ConstructorType } from './types';
 
-const instantiate = (klass, dependencies: string[], rendererInstance?: Renderer): Record<string, any> => {
-  const services = [];
-  for (let i = 0; i < dependencies.length; i++) {
-    if (dependencies[i] !== 'Renderer') {
-      services.push(Injector.getService(dependencies[i]));
-    } else {
-      services.push(rendererInstance);
+const instantiate = (klass, dependencies: ConstructorType<any>[], rendererInstance?: Renderer): Record<string, any> => {
+  if (dependencies.length) {
+    const services = [];
+    for (const dependency of dependencies) {
+      if (!dependency.__metadata__) {
+        services.push(Injector.getService(dependency));
+      } else {
+        services.push(rendererInstance);
+      }
     }
-  }
-  if (services.length > 0) {
     return new klass(...services);
   } else {
     return new klass();

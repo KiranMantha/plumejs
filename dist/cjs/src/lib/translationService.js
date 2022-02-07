@@ -5,7 +5,9 @@ const tslib_1 = require("tslib");
 const vanilla_i18n_1 = require("vanilla-i18n");
 const decorators_1 = require("./decorators");
 let TranslationService = class TranslationService {
-    _defaultLanguage = '';
+    constructor() {
+        this._defaultLanguage = '';
+    }
     setTranslate(i18n, lang) {
         (0, vanilla_i18n_1.setTranslate)(i18n, lang);
     }

@@ -1,35 +1,38 @@
 //https://medium.com/@OlegVaraksin/minimalistic-dependency-injection-di-container-in-typescript-2ce93d1c303b
 //https://jsfiddle.net/r5umxasz/
-import { Reflection as Reflect } from '@abraham/reflection';
 import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
-import { DecoratorOptions } from './types';
+import { ComponentDecoratorOptions, ServiceDecoratorOptions } from './types';
 
-const getDeps = (target: any): Array<string> => {
-  const types: Array<any> = Reflect.getMetadata('design:paramtypes', target) || [];
-  return types.map((a: any) => a.name);
+const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
+  deps: []
 };
 
-const Component = (options: DecoratorOptions) => (target) => {
+const Component = (options: ComponentDecoratorOptions) => (target: new (...args: any[]) => any) => {
   if (options.selector.indexOf('-') <= 0) {
     throw new Error('You need at least 1 dash in the custom element name!');
   }
   if (!window.customElements.get(options.selector)) {
-    const deps = getDeps(target);
-    target.prototype.selector = options.selector;
-    registerElement(options, target, deps);
+    Object.defineProperty(target.prototype, 'selector', {
+      get() {
+        return options.selector;
+      }
+    });
+    registerElement(options, target);
   }
 };
 
-const Injectable = () => (target) => {
-  const deps = getDeps(target);
-  const instance = instantiate(target, deps);
-  Injector.register(target.name, instance);
-};
+const Injectable =
+  (options: ServiceDecoratorOptions = {}) =>
+  (target: new (...args: any[]) => any) => {
+    options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
+    const instance = instantiate(target, options.deps);
+    Injector.register(target, instance);
+  };
 
 const InjectionToken = (name: string, target: Record<string, any>) => {
-  Injector.register(name, target);
+  Injector.register({ name }, target);
 };
 
 export { Component, Injectable, InjectionToken };

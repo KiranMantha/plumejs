@@ -1,7 +1,8 @@
 export {
   Component,
   ComponentRef,
-  DecoratorOptions,
+  ComponentDecoratorOptions,
+  ServiceDecoratorOptions,
   DomTransition,
   html,
   IHooks,
@@ -11,7 +12,6 @@ export {
   render,
   Renderer,
   TranslationService,
-  useFormFields,
-  wrapIntoObservable
+  useFormFields
 } from './src/plume';
 export { TestBed, Fixture } from './testBed';

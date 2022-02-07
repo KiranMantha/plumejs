@@ -1,31 +1,33 @@
+import { ConstructorType } from './types';
+
 interface IInjector {
-  getService(serviceName: string): Record<string, any>;
-  register(name: string, instance: Record<string, any>): void;
+  getService(klass: ConstructorType<any>): Record<string, any>;
+  register(klass: any, instance: ConstructorType<any>): void;
   clear(): void;
 }
 
 const Injector: IInjector = new (class implements IInjector {
-  #map = new Map();
+  private map = new WeakMap<any, any>();
 
-  public register<T>(serviceName: string, instance: Record<string, T>) {
-    if (!this.#map.get(serviceName)) {
-      this.#map.set(serviceName, instance);
+  public register<T>(klass: T, instance: T) {
+    if (!this.map.get(klass)) {
+      this.map.set(klass, instance);
     } else {
-      throw Error(`${serviceName} is already registered service.`);
+      throw Error(`${klass} is already registered service.`);
     }
   }
 
-  public getService<T>(serviceName: string): T {
-    const instance = this.#map.get(serviceName);
+  public getService<T>(klass: T): T {
+    const instance: T = this.map.get(klass);
     if (instance) {
       return instance;
     } else {
-      throw Error(`${serviceName} is not a registered provider.`);
+      throw Error(`${klass} is not a registered provider.`);
     }
   }
 
   public clear(): void {
-    this.#map = new Map();
+    this.map = new WeakMap();
   }
 })();
 

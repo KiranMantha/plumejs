@@ -1,5 +1,5 @@
-import { fromEvent, Subscription } from 'rxjs';
 import { Injectable } from './decorators';
+import { fromVanillaEvent } from './utils';
 
 @Injectable()
 export class DomTransition {
@@ -29,16 +29,16 @@ export class DomTransition {
 
   onTransitionEnd(element: HTMLElement, cb: () => void, duration: number) {
     let called = false;
-    let eventSubscription: Subscription = null;
+    let unSubscribeEvent = null;
     const _fn = () => {
       if (!called) {
         called = true;
         cb && cb();
-        eventSubscription.unsubscribe();
-        eventSubscription = null;
+        unSubscribeEvent();
+        unSubscribeEvent = null;
       }
     };
-    eventSubscription = fromEvent(element, this.transition).subscribe(() => {
+    unSubscribeEvent = fromVanillaEvent(element, this.transition, () => {
       _fn();
     });
     setTimeout(_fn, duration);

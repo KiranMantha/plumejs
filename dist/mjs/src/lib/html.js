@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.render = exports.html = void 0;
 const { html, render } = (() => {
     const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
     const isNodeRegex = /<[a-z][^>]+$/i;
@@ -22,6 +19,20 @@ const { html, render } = (() => {
         str = safe_tags_replace(str);
         return JSON.parse(str);
     };
+    const _setValuesForDropdown = (node, value) => {
+        const options = node.options, values = Array.isArray(value) ? value : [value];
+        let optionSet, option, i = options.length;
+        while (i--) {
+            option = options[i];
+            const value = option.getAttribute('value') ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
+            if ((option.selected = values.indexOf(value) > -1)) {
+                optionSet = true;
+            }
+        }
+        if (!optionSet) {
+            node.selectedIndex = -1;
+        }
+    };
     const _createFragment = (markup) => {
         const temp = document.createElement('template');
         temp.innerHTML = markup;
@@ -31,6 +42,7 @@ const { html, render } = (() => {
         const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
         let node = elementsWalker.nextNode();
         while (node) {
+            node.eventSubscriptions = [];
             if (node.hasAttributes()) {
                 const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
                 for (const { nodeName, nodeValue } of customAttributes) {
@@ -39,8 +51,14 @@ const { html, render } = (() => {
                         case /^on+/.test(nodeValue): {
                             const eventName = nodeValue.slice(2).toLowerCase();
                             node.removeEventListener(eventName, values[i]);
-                            node.addEventListener(eventName, values[i]);
-                            (node.eventListenersMap || (node.eventListenersMap = {}))[eventName] = values[i];
+                            if (eventName !== 'bindprops') {
+                                node.addEventListener(eventName, values[i]);
+                            }
+                            else {
+                                node.addEventListener(eventName, (event) => {
+                                    event.detail.setProps(values[i]());
+                                });
+                            }
                             break;
                         }
                         case /ref/.test(nodeValue): {
@@ -65,7 +83,12 @@ const { html, render } = (() => {
                             break;
                         }
                         case /value/.test(nodeValue): {
-                            node.value = _sanitize(values[i]);
+                            if (node.nodeName.toLowerCase() === 'select') {
+                                _setValuesForDropdown(node, values[i]);
+                            }
+                            else {
+                                node.value = _sanitize(values[i]);
+                            }
                             break;
                         }
                         case /disabled/.test(nodeValue):
@@ -133,5 +156,4 @@ const { html, render } = (() => {
     };
     return { html, render };
 })();
-exports.html = html;
-exports.render = render;
+export { html, render };

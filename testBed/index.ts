@@ -12,7 +12,7 @@ export class TestBed {
   }
 
   static MockService(name: string, target: any) {
-    Injector.register(name, target);
+    Injector.register({ name }, target);
     return Injector.getService(name);
   }
 
