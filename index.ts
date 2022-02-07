@@ -12,6 +12,7 @@ export {
   render,
   Renderer,
   TranslationService,
-  useFormFields
+  useFormFields,
+  InputProps
 } from './src/plume';
 export { TestBed, Fixture } from './testBed';
