@@ -24,7 +24,7 @@ Plumejs has yeoman generator which provides the entire scaffolding for your proj
 
 1. Require Nodejs version 11.0.0 or above
 2. Run `npm install -g yo generator-plumejs`
-3. After completing installation run `yo plumejs` in your destination folder. This will ask you about your project name and description and will install all your required dependencies.
+3. After completing installation run `yo plumejs` in your destination folder. This will ask you about your project name, description and type of bundler for your project. After that it will install all the required dependencies.
 4. After all the dependencies were installed, you can run application using command `npm start`.
 
 # Starter templates
