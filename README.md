@@ -698,21 +698,22 @@ Services in PlumeJs are singleton
 
 ## Setting up Internationalization
 
-Setting up traslations is chuncked out of main build to reduce overhead. But this doesn't mean that setting up translations will end up in loops. Follow the below steps to easily set it up.
+In previous versions translations are baked into the core module but from this version onwards it is removed from core build to reduce overhead as it is an optional feature. But this doesn't mean that setting up translations will end up in loops. Follow the below steps to easily set it up.
 
 1. add `i18n` folder to your src folder (you can name it as per your standards)
 
 ```
 src
  |- i18n
+      |-en.ts
+      |-fr.ts
 
 ```
 
 2. add translation files to i18n folder
 
 ```typescript
-in i18n/en.ts
-
+//en.ts
 const locale_en = {
   'user': {
     'name': 'My name is {name}'
@@ -720,8 +721,7 @@ const locale_en = {
 }
 export default locale_en;
 
-in i18n/fr.ts
-
+//fr.ts
 const locale_fr = {
   'user': {
     'name': 'je m`appelle {name}'
@@ -730,7 +730,7 @@ const locale_fr = {
 export default locale_fr;
 ```
 
-3. install `vanilla-i18n` package using `npm i -S vanilla-i18n`.
+3. install [vanilla-i18n](https://www.npmjs.com/package/vanilla-i18n) package using `npm i -S vanilla-i18n`.
 
 4. this package did not contain types. for that:
 
@@ -808,18 +808,19 @@ class AppComponent {
 }
 ```
 
-7. now translations are setup for english and french languages.
+7. now translations setup is done for english and french languages.
 
 8. To pass html from translations, no need to follow special ways:
 
 ```html
-<div>${{ html: 'html-translation'.translate() }}</div>
 // previously
-<div>${ 'html-translation'.translate() }</div>
+<div>${{ html: 'html-translation'.translate() }}</div>
+
 // with new version just like normal translation
+<div>${ 'html-translation'.translate() }</div>
 ```
 
-The above object inside template literal contains 'html' key which properly allow compiler to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
+> :warning: using translations via innerHTML will not work. `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
 
 For normal text translations:
 
