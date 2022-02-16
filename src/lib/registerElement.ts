@@ -56,9 +56,6 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
           const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles);
           this.shadow.adoptedStyleSheets = adoptedStyleSheets;
         }
-        this.update = this.update.bind(this);
-        this.emitEvent = this.emitEvent.bind(this);
-        this.setProps = this.setProps.bind(this);
         this.getInstance = this.getInstance.bind(this);
       }
 
@@ -74,14 +71,26 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       connectedCallback() {
         this.emulateComponent();
         const rendererInstance = new Renderer();
-        rendererInstance.update = this.update;
+        rendererInstance.update = () => {
+          this.update();
+        };
         rendererInstance.shadowRoot = this.shadow;
-        rendererInstance.emitEvent = this.emitEvent;
+        rendererInstance.emitEvent = (eventName: string, data: any) => {
+          this.emitEvent(eventName, data);
+        };
         this.klass = instantiate(target, options.deps, rendererInstance);
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();
-        this.emitEvent('bindprops', { setProps: this.setProps }, false);
+        this.emitEvent(
+          'bindprops',
+          {
+            setProps: (propsObj: Record<string, any>) => {
+              this.setProps(propsObj);
+            }
+          },
+          false
+        );
         this.eventSubscriptions.push(
           fromVanillaEvent(window, 'onLanguageChange', () => {
             this.update();
@@ -90,7 +99,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       }
 
       update() {
-        render(this.shadow, this.klass.render.bind(this.klass)());
+        render(this.shadow, (() => this.klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
           options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
           componentRegistry.globalStyleTag &&
