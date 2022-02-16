@@ -34,7 +34,17 @@ If you don't want to start with `yo plumejs` and need to use either with webpack
 1. [PlumeJS webpack template](https://github.com/KiranMantha/plumejs-webpack-template)
 2. [PlumeJS vite template](https://github.com/KiranMantha/plumejs-vite-template)
 
-# Whats new in 3.0.0 version
+
+# Upcoming breaking change in next version
+
+Translations which are built-in core module is removed. Instead devs are encouraged to check docs on how to setup translations manually. The intention behind this change is to make PlumeJS almost dependency free (few polyfills are needed here and then for unsupported features). Hope you welcome this change.
+
+# What's new 
+
+## in 3.1.1 version
+Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack.
+
+## in 3.0.0 version
 
 Plumejs is now moving to scoped packages, deprecating older versions. In the process it shed 50% in size and dependencies compared to its previous versions. The `core aka @plumejs/core` scope is now only ~50KB and acts more as a library instead of a framework. So the devs can plugin `router aka @plumejs/router` scope for routing, `ui aka @plumejs/ui` scope for built in controls and more to come.
 
@@ -51,17 +61,15 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
   [this.formFields, this.createChangeHandler, this.resetFormFields] = useFormFields({...});
 ```
 
-## Upcoming breaking change in next version
+# Breaking Change
 
-Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`.
-
-## Breaking change in 3.0.0 version
+## in 3.0.0 version
 
 1. `Input` decorator is removed in favor of `setProps` for better type safe of props.
 2. Inorder to update a component previously dev need to declare `update` property and call it as a function. But now dev needs to inject `Renderer` and call `renderer.update()` in the component. This helps linters to not throw error for usage of uninitialized variables and usage of `any`.
 3. `useRef` is deprecated. instead use `<input ref=${(node) => { this.ref = node; }}/>`. this prevents additional chaining like `this.ref.current.<do-some-operation>` instead user can do `this.ref.<do-some-operation>` which is more meaningful.
 
-## Breaking change from 2.2.2 version
+## from 2.2.2 version
 
 There is a breaking change in component declaration. Check below:
 
