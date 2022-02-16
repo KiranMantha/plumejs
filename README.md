@@ -698,7 +698,7 @@ Services in PlumeJs are singleton
 
 ## Setting up Internationalization
 
-Adding translations in PlumeJS is a breeze. Checkout below for implementation:
+Setting up traslations is chuncked out of main build to reduce overhead. But this doesn't mean that setting up translations will end up in loops. Follow the below steps to easily set it up.
 
 1. add `i18n` folder to your src folder (you can name it as per your standards)
 
@@ -730,10 +730,69 @@ const locale_fr = {
 export default locale_fr;
 ```
 
-3. import translation files in root component and pass them to translation service
+3. install `vanilla-i18n` package using `npm i -S vanilla-i18n`.
+
+4. this package did not contain types. for that:
+
+  * create `vanilla-i18n` folder to `@types` folder located at project root. 
+  ```
+  <rootDir>
+    |-@types
+    |   |-vanilla-i18n
+    |          |-index.d.ts 
+    |-src
+  ```
+  * create `index.d.ts` file to above folder and add below snippet:
+
+    ```typescript
+    /// <reference types="node" />
+    declare module 'vanilla-i18n' {
+      export function setDefaultLanguage(language: string): void;
+      export function setTranslate(obj: any, language: string): void;
+    }
+    ```
+
+5. after above setup, add the below service file to your project
+```
+<rootDir>
+  |-src
+     |-index.ts
+     |-translationService.ts
+```
 
 ```typescript
-import { Component, TranslationService } from '@plumejs/core';
+//translationService.ts
+import { setDefaultLanguage, setTranslate } from 'vanilla-i18n';
+import { Injectable } from './decorators';
+
+@Injectable()
+export class TranslationService {
+  private _defaultLanguage = '';
+
+  setTranslate(i18n: Record<string, any>, lang: string) {
+    setTranslate(i18n, lang);
+  }
+
+  setDefaultLanguage(language: string) {
+    this._defaultLanguage = language;
+    setDefaultLanguage(language);
+    const event = new CustomEvent('onLanguageChange');
+    window.dispatchEvent(event);
+  }
+
+  getCurrentLanguage() {
+    return this._defaultLanguage;
+  }
+}
+
+```
+
+6. import translation files in root component and pass them to translation service
+
+```typescript
+//index.ts or your root component file
+import { Component } from '@plumejs/core';
+import { TranslationService } from './translationService.ts'
 import locale_en from '<folder-i18n>/en';
 import locale_fr from '<folder-i18n>/fr';
 
@@ -749,9 +808,9 @@ class AppComponent {
 }
 ```
 
-4. now translations are setup for english and french languages.
+7. now translations are setup for english and french languages.
 
-5. To pass html from translations, no need to follow special ways:
+8. To pass html from translations, no need to follow special ways:
 
 ```html
 <div>${{ html: 'html-translation'.translate() }}</div>
