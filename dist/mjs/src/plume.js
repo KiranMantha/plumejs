@@ -5,3 +5,4 @@ export { useState, useFormFields } from './lib/hooks';
 export { html, render } from './lib/html';
 export { Injector } from './lib/service_resolver';
 export { Renderer } from './lib/types';
+export { fromVanillaEvent } from './lib/utils';

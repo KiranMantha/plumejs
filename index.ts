@@ -12,6 +12,7 @@ export {
   render,
   Renderer,
   useFormFields,
-  InputProps
+  InputProps,
+  fromVanillaEvent
 } from './src/plume';
 export { TestBed, Fixture } from './testBed';

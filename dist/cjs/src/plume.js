@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Renderer = exports.Injector = exports.render = exports.html = exports.useFormFields = exports.useState = exports.DomTransition = exports.InjectionToken = exports.Injectable = exports.Component = void 0;
+exports.fromVanillaEvent = exports.Renderer = exports.Injector = exports.render = exports.html = exports.useFormFields = exports.useState = exports.DomTransition = exports.InjectionToken = exports.Injectable = exports.Component = void 0;
 var decorators_1 = require("./lib/decorators");
 Object.defineProperty(exports, "Component", { enumerable: true, get: function () { return decorators_1.Component; } });
 Object.defineProperty(exports, "Injectable", { enumerable: true, get: function () { return decorators_1.Injectable; } });
@@ -17,3 +17,5 @@ var service_resolver_1 = require("./lib/service_resolver");
 Object.defineProperty(exports, "Injector", { enumerable: true, get: function () { return service_resolver_1.Injector; } });
 var types_1 = require("./lib/types");
 Object.defineProperty(exports, "Renderer", { enumerable: true, get: function () { return types_1.Renderer; } });
+var utils_1 = require("./lib/utils");
+Object.defineProperty(exports, "fromVanillaEvent", { enumerable: true, get: function () { return utils_1.fromVanillaEvent; } });

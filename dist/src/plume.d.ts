@@ -4,3 +4,4 @@ export { useState, useFormFields } from './lib/hooks';
 export { html, render } from './lib/html';
 export { Injector } from './lib/service_resolver';
 export { ComponentRef, ComponentDecoratorOptions, ServiceDecoratorOptions, IHooks, Renderer, InputProps } from './lib/types';
+export { fromVanillaEvent } from './lib/utils';

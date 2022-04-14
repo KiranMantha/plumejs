@@ -15,3 +15,4 @@ export {
   Renderer,
   InputProps
 } from './lib/types';
+export { fromVanillaEvent } from './lib/utils';
