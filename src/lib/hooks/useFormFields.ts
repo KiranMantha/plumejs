@@ -123,4 +123,4 @@ const useFormFields = <T extends Record<string, any>>(
   return [form, createChangeHandler, resetFormFields];
 };
 
-export { useFormFields };
+export { Form, useFormFields };

@@ -15,4 +15,4 @@ declare class Form {
     reset(): void;
 }
 declare const useFormFields: <T extends Record<string, any>>(initialValues: T) => [Form, (key: keyof T) => (e: Event) => void, () => void];
-export { useFormFields };
+export { Form, useFormFields };

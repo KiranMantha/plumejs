@@ -106,4 +106,4 @@ const useFormFields = (initialValues) => {
     };
     return [form, createChangeHandler, resetFormFields];
 };
-export { useFormFields };
+export { Form, useFormFields };

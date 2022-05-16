@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useFormFields = void 0;
+exports.useFormFields = exports.Form = void 0;
 const _getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -84,6 +84,7 @@ class Form {
         this._errors.clear();
     }
 }
+exports.Form = Form;
 const useFormFields = (initialValues) => {
     const controls = {};
     for (const [key, value] of Object.entries(initialValues)) {
