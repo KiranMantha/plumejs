@@ -1,6 +1,6 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fromVanillaEvent = exports.Renderer = exports.Injector = exports.render = exports.html = exports.useFormFields = exports.useState = exports.DomTransition = exports.InjectionToken = exports.Injectable = exports.Component = void 0;
+exports.fromVanillaEvent = exports.Renderer = exports.Injector = exports.render = exports.html = exports.Validators = exports.useFormFields = exports.useState = exports.DomTransition = exports.InjectionToken = exports.Injectable = exports.Component = void 0;
 var decorators_1 = require("./lib/decorators");
 Object.defineProperty(exports, "Component", { enumerable: true, get: function () { return decorators_1.Component; } });
 Object.defineProperty(exports, "Injectable", { enumerable: true, get: function () { return decorators_1.Injectable; } });
@@ -10,6 +10,7 @@ Object.defineProperty(exports, "DomTransition", { enumerable: true, get: functio
 var hooks_1 = require("./lib/hooks");
 Object.defineProperty(exports, "useState", { enumerable: true, get: function () { return hooks_1.useState; } });
 Object.defineProperty(exports, "useFormFields", { enumerable: true, get: function () { return hooks_1.useFormFields; } });
+Object.defineProperty(exports, "Validators", { enumerable: true, get: function () { return hooks_1.Validators; } });
 var html_1 = require("./lib/html");
 Object.defineProperty(exports, "html", { enumerable: true, get: function () { return html_1.html; } });
 Object.defineProperty(exports, "render", { enumerable: true, get: function () { return html_1.render; } });

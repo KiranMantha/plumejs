@@ -11,7 +11,9 @@ export {
   InjectionToken,
   render,
   Renderer,
+  useState,
   useFormFields,
+  Validators,
   InputProps,
   fromVanillaEvent
 } from './src/plume';

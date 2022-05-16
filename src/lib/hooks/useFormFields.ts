@@ -1,4 +1,8 @@
-import { useState } from './useState';
+interface Control {
+  value: string | number | boolean | Array<string | number>;
+  errors: Record<string, boolean | any>;
+  validators: Array<(value: string | number | boolean | Array<string | number>) => Record<string, any> | null>;
+}
 
 const _getTargetValue = (target: HTMLElement) => {
   let targetValue;
@@ -34,23 +38,89 @@ const _getTargetValue = (target: HTMLElement) => {
   return targetValue;
 };
 
+class Form {
+  private _controls: Record<string, Control>;
+  private _errors = new Map<string, Record<string, any>>();
+
+  constructor(controls: Record<string, Control>) {
+    this._controls = controls;
+  }
+
+  get errors() {
+    return this._errors;
+  }
+
+  get valid() {
+    return this._errors.size ? false : true;
+  }
+
+  get value() {
+    const values = {};
+    for (const [key, value] of Object.entries(this._controls)) {
+      values[key] = value.value;
+    }
+    return values;
+  }
+
+  get(controlName) {
+    return this._controls[controlName];
+  }
+
+  checkValidity() {
+    this._errors.clear();
+    for (const key in this._controls) {
+      const value = this._controls[key].value;
+      const validators = this._controls[key].validators;
+      this._controls[key].errors = null;
+      for (const validator of validators) {
+        const validity = validator(value);
+        if (validity !== null) {
+          if (this._errors.has(key)) {
+            this._errors.set(key, { ...this._errors.get(key), ...validity });
+            this._controls[key].errors = {
+              ...this._controls[key].errors,
+              ...validity
+            };
+          } else {
+            this._errors.set(key, validity);
+            this._controls[key].errors = validity;
+          }
+        }
+      }
+    }
+  }
+
+  reset() {
+    for (const key in this._controls) {
+      this._controls[key].value = '';
+    }
+    this._errors.clear();
+  }
+}
+
 const useFormFields = <T extends Record<string, any>>(
   initialValues: T
-): [T, (key: keyof T) => (e: Event) => void, () => void] => {
-  const clone: Record<string, any> = { ...initialValues };
-  const [formFields, setFormFields] = useState(initialValues);
-  const createChangeHandler = (key: keyof T) => (e: Event) => {
-    const target: any = e.target;
-    const value = _getTargetValue(target);
-    setFormFields(() => {
-      formFields[key] = value;
-      return formFields;
-    });
+): [Form, (key: keyof T) => (e: Event) => void, () => void] => {
+  const controls: Record<string, Control> = {};
+  for (const [key, value] of Object.entries(initialValues)) {
+    const val = Array.isArray(value) ? value : [value];
+    controls[key] = {
+      value: val.shift(),
+      validators: val,
+      errors: null
+    };
+  }
+  const form = new Form(controls);
+  const createChangeHandler = (key: keyof T) => (e: any) => {
+    const value = _getTargetValue(e.target);
+    form.get(key).value = value;
+    form.checkValidity();
   };
   const resetFormFields = () => {
-    Object.assign(formFields, clone);
+    form.reset();
   };
-  return [formFields, createChangeHandler, resetFormFields];
+
+  return [form, createChangeHandler, resetFormFields];
 };
 
 export { useFormFields };

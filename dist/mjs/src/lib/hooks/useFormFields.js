@@ -1,4 +1,3 @@
-import { useState } from './useState';
 const _getTargetValue = (target) => {
     let targetValue;
     switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -33,20 +32,78 @@ const _getTargetValue = (target) => {
     }
     return targetValue;
 };
+class Form {
+    _controls;
+    _errors = new Map();
+    constructor(controls) {
+        this._controls = controls;
+    }
+    get errors() {
+        return this._errors;
+    }
+    get valid() {
+        return this._errors.size ? false : true;
+    }
+    get value() {
+        const values = {};
+        for (const [key, value] of Object.entries(this._controls)) {
+            values[key] = value.value;
+        }
+        return values;
+    }
+    get(controlName) {
+        return this._controls[controlName];
+    }
+    checkValidity() {
+        this._errors.clear();
+        for (const key in this._controls) {
+            const value = this._controls[key].value;
+            const validators = this._controls[key].validators;
+            this._controls[key].errors = null;
+            for (const validator of validators) {
+                const validity = validator(value);
+                if (validity !== null) {
+                    if (this._errors.has(key)) {
+                        this._errors.set(key, { ...this._errors.get(key), ...validity });
+                        this._controls[key].errors = {
+                            ...this._controls[key].errors,
+                            ...validity
+                        };
+                    }
+                    else {
+                        this._errors.set(key, validity);
+                        this._controls[key].errors = validity;
+                    }
+                }
+            }
+        }
+    }
+    reset() {
+        for (const key in this._controls) {
+            this._controls[key].value = '';
+        }
+        this._errors.clear();
+    }
+}
 const useFormFields = (initialValues) => {
-    const clone = { ...initialValues };
-    const [formFields, setFormFields] = useState(initialValues);
+    const controls = {};
+    for (const [key, value] of Object.entries(initialValues)) {
+        const val = Array.isArray(value) ? value : [value];
+        controls[key] = {
+            value: val.shift(),
+            validators: val,
+            errors: null
+        };
+    }
+    const form = new Form(controls);
     const createChangeHandler = (key) => (e) => {
-        const target = e.target;
-        const value = _getTargetValue(target);
-        setFormFields(() => {
-            formFields[key] = value;
-            return formFields;
-        });
+        const value = _getTargetValue(e.target);
+        form.get(key).value = value;
+        form.checkValidity();
     };
     const resetFormFields = () => {
-        Object.assign(formFields, clone);
+        form.reset();
     };
-    return [formFields, createChangeHandler, resetFormFields];
+    return [form, createChangeHandler, resetFormFields];
 };
 export { useFormFields };
