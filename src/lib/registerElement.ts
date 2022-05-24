@@ -9,7 +9,8 @@ const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
   root: false,
   styles: '',
-  deps: []
+  deps: [],
+  standalone: false
 };
 
 const createStyleTag = (content: string, where: Node = null) => {
@@ -53,7 +54,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
         if (!CSS_SHEET_NOT_SUPPORTED) {
-          const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles);
+          const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
           this.shadow.adoptedStyleSheets = adoptedStyleSheets;
         }
         this.getInstance = this.getInstance.bind(this);

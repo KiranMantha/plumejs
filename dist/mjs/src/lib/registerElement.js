@@ -44,7 +44,7 @@ const registerElement = (options, target) => {
             super();
             this.shadow = this.attachShadow({ mode: 'open' });
             if (!CSS_SHEET_NOT_SUPPORTED) {
-                const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles);
+                const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
                 this.shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
             this.getInstance = this.getInstance.bind(this);

@@ -45,7 +45,7 @@ const registerElement = (options, target) => {
             this.eventSubscriptions = [];
             this.shadow = this.attachShadow({ mode: 'open' });
             if (!utils_1.CSS_SHEET_NOT_SUPPORTED) {
-                const adoptedStyleSheets = componentRegistry_1.componentRegistry.getComputedCss(options.styles);
+                const adoptedStyleSheets = componentRegistry_1.componentRegistry.getComputedCss(options.styles, options.standalone);
                 this.shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
             this.getInstance = this.getInstance.bind(this);

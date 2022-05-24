@@ -13,6 +13,7 @@ export {
   Renderer,
   useState,
   useFormFields,
+  Form,
   Validators,
   InputProps,
   fromVanillaEvent

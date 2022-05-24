@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TestBed = exports.fromVanillaEvent = exports.Validators = exports.useFormFields = exports.useState = exports.Renderer = exports.render = exports.InjectionToken = exports.Injector = exports.Injectable = exports.html = exports.DomTransition = exports.Component = void 0;
+exports.TestBed = exports.fromVanillaEvent = exports.Validators = exports.Form = exports.useFormFields = exports.useState = exports.Renderer = exports.render = exports.InjectionToken = exports.Injector = exports.Injectable = exports.html = exports.DomTransition = exports.Component = void 0;
 var plume_1 = require("./src/plume");
 Object.defineProperty(exports, "Component", { enumerable: true, get: function () { return plume_1.Component; } });
 Object.defineProperty(exports, "DomTransition", { enumerable: true, get: function () { return plume_1.DomTransition; } });
@@ -12,6 +12,7 @@ Object.defineProperty(exports, "render", { enumerable: true, get: function () { 
 Object.defineProperty(exports, "Renderer", { enumerable: true, get: function () { return plume_1.Renderer; } });
 Object.defineProperty(exports, "useState", { enumerable: true, get: function () { return plume_1.useState; } });
 Object.defineProperty(exports, "useFormFields", { enumerable: true, get: function () { return plume_1.useFormFields; } });
+Object.defineProperty(exports, "Form", { enumerable: true, get: function () { return plume_1.Form; } });
 Object.defineProperty(exports, "Validators", { enumerable: true, get: function () { return plume_1.Validators; } });
 Object.defineProperty(exports, "fromVanillaEvent", { enumerable: true, get: function () { return plume_1.fromVanillaEvent; } });
 var testBed_1 = require("./testBed");

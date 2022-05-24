@@ -13,11 +13,11 @@ const componentRegistry = new (class {
         this.isRootNodeSet = false;
         this.globalStyleTag = null;
     }
-    getComputedCss = (styles = '') => {
+    getComputedCss = (styles = '', standalone) => {
         let csoArray = [];
         const defaultStyles = new CSSStyleSheet();
         defaultStyles.insertRule(`:host { display: block; }`);
-        csoArray = [this.globalStyles, defaultStyles];
+        csoArray = !!standalone ? [defaultStyles] : [this.globalStyles, defaultStyles];
         if (styles) {
             const sheet = new CSSStyleSheet();
             sheet.replace(styles);

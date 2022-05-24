@@ -5,6 +5,7 @@ interface ComponentDecoratorOptions {
   styles?: string;
   root?: boolean;
   deps?: ConstructorType<any>[];
+  standalone?: boolean;
 }
 
 interface ServiceDecoratorOptions {
