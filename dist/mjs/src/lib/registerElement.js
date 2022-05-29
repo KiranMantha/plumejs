@@ -8,7 +8,8 @@ const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
     styles: '',
-    deps: []
+    deps: [],
+    standalone: false
 };
 const createStyleTag = (content, where = null) => {
     const tag = document.createElement('style');
