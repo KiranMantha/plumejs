@@ -33,15 +33,18 @@ const _getTargetValue = (target) => {
     return targetValue;
 };
 class Form {
+    _initialValues;
     _controls;
     _errors = new Map();
-    constructor(controls) {
+    constructor(initialValues, controls) {
+        this._initialValues = initialValues;
         this._controls = controls;
     }
     get errors() {
         return this._errors;
     }
     get valid() {
+        this.checkValidity();
         return this._errors.size ? false : true;
     }
     get value() {
@@ -78,15 +81,16 @@ class Form {
             }
         }
     }
-    reset() {
+    reset(obj = {}) {
         for (const key in this._controls) {
-            this._controls[key].value = '';
+            this._controls[key].value = obj[key] || this._initialValues[key];
         }
         this._errors.clear();
     }
 }
 const useFormFields = (initialValues) => {
     const controls = {};
+    const clonedValues = {};
     for (const [key, value] of Object.entries(initialValues)) {
         const val = Array.isArray(value) ? value : [value];
         controls[key] = {
@@ -94,12 +98,12 @@ const useFormFields = (initialValues) => {
             validators: val,
             errors: null
         };
+        clonedValues[key] = controls[key].value;
     }
-    const form = new Form(controls);
+    const form = new Form(clonedValues, controls);
     const createChangeHandler = (key) => (e) => {
         const value = _getTargetValue(e.target);
         form.get(key).value = value;
-        form.checkValidity();
     };
     const resetFormFields = () => {
         form.reset();

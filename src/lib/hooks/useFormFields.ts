@@ -39,10 +39,12 @@ const _getTargetValue = (target: HTMLElement) => {
 };
 
 class Form {
+  private _initialValues: Record<string, any>;
   private _controls: Record<string, Control>;
   private _errors = new Map<string, Record<string, any>>();
 
-  constructor(controls: Record<string, Control>) {
+  constructor(initialValues: Record<string, any>, controls: Record<string, Control>) {
+    this._initialValues = initialValues;
     this._controls = controls;
   }
 
@@ -51,6 +53,7 @@ class Form {
   }
 
   get valid() {
+    this.checkValidity();
     return this._errors.size ? false : true;
   }
 
@@ -62,7 +65,7 @@ class Form {
     return values;
   }
 
-  get(controlName) {
+  get(controlName: string): Control {
     return this._controls[controlName];
   }
 
@@ -90,9 +93,9 @@ class Form {
     }
   }
 
-  reset() {
+  reset(obj: Record<string, any> = {}) {
     for (const key in this._controls) {
-      this._controls[key].value = '';
+      this._controls[key].value = obj[key] || this._initialValues[key];
     }
     this._errors.clear();
   }
@@ -102,6 +105,7 @@ const useFormFields = <T extends Record<string, any>>(
   initialValues: T
 ): [Form, (key: keyof T) => (e: Event) => void, () => void] => {
   const controls: Record<string, Control> = {};
+  const clonedValues: Record<string, any> = {};
   for (const [key, value] of Object.entries(initialValues)) {
     const val = Array.isArray(value) ? value : [value];
     controls[key] = {
@@ -109,12 +113,12 @@ const useFormFields = <T extends Record<string, any>>(
       validators: val,
       errors: null
     };
+    clonedValues[key] = controls[key].value;
   }
-  const form = new Form(controls);
+  const form = new Form(clonedValues, controls);
   const createChangeHandler = (key: keyof T) => (e: any) => {
     const value = _getTargetValue(e.target);
-    form.get(key).value = value;
-    form.checkValidity();
+    form.get(key as string).value = value;
   };
   const resetFormFields = () => {
     form.reset();
