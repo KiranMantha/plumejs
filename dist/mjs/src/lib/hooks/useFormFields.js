@@ -44,7 +44,7 @@ class Form {
         return this._errors;
     }
     get valid() {
-        this.checkValidity();
+        this._checkValidity();
         return this._errors.size ? false : true;
     }
     get value() {
@@ -57,7 +57,13 @@ class Form {
     get(controlName) {
         return this._controls[controlName];
     }
-    checkValidity() {
+    reset(obj = {}) {
+        for (const key in this._controls) {
+            this._controls[key].value = obj[key] || this._initialValues[key];
+        }
+        this._errors.clear();
+    }
+    _checkValidity() {
         this._errors.clear();
         for (const key in this._controls) {
             const value = this._controls[key].value;
@@ -80,12 +86,6 @@ class Form {
                 }
             }
         }
-    }
-    reset(obj = {}) {
-        for (const key in this._controls) {
-            this._controls[key].value = obj[key] || this._initialValues[key];
-        }
-        this._errors.clear();
     }
 }
 const useFormFields = (initialValues) => {

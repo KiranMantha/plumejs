@@ -53,7 +53,7 @@ class Form {
   }
 
   get valid() {
-    this.checkValidity();
+    this._checkValidity();
     return this._errors.size ? false : true;
   }
 
@@ -69,7 +69,14 @@ class Form {
     return this._controls[controlName];
   }
 
-  checkValidity() {
+  reset(obj: Record<string, any> = {}) {
+    for (const key in this._controls) {
+      this._controls[key].value = obj[key] || this._initialValues[key];
+    }
+    this._errors.clear();
+  }
+
+  private _checkValidity() {
     this._errors.clear();
     for (const key in this._controls) {
       const value = this._controls[key].value;
@@ -91,13 +98,6 @@ class Form {
         }
       }
     }
-  }
-
-  reset(obj: Record<string, any> = {}) {
-    for (const key in this._controls) {
-      this._controls[key].value = obj[key] || this._initialValues[key];
-    }
-    this._errors.clear();
   }
 }
 

@@ -12,8 +12,8 @@ declare class Form {
     get valid(): boolean;
     get value(): {};
     get(controlName: string): Control;
-    checkValidity(): void;
     reset(obj?: Record<string, any>): void;
+    private _checkValidity;
 }
 declare const useFormFields: <T extends Record<string, any>>(initialValues: T) => [Form, (key: keyof T) => (e: Event) => void, () => void];
 export { Form, useFormFields };
