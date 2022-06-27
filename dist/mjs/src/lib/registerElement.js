@@ -3,7 +3,6 @@ import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
-const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -17,19 +16,13 @@ const createStyleTag = (content, where = null) => {
     where && where.appendChild(tag);
     return tag;
 };
-const transformCSS = (styles, selector) => {
-    if (styles) {
-        styles = selector + ' ' + styles.toString().replace('}', ` } ${selector} `);
-    }
-    return styles;
-};
 const registerElement = (options, target) => {
     options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
     options.styles = options.styles.toString();
     if (options.root && !componentRegistry.isRootNodeSet) {
         componentRegistry.isRootNodeSet = true;
         if (options.styles) {
-            createStyleTag(options.styles, document.head);
+            componentRegistry.globalStyleTag = createStyleTag(options.styles, document.head);
             componentRegistry.globalStyles.replace(options.styles);
         }
     }
@@ -52,10 +45,7 @@ const registerElement = (options, target) => {
         }
         emulateComponent() {
             if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
-                const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
-                const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
-                this.componentStyleTag = createStyleTag(compiledCSS);
-                this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
+                this.componentStyleTag = createStyleTag(options.styles);
             }
         }
         connectedCallback() {
@@ -85,8 +75,9 @@ const registerElement = (options, target) => {
             render(this.shadow, (() => this.klass.render())());
             if (CSS_SHEET_NOT_SUPPORTED) {
                 options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-                componentRegistry.globalStyleTag &&
+                if (componentRegistry.globalStyleTag && !options.standalone) {
                     this.shadow.insertBefore(document.importNode(componentRegistry.globalStyleTag, true), this.shadow.childNodes[0]);
+                }
             }
         }
         emitEvent(eventName, data, allowBubbling = true) {

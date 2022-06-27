@@ -4,7 +4,6 @@ import { instantiate } from './instance';
 import { ComponentRef, ComponentDecoratorOptions, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
 
-const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
   root: false,
@@ -20,13 +19,6 @@ const createStyleTag = (content: string, where: Node = null) => {
   return tag;
 };
 
-const transformCSS = (styles: string, selector: string) => {
-  if (styles) {
-    styles = selector + ' ' + styles.toString().replace('}', ` } ${selector} `);
-  }
-  return styles;
-};
-
 const registerElement = (options: ComponentDecoratorOptions, target) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
@@ -35,7 +27,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
   if (options.root && !componentRegistry.isRootNodeSet) {
     componentRegistry.isRootNodeSet = true;
     if (options.styles) {
-      createStyleTag(options.styles, document.head);
+      componentRegistry.globalStyleTag = createStyleTag(options.styles, document.head);
       componentRegistry.globalStyles.replace(options.styles);
     }
   } else if (options.root && componentRegistry.isRootNodeSet) {
@@ -62,10 +54,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
 
       private emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
-          const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
-          const compiledCSS = transformCSS(options.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
-          this.componentStyleTag = createStyleTag(compiledCSS);
-          this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
+          this.componentStyleTag = createStyleTag(options.styles);
         }
       }
 
@@ -103,11 +92,12 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         render(this.shadow, (() => this.klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
           options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-          componentRegistry.globalStyleTag &&
+          if (componentRegistry.globalStyleTag && !options.standalone) {
             this.shadow.insertBefore(
               document.importNode(componentRegistry.globalStyleTag, true),
               this.shadow.childNodes[0]
             );
+          }
         }
       }
 
