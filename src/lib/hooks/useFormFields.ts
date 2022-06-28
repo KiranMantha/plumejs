@@ -38,7 +38,7 @@ const _getTargetValue = (target: HTMLElement) => {
   return targetValue;
 };
 
-class Form {
+class Form<T> {
   private _initialValues: Record<string, any>;
   private _controls: Record<string, Control>;
   private _errors = new Map<string, Record<string, any>>();
@@ -57,12 +57,12 @@ class Form {
     return this._errors.size ? false : true;
   }
 
-  get value() {
+  get value(): T {
     const values = {};
     for (const [key, value] of Object.entries(this._controls)) {
       values[key] = value.value;
     }
-    return values;
+    return values as T;
   }
 
   get(controlName: string): Control {
@@ -103,7 +103,7 @@ class Form {
 
 const useFormFields = <T extends Record<string, any>>(
   initialValues: T
-): [Form, (key: keyof T) => (e: Event) => void, () => void] => {
+): [Form<T>, (key: keyof T) => (e: Event) => void, () => void] => {
   const controls: Record<string, Control> = {};
   const clonedValues: Record<string, any> = {};
   for (const [key, value] of Object.entries(initialValues)) {
@@ -115,7 +115,7 @@ const useFormFields = <T extends Record<string, any>>(
     };
     clonedValues[key] = controls[key].value;
   }
-  const form = new Form(clonedValues, controls);
+  const form = new Form<T>(clonedValues, controls);
   const createChangeHandler = (key: keyof T) => (e: any) => {
     const value = _getTargetValue(e.target);
     form.get(key as string).value = value;

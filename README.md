@@ -41,6 +41,222 @@ Translations which are built-in core module is removed. Instead devs are encoura
 
 # What's new 
 
+## in 3.2.1 version
+PlumeJS internally makes use of `CSSStyleSheet` constructor to enable styling of webcomponents. As this is relatively newer technology (which supports only in Chrome, Edge & Mozilla), this update provides better fallback mechanism if a browser doesn't support `CSSStyleSheet` constructor. Along with this, the new update also brings improvements to `useFormFields` hook which was introduced in `v3.0.0`. The feature upgrade for this hook enables developers to pass a single or multiple validators for a form field (Just like validations in reactive forms in angular for instance). It also brings a new `Form` interface which provides apis like: 
+
+1. `form.value` returns an object of form field name and value as key-value pair.
+2. `form.valid` to check the validity of the form.
+3. `form.errors` is a `Map` containing field name as key and error object as value. Developer can query this map for a field to extract errors easily. This also used to display summary of error messages.
+4. `form.get(<-your-field-name->)` to read a field value|errors|validators.
+5. `form.reset()` to reset the form to initial state. 
+
+One advantage of this newer `Form` interface is `form.errors` which gives developers the error summary of all form fields.
+
+```javascript
+  form: Form;
+  ...
+  [this.form, this.createChangeHandler] = useFormFields({...});
+```
+
+Not all is good. The newer inplementation brings slight inconvinience.
+
+Before the update, the sample form looks like this:
+
+```javascript
+import { Component, html, useFormFields } from '@plumejs/core';
+
+interface IFormFields {
+  email: string;
+  checkme: boolean;
+  option: string;
+  gender: string
+}
+
+@Component(...)
+class SampleForm {
+  sampleformFields: IFormFields;
+	createChangeHandler: any;
+
+  constructor() {
+    [ this.sampleformFields, this.createChangeHandler, this.resetFormFields ] = useFormFields<IFormFields>({
+			email: "",
+			checkme: false,
+			option: '',
+			gender: "",
+		});
+		this.submitForm = this.submitForm.bind(this);
+  }
+
+  submitForm(e: Event) {
+		e.preventDefault();
+		console.log(this.sampleformFields);
+	}
+
+  render() {
+    return html`
+      <form onsubmit=${this.submitForm}>
+        <div>
+          <label>textbox</label>
+          <input onchange=${this.createChangeHandler("email")}/>
+        </div>
+        <div>
+          <b>radio</b>
+          <input
+							type="radio"
+							id="gender_male"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_male">Male</label>
+						<input
+							type="radio"
+							id="gender_female"
+							name="gender"
+							value="female"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_female">Female</label>
+        <div>
+        <div>
+          <label>checkbox</label>
+          <input
+							type="checkbox"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("checkme")}
+						/>
+        <div>
+        <div>
+          <label>single select</label>
+          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <button type="submit" class="button is-info">Submit</button>
+      </form>
+    `
+  }
+}
+```
+
+From the new version, the implementation looks like this:
+
+```javascript
+import { Component, html, useFormFields, Form } from '@plumejs/core';
+
+interface IFormFields {
+  email: string;
+  checkme: boolean;
+  option: string;
+  options: string[]
+  gender: string
+}
+
+@Component(...)
+class SampleForm {
+  sampleform: Form<IFormFields>;
+	createChangeHandler: any;
+
+  constructor() {
+    [this.sampleform, this.createChangeHandler] = useFormFields<IFormFields>({
+			email: "",
+			checkme: false,
+			option: '',
+      options: [['1', '2']] //this syntax is must for multi-select dropdown options
+			gender: "",
+		});
+		this.submitForm = this.submitForm.bind(this);
+  }
+
+  submitForm(e: Event) {
+		e.preventDefault();
+		console.log(this.sampleform.value);
+	}
+
+  reset() {
+    this.sampleForm.reset();
+  }
+
+  render() {
+    return html`
+      <form onsubmit=${this.submitForm}>
+        <div>
+          <label>textbox</label>
+          <input onchange=${this.createChangeHandler("email")}/>
+        </div>
+        <div>
+          <b>radio</b>
+          <input
+							type="radio"
+							id="gender_male"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_male">Male</label>
+						<input
+							type="radio"
+							id="gender_female"
+							name="gender"
+							value="female"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_female">Female</label>
+        <div>
+        <div>
+          <label>checkbox</label>
+          <input
+							type="checkbox"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("checkme")}
+						/>
+        <div>
+        <div>
+          <label>single select</label>
+          <select value=${this.sampleform.get('option').value} onchange=${this.createChangeHandler("option")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <div>
+          <label>multi select</label>
+          <select multiple value=${this.sampleform.get('options').value} onchange=${this.createChangeHandler("options")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <button type='button' onclick=${() => this.reset()}>Reset</button>
+        <button type="submit" class="button is-info">Submit</button>
+      </form>
+    `
+  }
+}
+```
+
+Previously, `useFormFields` also returns `resetFormFields` function to reset the form. But with the introduction of `Form` interface, this function becomes redundant and will be removed in future versions.
+
+The new update also brings one notable feature called `standalone` components. Standalone components doesn't rely on any type of global styles aprt from inheriting fonts. Such components design is purely dictated by their own styles. This doesn't mean like developers have to write components in different manner :wink:. 
+
+```
+@Component({
+  selector: 'my-app',
+  styles: '',
+  standalone: true
+})
+class YourComponent {...}
+```
+
+That's it. a new `standalone` property in component decorator options make your component standalone.
+
 ## in 3.1.1 version
 Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack.
 
@@ -57,7 +273,7 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
 
 `useFormFields` now returns an array instead of object. This change makes it in-line with `useState`. This helps in assigning values directly in array instead of creating new variables and reassigning them. Now `useFormFields` also provides a `resetFormFields` function which resets all form values. for example:
 
-```
+```javascript
   [this.formFields, this.createChangeHandler, this.resetFormFields] = useFormFields({...});
 ```
 
@@ -529,7 +745,7 @@ For more documentation check [here](https://viperhtml.js.org/hyperhtml/documenta
 example:
 
 ```typescript
-import { Component, html, useFormFields } from '@plumejs/core';
+import { Component, html, useFormFields, Form } from '@plumejs/core';
 import { IMultiSelectOptions, registerMultiSelectComponent } from '@plumejs/ui';
 
 // call in root component only.
@@ -545,9 +761,8 @@ interface IFormFields {
 
 @Component(...)
 class SampleForm {
-  sampleformFields: IFormFields;
+  sampleform: Form<IFormFields>;
 	createChangeHandler: any;
-  resetFormFields: any;
 	multiSelectChangehandler: any;
   multiSelectOptions: IMultiSelectOptions = {
 		data: ['option1', 'option2', 'option3', 'option4'],
@@ -572,7 +787,7 @@ class SampleForm {
 	}
 
   constructor() {
-    [ this.sampleformFields, this.createChangeHandler, this.resetFormFields ] = useFormFields<IFormFields>({
+    [ this.sampleform, this.createChangeHandler ] = useFormFields<IFormFields>({
 			email: "",
 			checkme: false,
 			option: '',
@@ -585,8 +800,12 @@ class SampleForm {
 
   submitForm(e: Event) {
 		e.preventDefault();
-		console.log(this.sampleformFields);
+		console.log(this.sampleform);
 	}
+
+  reset() {
+    this.sampleForm.reset();
+  }
 
   render() {
     return html`
@@ -625,7 +844,7 @@ class SampleForm {
         <div>
         <div>
           <label>single select</label>
-          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+          <select value=${this.sampleform.get('option').value} onchange=${this.createChangeHandler("option")}>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -634,7 +853,7 @@ class SampleForm {
         <div>
         <div>
           <label>multi select</label>
-          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+          <select multiple value=${this.sampleform.get('options').value} onchange=${this.createChangeHandler("options")}>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -645,6 +864,7 @@ class SampleForm {
           <label>plumeui component multi select</label>
           <multi-select multiSelectOptions=${ this.multiSelectOptions }></multi-select>
         <div>
+        <button onclick=${() => this.reset()}>Reset</button>
         <button type="submit" class="button is-info">Submit</button>
       </form>
     `
