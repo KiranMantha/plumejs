@@ -740,12 +740,19 @@ For more documentation check [here](https://viperhtml.js.org/hyperhtml/documenta
 
 ### useFormFields
 
-`useFormFields` is very helpful to build forms and retrive form data.
+`useFormFields` is very helpful to build forms, validate and retrive form data.
+
+Built-in validators:
+
+1. Validators.required
+2. Validators.min
+3. Validators.max
+4. Validators.pattern
 
 example:
 
 ```typescript
-import { Component, html, useFormFields, Form } from '@plumejs/core';
+import { Component, html, useFormFields, Form, Validators } from '@plumejs/core';
 import { IMultiSelectOptions, registerMultiSelectComponent } from '@plumejs/ui';
 
 // call in root component only.
@@ -788,7 +795,7 @@ class SampleForm {
 
   constructor() {
     [ this.sampleform, this.createChangeHandler ] = useFormFields<IFormFields>({
-			email: "",
+			email: ["", Validators.required, Validators.pattern(/^[a-z0-9]((\.|\+)?[a-z0-9]){5,}@gmail\.com$/)],
 			checkme: false,
 			option: '',
 			options: [],
