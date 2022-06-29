@@ -47,7 +47,7 @@ PlumeJS internally makes use of `CSSStyleSheet` constructor to enable styling of
 1. `form.value` returns an object of form field name and value as key-value pair.
 2. `form.valid` to check the validity of the form.
 3. `form.errors` is a `Map` containing field name as key and error object as value. Developer can query this map for a field to extract errors easily. This also used to display summary of error messages.
-4. `form.get(<-your-field-name->)` to read a field value|errors|validators.
+4. `form.get(<-your-field-name->)` to read a form field's value or errors or validators.
 5. `form.reset()` to reset the form to initial state. 
 
 One advantage of this newer `Form` interface is `form.errors` which gives developers the error summary of all form fields.
@@ -244,7 +244,7 @@ class SampleForm {
 
 Previously, `useFormFields` also returns `resetFormFields` function to reset the form. But with the introduction of `Form` interface, this function becomes redundant and will be removed in future versions.
 
-The new update also brings one notable feature called `standalone` components. Standalone components doesn't rely on any type of global styles aprt from inheriting fonts. Such components design is purely dictated by their own styles. This doesn't mean like developers have to write components in different manner :wink:. 
+The new update also brings one notable feature called `standalone` components. Standalone components doesn't rely on any type of global styles apart from inheriting fonts. Such components design is purely dictated by their own styles. This doesn't mean like developers have to write components in different manner :wink:. 
 
 ```
 @Component({
