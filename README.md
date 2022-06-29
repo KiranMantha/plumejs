@@ -34,11 +34,6 @@ If you don't want to start with `yo plumejs` and need to use either with webpack
 1. [PlumeJS webpack template](https://github.com/KiranMantha/plumejs-webpack-template)
 2. [PlumeJS vite template](https://github.com/KiranMantha/plumejs-vite-template)
 
-
-# Upcoming breaking change in next version
-
-Translations which are built-in core module is removed. Instead devs are encouraged to check docs on how to setup translations manually. The intention behind this change is to make PlumeJS almost dependency free (few polyfills are needed here and then for unsupported features). Hope you welcome this change.
-
 # What's new 
 
 ## in 3.2.1 version
@@ -256,6 +251,8 @@ class YourComponent {...}
 ```
 
 That's it. a new `standalone` property in component decorator options make your component standalone.
+
+Translations which are built-in core module is removed. Instead devs are encouraged to check docs on how to setup translations manually. The intention behind this change is to make PlumeJS almost dependency free (few polyfills are needed here and then for unsupported features). Hope you welcome this change.
 
 ## in 3.1.1 version
 Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack.
