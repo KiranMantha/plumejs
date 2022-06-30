@@ -9,22 +9,6 @@ let DomTransition = class DomTransition {
         this.transition = '';
         this.whichTransitionEnd();
     }
-    whichTransitionEnd() {
-        const element = document.createElement('div');
-        const styleobj = element.style;
-        const transitions = {
-            transition: 'transitionend',
-            WebkitTransition: 'webkitTransitionEnd',
-            MozTransition: 'transitionend',
-            OTransition: 'otransitionend'
-        };
-        for (const t in transitions) {
-            if (typeof styleobj[t] !== 'undefined') {
-                this.transition = transitions[t];
-                break;
-            }
-        }
-    }
     onTransitionEnd(element, cb, duration) {
         let called = false;
         let unSubscribeEvent = null;
@@ -41,9 +25,33 @@ let DomTransition = class DomTransition {
         });
         setTimeout(_fn, duration);
     }
+    animationsComplete(element) {
+        if (element.getAnimations) {
+            return Promise.allSettled(element.getAnimations().map((animation) => animation.finished));
+        }
+        else {
+            return Promise.allSettled([true]);
+        }
+    }
+    whichTransitionEnd() {
+        const element = document.createElement('div');
+        const styleobj = element.style;
+        const transitions = {
+            transition: 'transitionend',
+            WebkitTransition: 'webkitTransitionEnd',
+            MozTransition: 'transitionend',
+            OTransition: 'otransitionend'
+        };
+        for (const t in transitions) {
+            if (typeof styleobj[t] !== 'undefined') {
+                this.transition = transitions[t];
+                break;
+            }
+        }
+    }
 };
-DomTransition = (0, tslib_1.__decorate)([
+DomTransition = tslib_1.__decorate([
     (0, decorators_1.Injectable)(),
-    (0, tslib_1.__metadata)("design:paramtypes", [])
+    tslib_1.__metadata("design:paramtypes", [])
 ], DomTransition);
 exports.DomTransition = DomTransition;

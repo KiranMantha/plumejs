@@ -5,7 +5,7 @@ const tslib_1 = require("tslib");
 const service_resolver_1 = require("../src/lib/service_resolver");
 class TestBed {
     static MockComponent(target) {
-        return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const appRoot = yield _waitForComponentToRender(target.prototype.selector);
             return { componentInstance: appRoot.getInstance(), element: appRoot.shadowRoot };
         });
@@ -20,7 +20,7 @@ class TestBed {
 }
 exports.TestBed = TestBed;
 function _waitForComponentToRender(tag) {
-    return (0, tslib_1.__awaiter)(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const ele = document.createElement(tag);
         document.body.appendChild(ele);
         return new Promise((resolve) => {

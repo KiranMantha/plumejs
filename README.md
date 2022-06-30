@@ -34,7 +34,230 @@ If you don't want to start with `yo plumejs` and need to use either with webpack
 1. [PlumeJS webpack template](https://github.com/KiranMantha/plumejs-webpack-template)
 2. [PlumeJS vite template](https://github.com/KiranMantha/plumejs-vite-template)
 
-# Whats new in 3.0.0 version
+# What's new 
+
+## in 3.2.1 version
+PlumeJS internally makes use of `CSSStyleSheet` constructor to enable styling of webcomponents. As this is relatively newer technology (which supports only in Chrome, Edge & Mozilla), this update provides better fallback mechanism if a browser doesn't support `CSSStyleSheet` constructor. Along with this, the new update also brings improvements to `useFormFields` hook which was introduced in `v3.0.0`. The feature upgrade for this hook enables developers to pass a single or multiple validators for a form field (Just like validations in reactive forms in angular for instance). It also brings a new `Form` interface which provides apis like: 
+
+1. `form.value` returns an object of form field name and value as key-value pair.
+2. `form.valid` to check the validity of the form.
+3. `form.errors` is a `Map` containing field name as key and error object as value. Developer can query this map for a field to extract errors easily. This also used to display summary of error messages.
+4. `form.get(<-your-field-name->)` to read a form field's value or errors or validators.
+5. `form.reset()` to reset the form to initial state. 
+
+One advantage of this newer `Form` interface is `form.errors` which gives developers the error summary of all form fields.
+
+```javascript
+  form: Form;
+  ...
+  [this.form, this.createChangeHandler] = useFormFields({...});
+```
+
+Not all is good. The newer inplementation brings slight inconvinience.
+
+Before the update, the sample form looks like this:
+
+```javascript
+import { Component, html, useFormFields } from '@plumejs/core';
+
+interface IFormFields {
+  email: string;
+  checkme: boolean;
+  option: string;
+  gender: string
+}
+
+@Component(...)
+class SampleForm {
+  sampleformFields: IFormFields;
+	createChangeHandler: any;
+
+  constructor() {
+    [ this.sampleformFields, this.createChangeHandler, this.resetFormFields ] = useFormFields<IFormFields>({
+			email: "",
+			checkme: false,
+			option: '',
+			gender: "",
+		});
+		this.submitForm = this.submitForm.bind(this);
+  }
+
+  submitForm(e: Event) {
+		e.preventDefault();
+		console.log(this.sampleformFields);
+	}
+
+  render() {
+    return html`
+      <form onsubmit=${this.submitForm}>
+        <div>
+          <label>textbox</label>
+          <input onchange=${this.createChangeHandler("email")}/>
+        </div>
+        <div>
+          <b>radio</b>
+          <input
+							type="radio"
+							id="gender_male"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_male">Male</label>
+						<input
+							type="radio"
+							id="gender_female"
+							name="gender"
+							value="female"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_female">Female</label>
+        <div>
+        <div>
+          <label>checkbox</label>
+          <input
+							type="checkbox"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("checkme")}
+						/>
+        <div>
+        <div>
+          <label>single select</label>
+          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <button type="submit" class="button is-info">Submit</button>
+      </form>
+    `
+  }
+}
+```
+
+From the new version, the implementation looks like this:
+
+```javascript
+import { Component, html, useFormFields, Form } from '@plumejs/core';
+
+interface IFormFields {
+  email: string;
+  checkme: boolean;
+  option: string;
+  options: string[]
+  gender: string
+}
+
+@Component(...)
+class SampleForm {
+  sampleform: Form<IFormFields>;
+	createChangeHandler: any;
+
+  constructor() {
+    [this.sampleform, this.createChangeHandler] = useFormFields<IFormFields>({
+			email: "",
+			checkme: false,
+			option: '',
+      options: [['1', '2']] //this syntax is must for multi-select dropdown options
+			gender: "",
+		});
+		this.submitForm = this.submitForm.bind(this);
+  }
+
+  submitForm(e: Event) {
+		e.preventDefault();
+		console.log(this.sampleform.value);
+	}
+
+  reset() {
+    this.sampleForm.reset();
+  }
+
+  render() {
+    return html`
+      <form onsubmit=${this.submitForm}>
+        <div>
+          <label>textbox</label>
+          <input onchange=${this.createChangeHandler("email")}/>
+        </div>
+        <div>
+          <b>radio</b>
+          <input
+							type="radio"
+							id="gender_male"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_male">Male</label>
+						<input
+							type="radio"
+							id="gender_female"
+							name="gender"
+							value="female"
+							onchange=${this.createChangeHandler("gender")}
+						/>
+						<label for="gender_female">Female</label>
+        <div>
+        <div>
+          <label>checkbox</label>
+          <input
+							type="checkbox"
+							name="gender"
+							value="male"
+							onchange=${this.createChangeHandler("checkme")}
+						/>
+        <div>
+        <div>
+          <label>single select</label>
+          <select value=${this.sampleform.get('option').value} onchange=${this.createChangeHandler("option")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <div>
+          <label>multi select</label>
+          <select multiple value=${this.sampleform.get('options').value} onchange=${this.createChangeHandler("options")}>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        <div>
+        <button type='button' onclick=${() => this.reset()}>Reset</button>
+        <button type="submit" class="button is-info">Submit</button>
+      </form>
+    `
+  }
+}
+```
+
+Previously, `useFormFields` also returns `resetFormFields` function to reset the form. But with the introduction of `Form` interface, this function becomes redundant and will be removed in future versions.
+
+The new update also brings one notable feature called `standalone` components. Standalone components doesn't rely on any type of global styles apart from inheriting fonts. Such components design is purely dictated by their own styles. This doesn't mean like developers have to write components in different manner :wink:. 
+
+```
+@Component({
+  selector: 'my-app',
+  styles: '',
+  standalone: true
+})
+class YourComponent {...}
+```
+
+That's it. a new `standalone` property in component decorator options make your component standalone.
+
+Translations which are built-in core module is removed. Instead devs are encouraged to check docs on how to setup translations manually. The intention behind this change is to make PlumeJS almost dependency free (few polyfills are needed here and then for unsupported features). Hope you welcome this change.
+
+## in 3.1.1 version
+Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack.
+
+## in 3.0.0 version
 
 Plumejs is now moving to scoped packages, deprecating older versions. In the process it shed 50% in size and dependencies compared to its previous versions. The `core aka @plumejs/core` scope is now only ~50KB and acts more as a library instead of a framework. So the devs can plugin `router aka @plumejs/router` scope for routing, `ui aka @plumejs/ui` scope for built in controls and more to come.
 
@@ -47,21 +270,19 @@ It also adds a new `ComponentRef` api which takes a component class as generic t
 
 `useFormFields` now returns an array instead of object. This change makes it in-line with `useState`. This helps in assigning values directly in array instead of creating new variables and reassigning them. Now `useFormFields` also provides a `resetFormFields` function which resets all form values. for example:
 
-```
+```javascript
   [this.formFields, this.createChangeHandler, this.resetFormFields] = useFormFields({...});
 ```
 
-## Upcoming breaking change in next version
+# Breaking Change
 
-Previously PlumeJS rely on reflection for DI. But as javascript itself won't provide reflection metadata at minification phase, Dev has to supply that metadata. Well this is a small inconvinience but this enables devs to use their preferred bundlers like rollup/esbuild/vite/swc which won't rely on reflection which inturn reduce the bundle size. PlumeJS will itself move to [vite](https://vitejs.dev/) which leads to way smaller builds when compared with webpack. This is still in WIP which needs modifications to `plumejs-router` and `plumejs-ui`.
-
-## Breaking change in 3.0.0 version
+## in 3.0.0 version
 
 1. `Input` decorator is removed in favor of `setProps` for better type safe of props.
 2. Inorder to update a component previously dev need to declare `update` property and call it as a function. But now dev needs to inject `Renderer` and call `renderer.update()` in the component. This helps linters to not throw error for usage of uninitialized variables and usage of `any`.
 3. `useRef` is deprecated. instead use `<input ref=${(node) => { this.ref = node; }}/>`. this prevents additional chaining like `this.ref.current.<do-some-operation>` instead user can do `this.ref.<do-some-operation>` which is more meaningful.
 
-## Breaking change from 2.2.2 version
+## from 2.2.2 version
 
 There is a breaking change in component declaration. Check below:
 
@@ -516,12 +737,19 @@ For more documentation check [here](https://viperhtml.js.org/hyperhtml/documenta
 
 ### useFormFields
 
-`useFormFields` is very helpful to build forms and retrive form data.
+`useFormFields` is very helpful to build forms, validate and retrive form data.
+
+Built-in validators:
+
+1. Validators.required
+2. Validators.min
+3. Validators.max
+4. Validators.pattern
 
 example:
 
 ```typescript
-import { Component, html, useFormFields } from '@plumejs/core';
+import { Component, html, useFormFields, Form, Validators } from '@plumejs/core';
 import { IMultiSelectOptions, registerMultiSelectComponent } from '@plumejs/ui';
 
 // call in root component only.
@@ -537,9 +765,8 @@ interface IFormFields {
 
 @Component(...)
 class SampleForm {
-  sampleformFields: IFormFields;
+  sampleform: Form<IFormFields>;
 	createChangeHandler: any;
-  resetFormFields: any;
 	multiSelectChangehandler: any;
   multiSelectOptions: IMultiSelectOptions = {
 		data: ['option1', 'option2', 'option3', 'option4'],
@@ -564,8 +791,8 @@ class SampleForm {
 	}
 
   constructor() {
-    [ this.sampleformFields, this.createChangeHandler, this.resetFormFields ] = useFormFields<IFormFields>({
-			email: "",
+    [ this.sampleform, this.createChangeHandler ] = useFormFields<IFormFields>({
+			email: ["", Validators.required, Validators.pattern(/^[a-z0-9]((\.|\+)?[a-z0-9]){5,}@gmail\.com$/)],
 			checkme: false,
 			option: '',
 			options: [],
@@ -577,8 +804,12 @@ class SampleForm {
 
   submitForm(e: Event) {
 		e.preventDefault();
-		console.log(this.sampleformFields);
+		console.log(this.sampleform);
 	}
+
+  reset() {
+    this.sampleForm.reset();
+  }
 
   render() {
     return html`
@@ -617,7 +848,7 @@ class SampleForm {
         <div>
         <div>
           <label>single select</label>
-          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+          <select value=${this.sampleform.get('option').value} onchange=${this.createChangeHandler("option")}>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -626,7 +857,7 @@ class SampleForm {
         <div>
         <div>
           <label>multi select</label>
-          <select value=${this.sampleformFields.option} onchange=${this.createChangeHandler("option")}>
+          <select multiple value=${this.sampleform.get('options').value} onchange=${this.createChangeHandler("options")}>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -637,6 +868,7 @@ class SampleForm {
           <label>plumeui component multi select</label>
           <multi-select multiSelectOptions=${ this.multiSelectOptions }></multi-select>
         <div>
+        <button onclick=${() => this.reset()}>Reset</button>
         <button type="submit" class="button is-info">Submit</button>
       </form>
     `
@@ -698,21 +930,22 @@ Services in PlumeJs are singleton
 
 ## Setting up Internationalization
 
-Adding translations in PlumeJS is a breeze. Checkout below for implementation:
+In previous versions translations are baked into the core module but from this version onwards it is removed from core build to reduce overhead as it is an optional feature. But this doesn't mean that setting up translations will end up in loops. Follow the below steps to easily set it up.
 
 1. add `i18n` folder to your src folder (you can name it as per your standards)
 
 ```
 src
  |- i18n
+      |-en.ts
+      |-fr.ts
 
 ```
 
 2. add translation files to i18n folder
 
 ```typescript
-in i18n/en.ts
-
+//en.ts
 const locale_en = {
   'user': {
     'name': 'My name is {name}'
@@ -720,8 +953,7 @@ const locale_en = {
 }
 export default locale_en;
 
-in i18n/fr.ts
-
+//fr.ts
 const locale_fr = {
   'user': {
     'name': 'je m`appelle {name}'
@@ -730,10 +962,69 @@ const locale_fr = {
 export default locale_fr;
 ```
 
-3. import translation files in root component and pass them to translation service
+3. install [vanilla-i18n](https://www.npmjs.com/package/vanilla-i18n) package using `npm i -S vanilla-i18n`.
+
+4. this package did not contain types. for that:
+
+  * create `vanilla-i18n` folder to `@types` folder located at project root. 
+  ```
+  <rootDir>
+    |-@types
+    |   |-vanilla-i18n
+    |          |-index.d.ts 
+    |-src
+  ```
+  * create `index.d.ts` file to above folder and add below snippet:
+
+    ```typescript
+    /// <reference types="node" />
+    declare module 'vanilla-i18n' {
+      export function setDefaultLanguage(language: string): void;
+      export function setTranslate(obj: any, language: string): void;
+    }
+    ```
+
+5. after above setup, add the below service file to your project
+```
+<rootDir>
+  |-src
+     |-index.ts
+     |-translationService.ts
+```
 
 ```typescript
-import { Component, TranslationService } from '@plumejs/core';
+//translationService.ts
+import { setDefaultLanguage, setTranslate } from 'vanilla-i18n';
+import { Injectable } from './decorators';
+
+@Injectable()
+export class TranslationService {
+  private _defaultLanguage = '';
+
+  setTranslate(i18n: Record<string, any>, lang: string) {
+    setTranslate(i18n, lang);
+  }
+
+  setDefaultLanguage(language: string) {
+    this._defaultLanguage = language;
+    setDefaultLanguage(language);
+    const event = new CustomEvent('onLanguageChange');
+    window.dispatchEvent(event);
+  }
+
+  getCurrentLanguage() {
+    return this._defaultLanguage;
+  }
+}
+
+```
+
+6. import translation files in root component and pass them to translation service
+
+```typescript
+//index.ts or your root component file
+import { Component } from '@plumejs/core';
+import { TranslationService } from './translationService.ts'
 import locale_en from '<folder-i18n>/en';
 import locale_fr from '<folder-i18n>/fr';
 
@@ -749,18 +1040,19 @@ class AppComponent {
 }
 ```
 
-4. now translations are setup for english and french languages.
+7. now translations setup is done for english and french languages.
 
-5. To pass html from translations, no need to follow special ways:
+8. To pass html from translations, no need to follow special ways:
 
 ```html
-<div>${{ html: 'html-translation'.translate() }}</div>
 // previously
-<div>${ 'html-translation'.translate() }</div>
+<div>${{ html: 'html-translation'.translate() }}</div>
+
 // with new version just like normal translation
+<div>${ 'html-translation'.translate() }</div>
 ```
 
-The above object inside template literal contains 'html' key which properly allow compiler to render html properly. This is to address a defect where `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
+> :warning: using translations via innerHTML will not work. `<div innerHTML=${ 'html-translation'.translate() }></div>` won't work properly.
 
 For normal text translations:
 

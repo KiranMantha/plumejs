@@ -9,6 +9,31 @@ export class DomTransition {
     this.whichTransitionEnd();
   }
 
+  onTransitionEnd(element: HTMLElement, cb: () => void, duration: number) {
+    let called = false;
+    let unSubscribeEvent = null;
+    const _fn = () => {
+      if (!called) {
+        called = true;
+        cb && cb();
+        unSubscribeEvent();
+        unSubscribeEvent = null;
+      }
+    };
+    unSubscribeEvent = fromVanillaEvent(element, this.transition, () => {
+      _fn();
+    });
+    setTimeout(_fn, duration);
+  }
+
+  animationsComplete(element: HTMLElement): Promise<any> {
+    if (element.getAnimations) {
+      return Promise.allSettled(element.getAnimations().map((animation: Animation) => animation.finished));
+    } else {
+      return Promise.allSettled([true]);
+    }
+  }
+
   private whichTransitionEnd() {
     const element = document.createElement('div');
     const styleobj: any = element.style;
@@ -25,22 +50,5 @@ export class DomTransition {
         break;
       }
     }
-  }
-
-  onTransitionEnd(element: HTMLElement, cb: () => void, duration: number) {
-    let called = false;
-    let unSubscribeEvent = null;
-    const _fn = () => {
-      if (!called) {
-        called = true;
-        cb && cb();
-        unSubscribeEvent();
-        unSubscribeEvent = null;
-      }
-    };
-    unSubscribeEvent = fromVanillaEvent(element, this.transition, () => {
-      _fn();
-    });
-    setTimeout(_fn, duration);
   }
 }

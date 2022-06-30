@@ -11,8 +11,11 @@ export {
   InjectionToken,
   render,
   Renderer,
-  TranslationService,
+  useState,
   useFormFields,
-  InputProps
+  Form,
+  Validators,
+  InputProps,
+  fromVanillaEvent
 } from './src/plume';
 export { TestBed, Fixture } from './testBed';
