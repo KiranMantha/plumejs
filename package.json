@@ -14,7 +14,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.json",
+    "build": "rimraf dist && tsc",
     "eslint:init": "eslint --init",
     "lint": "eslint . --ext .ts --fix",
     "patch-update": "npm version patch",
