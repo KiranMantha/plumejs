@@ -5,20 +5,16 @@
   "files": [
     "dist/**/*"
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/mjs/index.js",
-      "require": "./dist/cjs/index.js"
-    }
-  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "rimraf dist && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "rimraf dist && tsc -p tsconfig.json",
     "eslint:init": "eslint --init",
     "lint": "eslint . --ext .ts --fix",
     "patch-update": "npm version patch",
