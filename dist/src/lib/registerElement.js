@@ -34,6 +34,9 @@ const registerElement = (options, target) => {
         shadow;
         componentStyleTag = null;
         eventSubscriptions = [];
+        static get observedAttributes() {
+            return target.observedAttributes || [];
+        }
         constructor() {
             super();
             this.shadow = this.attachShadow({ mode: 'open' });
@@ -91,15 +94,18 @@ const registerElement = (options, target) => {
             for (const [key, value] of Object.entries(propsObj)) {
                 this.klass[key] = value;
             }
-            this.klass.onPropsChanged && this.klass.onPropsChanged();
+            this.klass.onPropsChanged?.();
             this.update();
         }
         getInstance() {
             return this.klass;
         }
+        attributeChangedCallback(name, oldValue, newValue) {
+            this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+        }
         disconnectedCallback() {
             this.componentStyleTag && this.componentStyleTag.remove();
-            this.klass.unmount && this.klass.unmount();
+            this.klass.unmount?.();
             if (this.eventSubscriptions?.length) {
                 for (const unsubscribe of this.eventSubscriptions) {
                     unsubscribe();

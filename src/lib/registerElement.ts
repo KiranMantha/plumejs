@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentRef, ComponentDecoratorOptions, Renderer } from './types';
+import { ComponentDecoratorOptions, ComponentRef, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
@@ -41,6 +41,10 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
       eventSubscriptions: (() => void)[] = [];
+
+      static get observedAttributes() {
+        return target.observedAttributes || [];
+      }
 
       constructor() {
         super();
@@ -113,7 +117,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         for (const [key, value] of Object.entries(propsObj)) {
           this.klass[key] = value;
         }
-        this.klass.onPropsChanged && this.klass.onPropsChanged();
+        this.klass.onPropsChanged?.();
         this.update();
       }
 
@@ -121,9 +125,13 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         return this.klass;
       }
 
+      attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+      }
+
       disconnectedCallback() {
         this.componentStyleTag && this.componentStyleTag.remove();
-        this.klass.unmount && this.klass.unmount();
+        this.klass.unmount?.();
         if (this.eventSubscriptions?.length) {
           for (const unsubscribe of this.eventSubscriptions) {
             unsubscribe();
