@@ -132,6 +132,87 @@ const { html, render } = (() => {
     }
   };
 
+  /**
+   * Get the type for a node
+   * @param  {Node}   node The node
+   * @return {String}      The type
+   */
+  const _getNodeType = (node: HTMLElement) => {
+    if (node.nodeType === 3) return 'text';
+    if (node.nodeType === 8) return 'comment';
+    return node.tagName.toLowerCase();
+  };
+
+  /**
+   * Get the content from a node
+   * @param  {Node}   node The node
+   * @return {String}      The type
+   */
+  const _getNodeContent = (node: HTMLElement) => {
+    if (node.childNodes && node.childNodes.length > 0) return null;
+    return node.textContent;
+  };
+
+  /**
+   * Compare the template to the UI and make updates
+   * @param  {Node} template The template HTML
+   * @param  {Node} elem     The UI HTML
+   */
+  const _diff = (template: HTMLElement | DocumentFragment, elem: HTMLElement | DocumentFragment) => {
+    // Get arrays of child nodes
+    const domNodes: HTMLElement[] = Array.prototype.slice.call(elem.childNodes);
+    const templateNodes: HTMLElement[] = Array.prototype.slice.call(template.childNodes);
+
+    // If extra elements in DOM, remove them
+    let count = domNodes.length - templateNodes.length;
+    if (count > 0) {
+      for (; count > 0; count--) {
+        domNodes[domNodes.length - count].parentNode.removeChild(domNodes[domNodes.length - count]);
+      }
+    }
+
+    // Diff each item in the templateNodes
+    templateNodes.forEach((node, index) => {
+      // If element doesn't exist, create it
+      if (!domNodes[index]) {
+        elem.appendChild(node.cloneNode(true));
+        return;
+      }
+
+      // If element is not the same type, replace it with new element
+      if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
+        domNodes[index].parentNode.replaceChild(node.cloneNode(true), domNodes[index]);
+        return;
+      }
+
+      // If content is different, update it
+      const templateContent = _getNodeContent(node);
+      if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
+        domNodes[index].textContent = templateContent;
+      }
+
+      // If target element should be empty, wipe it
+      if (domNodes[index].childNodes.length > 0 && node.childNodes.length < 1) {
+        domNodes[index].innerHTML = '';
+        return;
+      }
+
+      // If element is empty and shouldn't be, build it up
+      // This uses a document fragment to minimize reflows
+      if (domNodes[index].childNodes.length < 1 && node.childNodes.length > 0) {
+        const fragment = document.createDocumentFragment();
+        _diff(node, fragment);
+        domNodes[index].appendChild(fragment);
+        return;
+      }
+
+      // If there are existing child elements that need to be modified, diff them
+      if (node.childNodes.length > 0) {
+        _diff(node, domNodes[index]);
+      }
+    });
+  };
+
   const html = (templates: TemplateStringsArray, ...values: Array<any>): DocumentFragment => {
     let result = '';
     const { length } = templates;
@@ -165,8 +246,12 @@ const { html, render } = (() => {
   };
 
   const render = (where: HTMLElement, what: DocumentFragment) => {
-    where.textContent = '';
-    where.appendChild(what);
+    if (!where.children.length) {
+      where.innerHTML = '';
+      where.appendChild(what);
+    } else {
+      _diff(what, where);
+    }
   };
 
   return { html, render };

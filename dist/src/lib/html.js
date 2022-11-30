@@ -124,6 +124,55 @@ const { html, render } = (() => {
             node = commentsWalker.nextNode();
         }
     };
+    const _getNodeType = (node) => {
+        if (node.nodeType === 3)
+            return 'text';
+        if (node.nodeType === 8)
+            return 'comment';
+        return node.tagName.toLowerCase();
+    };
+    const _getNodeContent = (node) => {
+        if (node.childNodes && node.childNodes.length > 0)
+            return null;
+        return node.textContent;
+    };
+    const _diff = (template, elem) => {
+        const domNodes = Array.prototype.slice.call(elem.childNodes);
+        const templateNodes = Array.prototype.slice.call(template.childNodes);
+        let count = domNodes.length - templateNodes.length;
+        if (count > 0) {
+            for (; count > 0; count--) {
+                domNodes[domNodes.length - count].parentNode.removeChild(domNodes[domNodes.length - count]);
+            }
+        }
+        templateNodes.forEach((node, index) => {
+            if (!domNodes[index]) {
+                elem.appendChild(node.cloneNode(true));
+                return;
+            }
+            if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
+                domNodes[index].parentNode.replaceChild(node.cloneNode(true), domNodes[index]);
+                return;
+            }
+            const templateContent = _getNodeContent(node);
+            if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
+                domNodes[index].textContent = templateContent;
+            }
+            if (domNodes[index].childNodes.length > 0 && node.childNodes.length < 1) {
+                domNodes[index].innerHTML = '';
+                return;
+            }
+            if (domNodes[index].childNodes.length < 1 && node.childNodes.length > 0) {
+                const fragment = document.createDocumentFragment();
+                _diff(node, fragment);
+                domNodes[index].appendChild(fragment);
+                return;
+            }
+            if (node.childNodes.length > 0) {
+                _diff(node, domNodes[index]);
+            }
+        });
+    };
     const html = (templates, ...values) => {
         let result = '';
         const { length } = templates;
@@ -151,8 +200,13 @@ const { html, render } = (() => {
         return fragment;
     };
     const render = (where, what) => {
-        where.textContent = '';
-        where.appendChild(what);
+        if (!where.children.length) {
+            where.innerHTML = '';
+            where.appendChild(what);
+        }
+        else {
+            _diff(what, where);
+        }
     };
     return { html, render };
 })();
