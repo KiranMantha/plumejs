@@ -62,7 +62,14 @@ const { html, render } = (() => {
                             break;
                         }
                         case /ref/.test(nodeValue): {
-                            values[i](node);
+                            if (node.tagName.includes('-')) {
+                                node.addEventListener('load', (e) => {
+                                    values[i](e.detail);
+                                });
+                            }
+                            else {
+                                values[i](node);
+                            }
                             break;
                         }
                         case /^data-+/.test(nodeValue): {
@@ -136,9 +143,9 @@ const { html, render } = (() => {
             return null;
         return node.textContent;
     };
-    const _diff = (template, elem) => {
-        const domNodes = Array.prototype.slice.call(elem.childNodes);
-        const templateNodes = Array.prototype.slice.call(template.childNodes);
+    const _diff = (template, element) => {
+        const domNodes = element ? Array.from(element.childNodes) : [];
+        const templateNodes = template ? Array.from(template.childNodes) : [];
         let count = domNodes.length - templateNodes.length;
         if (count > 0) {
             for (; count > 0; count--) {
@@ -146,30 +153,33 @@ const { html, render } = (() => {
             }
         }
         templateNodes.forEach((node, index) => {
-            if (!domNodes[index]) {
-                elem.appendChild(node.cloneNode(true));
+            const domNode = domNodes[index];
+            if (!domNode) {
+                element && element.appendChild(node);
                 return;
             }
-            if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
-                domNodes[index].parentNode.replaceChild(node.cloneNode(true), domNodes[index]);
+            if (_getNodeType(node) !== _getNodeType(domNode)) {
+                domNode.replaceWith(node);
                 return;
             }
             const templateContent = _getNodeContent(node);
-            if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
-                domNodes[index].textContent = templateContent;
-            }
-            if (domNodes[index].childNodes.length > 0 && node.childNodes.length < 1) {
-                domNodes[index].innerHTML = '';
+            if (templateContent && templateContent !== _getNodeContent(domNode)) {
+                domNode.textContent = templateContent;
                 return;
             }
-            if (domNodes[index].childNodes.length < 1 && node.childNodes.length > 0) {
+            if (domNode.childNodes.length > 0 && node.childNodes.length < 1) {
+                domNode.innerHTML = '';
+                return;
+            }
+            if (domNode.childNodes.length < 1 && node.childNodes.length > 0) {
                 const fragment = document.createDocumentFragment();
                 _diff(node, fragment);
-                domNodes[index].appendChild(fragment);
+                domNode.appendChild(fragment);
                 return;
             }
             if (node.childNodes.length > 0) {
-                _diff(node, domNodes[index]);
+                _diff(node, domNode);
+                return;
             }
         });
     };

@@ -52,27 +52,30 @@ const registerElement = (options, target) => {
             }
         }
         connectedCallback() {
-            this.emulateComponent();
-            const rendererInstance = new Renderer();
-            rendererInstance.update = () => {
+            if (this.isConnected) {
+                this.emitEvent('load', this);
+                this.emulateComponent();
+                const rendererInstance = new Renderer();
+                rendererInstance.update = () => {
+                    this.update();
+                };
+                rendererInstance.shadowRoot = this.shadow;
+                rendererInstance.emitEvent = (eventName, data) => {
+                    this.emitEvent(eventName, data);
+                };
+                this.klass = instantiate(target, options.deps, rendererInstance);
+                this.klass.beforeMount && this.klass.beforeMount();
                 this.update();
-            };
-            rendererInstance.shadowRoot = this.shadow;
-            rendererInstance.emitEvent = (eventName, data) => {
-                this.emitEvent(eventName, data);
-            };
-            this.klass = instantiate(target, options.deps, rendererInstance);
-            this.klass.beforeMount && this.klass.beforeMount();
-            this.update();
-            this.klass.mount && this.klass.mount();
-            this.emitEvent('bindprops', {
-                setProps: (propsObj) => {
-                    this.setProps(propsObj);
-                }
-            }, false);
-            this.eventSubscriptions.push(fromVanillaEvent(window, 'onLanguageChange', () => {
-                this.update();
-            }));
+                this.klass.mount && this.klass.mount();
+                this.emitEvent('bindprops', {
+                    setProps: (propsObj) => {
+                        this.setProps(propsObj);
+                    }
+                }, false);
+                this.eventSubscriptions.push(fromVanillaEvent(window, 'onLanguageChange', () => {
+                    this.update();
+                }));
+            }
         }
         update() {
             render(this.shadow, (() => this.klass.render())());

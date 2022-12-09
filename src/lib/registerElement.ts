@@ -63,33 +63,36 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       }
 
       connectedCallback() {
-        this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.update = () => {
-          this.update();
-        };
-        rendererInstance.shadowRoot = this.shadow;
-        rendererInstance.emitEvent = (eventName: string, data: any) => {
-          this.emitEvent(eventName, data);
-        };
-        this.klass = instantiate(target, options.deps, rendererInstance);
-        this.klass.beforeMount && this.klass.beforeMount();
-        this.update();
-        this.klass.mount && this.klass.mount();
-        this.emitEvent(
-          'bindprops',
-          {
-            setProps: (propsObj: Record<string, any>) => {
-              this.setProps(propsObj);
-            }
-          },
-          false
-        );
-        this.eventSubscriptions.push(
-          fromVanillaEvent(window, 'onLanguageChange', () => {
+        if (this.isConnected) {
+          this.emitEvent('load', this);
+          this.emulateComponent();
+          const rendererInstance = new Renderer();
+          rendererInstance.update = () => {
             this.update();
-          })
-        );
+          };
+          rendererInstance.shadowRoot = this.shadow;
+          rendererInstance.emitEvent = (eventName: string, data: any) => {
+            this.emitEvent(eventName, data);
+          };
+          this.klass = instantiate(target, options.deps, rendererInstance);
+          this.klass.beforeMount && this.klass.beforeMount();
+          this.update();
+          this.klass.mount && this.klass.mount();
+          this.emitEvent(
+            'bindprops',
+            {
+              setProps: (propsObj: Record<string, any>) => {
+                this.setProps(propsObj);
+              }
+            },
+            false
+          );
+          this.eventSubscriptions.push(
+            fromVanillaEvent(window, 'onLanguageChange', () => {
+              this.update();
+            })
+          );
+        }
       }
 
       update() {
