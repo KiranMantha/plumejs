@@ -62,39 +62,6 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         }
       }
 
-      connectedCallback() {
-        if (this.isConnected) {
-          this.emitEvent('load', this);
-          this.emulateComponent();
-          const rendererInstance = new Renderer();
-          rendererInstance.update = () => {
-            this.update();
-          };
-          rendererInstance.shadowRoot = this.shadow;
-          rendererInstance.emitEvent = (eventName: string, data: any) => {
-            this.emitEvent(eventName, data);
-          };
-          this.klass = instantiate(target, options.deps, rendererInstance);
-          this.klass.beforeMount && this.klass.beforeMount();
-          this.update();
-          this.klass.mount && this.klass.mount();
-          this.emitEvent(
-            'bindprops',
-            {
-              setProps: (propsObj: Record<string, any>) => {
-                this.setProps(propsObj);
-              }
-            },
-            false
-          );
-          this.eventSubscriptions.push(
-            fromVanillaEvent(window, 'onLanguageChange', () => {
-              this.update();
-            })
-          );
-        }
-      }
-
       update() {
         render(this.shadow, (() => this.klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
@@ -126,6 +93,39 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
 
       getInstance() {
         return this.klass;
+      }
+
+      connectedCallback() {
+        if (this.isConnected) {
+          this.emitEvent('load', this);
+          this.emulateComponent();
+          const rendererInstance = new Renderer();
+          rendererInstance.update = () => {
+            this.update();
+          };
+          rendererInstance.shadowRoot = this.shadow;
+          rendererInstance.emitEvent = (eventName: string, data: any) => {
+            this.emitEvent(eventName, data);
+          };
+          this.klass = instantiate(target, options.deps, rendererInstance);
+          this.klass.beforeMount && this.klass.beforeMount();
+          this.update();
+          this.klass.mount && this.klass.mount();
+          this.emitEvent(
+            'bindprops',
+            {
+              setProps: (propsObj: Record<string, any>) => {
+                this.setProps(propsObj);
+              }
+            },
+            false
+          );
+          this.eventSubscriptions.push(
+            fromVanillaEvent(window, 'onLanguageChange', () => {
+              this.update();
+            })
+          );
+        }
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
