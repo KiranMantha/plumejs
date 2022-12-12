@@ -131,6 +131,40 @@ const { html, render } = (() => {
             node = commentsWalker.nextNode();
         }
     };
+    const _diffAttributes = (templateNode, domNode) => {
+        if (!templateNode || !domNode || templateNode.nodeType !== 1 || domNode.nodeType !== 1)
+            return;
+        const templateAtts = templateNode.attributes;
+        const existingAtts = domNode.attributes;
+        for (const { name, value } of templateAtts) {
+            if (/class/.test(name)) {
+                Array.from(templateNode.classList).every((className) => {
+                    if (!domNode.classList.contains(className)) {
+                        domNode.classList.add(className);
+                    }
+                });
+            }
+            else {
+                if (!existingAtts[name] || existingAtts[name] !== value) {
+                    domNode.setAttribute(name, value);
+                }
+            }
+        }
+        for (const { name } of existingAtts) {
+            if (/class/.test(name)) {
+                Array.from(domNode.classList).every((className) => {
+                    if (!templateNode.classList.contains(className)) {
+                        domNode.classList.remove(className);
+                    }
+                });
+            }
+            else {
+                if (!templateAtts[name]) {
+                    domNode.removeAttribute(name);
+                }
+            }
+        }
+    };
     const _getNodeType = (node) => {
         if (node.nodeType === 3)
             return 'text';
@@ -154,6 +188,7 @@ const { html, render } = (() => {
         }
         templateNodes.forEach((node, index) => {
             const domNode = domNodes[index];
+            _diffAttributes(node, domNode);
             if (!domNode) {
                 element && element.appendChild(node);
                 return;

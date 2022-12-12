@@ -138,6 +138,40 @@ const { html, render } = (() => {
     }
   };
 
+  const _diffAttributes = (templateNode: HTMLElement, domNode: HTMLElement) => {
+    if (!templateNode || !domNode || templateNode.nodeType !== 1 || domNode.nodeType !== 1) return;
+    const templateAtts = templateNode.attributes;
+    const existingAtts = domNode.attributes;
+
+    for (const { name, value } of templateAtts) {
+      if (/class/.test(name)) {
+        Array.from(templateNode.classList).every((className) => {
+          if (!domNode.classList.contains(className)) {
+            domNode.classList.add(className);
+          }
+        });
+      } else {
+        if (!existingAtts[name] || existingAtts[name] !== value) {
+          domNode.setAttribute(name, value);
+        }
+      }
+    }
+
+    for (const { name } of existingAtts) {
+      if (/class/.test(name)) {
+        Array.from(domNode.classList).every((className) => {
+          if (!templateNode.classList.contains(className)) {
+            domNode.classList.remove(className);
+          }
+        });
+      } else {
+        if (!templateAtts[name]) {
+          domNode.removeAttribute(name);
+        }
+      }
+    }
+  };
+
   /**
    * Get the type for a node
    * @param  {Node}   node The node
@@ -180,6 +214,7 @@ const { html, render } = (() => {
     // Diff each item in the templateNodes
     templateNodes.forEach((node: HTMLElement, index) => {
       const domNode = domNodes[index] as HTMLElement;
+      _diffAttributes(node, domNode);
 
       // If element doesn't exist, create it
       if (!domNode) {

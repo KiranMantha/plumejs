@@ -1,10 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "lib": [
-      "DOM",
-      "ESNext"
-    ],
+    "lib": ["DOM", "ESNext", "DOM.Iterable"],
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "node",
@@ -19,14 +16,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noEmitOnError": true,
-    "typeRoots": [
-      "@types",
-      "node_modules/@types"
-    ]
+    "typeRoots": ["@types", "node_modules/@types"]
   },
-  "exclude": [
-    "__tests__",
-    "dist",
-    "node_modules"
-  ]
+  "exclude": ["__tests__", "dist", "node_modules"]
 }
