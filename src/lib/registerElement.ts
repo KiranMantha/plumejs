@@ -97,7 +97,6 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
 
       connectedCallback() {
         if (this.isConnected) {
-          this.emitEvent('load', this);
           this.emulateComponent();
           const rendererInstance = new Renderer();
           rendererInstance.update = () => {
