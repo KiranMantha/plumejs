@@ -78,29 +78,27 @@ const registerElement = (options, target) => {
             return this.klass;
         }
         connectedCallback() {
-            if (this.isConnected) {
-                this.emulateComponent();
-                const rendererInstance = new Renderer();
-                rendererInstance.update = () => {
-                    this.update();
-                };
-                rendererInstance.shadowRoot = this.shadow;
-                rendererInstance.emitEvent = (eventName, data) => {
-                    this.emitEvent(eventName, data);
-                };
-                this.klass = instantiate(target, options.deps, rendererInstance);
-                this.klass.beforeMount && this.klass.beforeMount();
+            this.emulateComponent();
+            const rendererInstance = new Renderer();
+            rendererInstance.update = () => {
                 this.update();
-                this.klass.mount && this.klass.mount();
-                this.emitEvent('bindprops', {
-                    setProps: (propsObj) => {
-                        this.setProps(propsObj);
-                    }
-                }, false);
-                this.eventSubscriptions.push(fromVanillaEvent(window, 'onLanguageChange', () => {
-                    this.update();
-                }));
-            }
+            };
+            rendererInstance.shadowRoot = this.shadow;
+            rendererInstance.emitEvent = (eventName, data) => {
+                this.emitEvent(eventName, data);
+            };
+            this.klass = instantiate(target, options.deps, rendererInstance);
+            this.klass.beforeMount && this.klass.beforeMount();
+            this.update();
+            this.klass.mount && this.klass.mount();
+            this.emitEvent('bindprops', {
+                setProps: (propsObj) => {
+                    this.setProps(propsObj);
+                }
+            }, false);
+            this.eventSubscriptions.push(fromVanillaEvent(window, 'onLanguageChange', () => {
+                this.update();
+            }));
         }
         attributeChangedCallback(name, oldValue, newValue) {
             this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
