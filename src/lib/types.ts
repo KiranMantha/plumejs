@@ -30,6 +30,8 @@ class Renderer {
 }
 
 type InputProps<T> = {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 
