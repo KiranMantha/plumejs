@@ -34,6 +34,9 @@ const registerElement = (options, target) => {
         shadow;
         componentStyleTag = null;
         eventSubscriptions = [];
+        static get observedAttributes() {
+            return target.observedAttributes || [];
+        }
         constructor() {
             super();
             this.shadow = this.attachShadow({ mode: 'open' });
@@ -47,6 +50,32 @@ const registerElement = (options, target) => {
             if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
                 this.componentStyleTag = createStyleTag(options.styles);
             }
+        }
+        update() {
+            render(this.shadow, (() => this.klass.render())());
+            if (CSS_SHEET_NOT_SUPPORTED) {
+                options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
+                if (componentRegistry.globalStyleTag && !options.standalone) {
+                    this.shadow.insertBefore(document.importNode(componentRegistry.globalStyleTag, true), this.shadow.childNodes[0]);
+                }
+            }
+        }
+        emitEvent(eventName, data, allowBubbling = true) {
+            const event = new CustomEvent(eventName, {
+                detail: data,
+                bubbles: allowBubbling
+            });
+            this.dispatchEvent(event);
+        }
+        setProps(propsObj) {
+            for (const [key, value] of Object.entries(propsObj)) {
+                this.klass[key] = value;
+            }
+            this.klass.onPropsChanged?.();
+            this.update();
+        }
+        getInstance() {
+            return this.klass;
         }
         connectedCallback() {
             this.emulateComponent();
@@ -71,35 +100,12 @@ const registerElement = (options, target) => {
                 this.update();
             }));
         }
-        update() {
-            render(this.shadow, (() => this.klass.render())());
-            if (CSS_SHEET_NOT_SUPPORTED) {
-                options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-                if (componentRegistry.globalStyleTag && !options.standalone) {
-                    this.shadow.insertBefore(document.importNode(componentRegistry.globalStyleTag, true), this.shadow.childNodes[0]);
-                }
-            }
-        }
-        emitEvent(eventName, data, allowBubbling = true) {
-            const event = new CustomEvent(eventName, {
-                detail: data,
-                bubbles: allowBubbling
-            });
-            this.dispatchEvent(event);
-        }
-        setProps(propsObj) {
-            for (const [key, value] of Object.entries(propsObj)) {
-                this.klass[key] = value;
-            }
-            this.klass.onPropsChanged && this.klass.onPropsChanged();
-            this.update();
-        }
-        getInstance() {
-            return this.klass;
+        attributeChangedCallback(name, oldValue, newValue) {
+            this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
         }
         disconnectedCallback() {
             this.componentStyleTag && this.componentStyleTag.remove();
-            this.klass.unmount && this.klass.unmount();
+            this.klass.unmount?.();
             if (this.eventSubscriptions?.length) {
                 for (const unsubscribe of this.eventSubscriptions) {
                     unsubscribe();

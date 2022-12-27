@@ -1,4 +1,4 @@
-declare type ConstructorType<T extends {
+type ConstructorType<T extends {
     new (...args: any[]): T;
 }> = T;
 interface ComponentDecoratorOptions {
@@ -26,7 +26,7 @@ declare class Renderer {
         name: string;
     };
 }
-declare type InputProps<T> = {
+type InputProps<T> = {
     [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 interface ComponentRef<T> {

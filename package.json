@@ -1,30 +1,26 @@
 {
   "name": "@plumejs/core",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "A light weight web-components based typescript framework to build single page applications.",
   "files": [
     "dist/**/*"
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/mjs/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/mjs/index.js",
-      "require": "./dist/cjs/index.js"
-    }
-  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "npm run lint && rimraf dist && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
-    "build:ttsc": "npm run lint && rimraf dist && ttsc",
+    "build": "rimraf dist && tsc",
     "eslint:init": "eslint --init",
-    "lint": "eslint . --ext .ts --fix",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "patch-update": "npm version patch",
     "tag": "git push --follow-tags",
-    "tag-release": "npm run patch-update && npm run tag"
+    "tag-release": "npm run patch-update && npm run tag",
+    "prepare": "husky install"
   },
   "keywords": [
     "plumejs",
@@ -43,16 +39,18 @@
   "homepage": "https://github.com/KiranMantha/plumejs#readme",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@types/node": "^16.11.9",
-    "@webcomponents/webcomponentsjs": "^2.6.0"
+    "@types/node": "^18.11.18",
+    "@webcomponents/webcomponentsjs": "^2.7.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "eslint": "^8.2.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.47.1",
+    "@typescript-eslint/parser": "^5.47.1",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.2",
+    "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.5.2"
+    "typescript": "^4.9.4"
   }
 }

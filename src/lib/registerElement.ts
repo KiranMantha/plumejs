@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentRef, ComponentDecoratorOptions, Renderer } from './types';
+import { ComponentDecoratorOptions, ComponentRef, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
@@ -42,6 +42,10 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       private componentStyleTag: HTMLStyleElement = null;
       eventSubscriptions: (() => void)[] = [];
 
+      static get observedAttributes() {
+        return target.observedAttributes || [];
+      }
+
       constructor() {
         super();
         this.shadow = this.attachShadow({ mode: 'open' });
@@ -56,6 +60,39 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
           this.componentStyleTag = createStyleTag(options.styles);
         }
+      }
+
+      update() {
+        render(this.shadow, (() => this.klass.render())());
+        if (CSS_SHEET_NOT_SUPPORTED) {
+          options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
+          if (componentRegistry.globalStyleTag && !options.standalone) {
+            this.shadow.insertBefore(
+              document.importNode(componentRegistry.globalStyleTag, true),
+              this.shadow.childNodes[0]
+            );
+          }
+        }
+      }
+
+      emitEvent(eventName: string, data: any, allowBubbling = true) {
+        const event = new CustomEvent(eventName, {
+          detail: data,
+          bubbles: allowBubbling
+        });
+        this.dispatchEvent(event);
+      }
+
+      setProps(propsObj: Record<string, any>) {
+        for (const [key, value] of Object.entries(propsObj)) {
+          this.klass[key] = value;
+        }
+        this.klass.onPropsChanged?.();
+        this.update();
+      }
+
+      getInstance() {
+        return this.klass;
       }
 
       connectedCallback() {
@@ -88,42 +125,13 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         );
       }
 
-      update() {
-        render(this.shadow, (() => this.klass.render())());
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-          if (componentRegistry.globalStyleTag && !options.standalone) {
-            this.shadow.insertBefore(
-              document.importNode(componentRegistry.globalStyleTag, true),
-              this.shadow.childNodes[0]
-            );
-          }
-        }
-      }
-
-      emitEvent(eventName: string, data: any, allowBubbling = true) {
-        const event = new CustomEvent(eventName, {
-          detail: data,
-          bubbles: allowBubbling
-        });
-        this.dispatchEvent(event);
-      }
-
-      setProps(propsObj: Record<string, any>) {
-        for (const [key, value] of Object.entries(propsObj)) {
-          this.klass[key] = value;
-        }
-        this.klass.onPropsChanged && this.klass.onPropsChanged();
-        this.update();
-      }
-
-      getInstance() {
-        return this.klass;
+      attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {
         this.componentStyleTag && this.componentStyleTag.remove();
-        this.klass.unmount && this.klass.unmount();
+        this.klass.unmount?.();
         if (this.eventSubscriptions?.length) {
           for (const unsubscribe of this.eventSubscriptions) {
             unsubscribe();
