@@ -47,3 +47,4 @@ For documentation please visit [wiki](https://github.com/KiranMantha/plumejs/wik
 5. template.js: https://github.com/Mevrael/html-template/blob/master/template.js
 6. proposals for <template> tag: https://github.com/whatwg/html/issues/2254
 7. styling shadow dom using parts: https://css-tricks.com/styling-in-the-shadow-dom-with-css-shadow-parts/
+8. setting jest with esm: https://gist.github.com/rstacruz/511f43265de4939f6ca729a3df7b001c
