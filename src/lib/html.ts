@@ -83,12 +83,9 @@ const { html, render } = (() => {
               refNodes.push(closure);
               break;
             }
-            case /^data-+/.test(nodeValue): {
-              node.setAttribute(`data-${nodeValue}`, _sanitize(values[i]));
-              break;
-            }
+            case /^data-+/.test(nodeValue):
             case /^aria-+/.test(nodeValue): {
-              node.setAttribute(`aria-${nodeValue}`, _sanitize(values[i]));
+              node.setAttribute(nodeValue, _sanitize(values[i]));
               break;
             }
             case /class/.test(nodeValue): {
