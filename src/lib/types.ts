@@ -13,11 +13,13 @@ interface ServiceDecoratorOptions {
 }
 
 interface IHooks {
-  ObservedProperties?: readonly string[];
+  observedAttributes?: readonly string[];
+  observedProperties?: readonly string[];
   beforeMount?: () => void;
   mount?: () => void;
   unmount?: () => void;
   onPropsChanged?: () => void;
+  onNativeAttributeChanged?: (name: string, oldValue: string, newValue: string) => void;
 }
 
 class Renderer {
@@ -32,7 +34,7 @@ class Renderer {
 type InputProps<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+  [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 
 interface ComponentRef<T> {

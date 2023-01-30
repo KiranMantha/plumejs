@@ -12,11 +12,13 @@ interface ServiceDecoratorOptions {
     deps?: ConstructorType<any>[];
 }
 interface IHooks {
-    ObservedProperties?: readonly string[];
+    observedAttributes?: readonly string[];
+    observedProperties?: readonly string[];
     beforeMount?: () => void;
     mount?: () => void;
     unmount?: () => void;
     onPropsChanged?: () => void;
+    onNativeAttributeChanged?: (name: string, oldValue: string, newValue: string) => void;
 }
 declare class Renderer {
     shadowRoot: ShadowRoot;
@@ -27,7 +29,7 @@ declare class Renderer {
     };
 }
 type InputProps<T> = {
-    [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+    [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 interface ComponentRef<T> {
     setProps(propertiesObject: InputProps<T>): void;
