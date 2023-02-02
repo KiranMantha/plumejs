@@ -3,7 +3,7 @@
 import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
-import { ComponentDecoratorOptions, ServiceDecoratorOptions } from './types';
+import { ComponentDecoratorOptions, ConstructorType, ServiceDecoratorOptions } from './types';
 
 const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
   deps: []
@@ -31,8 +31,10 @@ const Injectable =
     Injector.register(target, instance);
   };
 
-const InjectionToken = (name: string, target: Record<string, any>) => {
-  Injector.register({ name }, target);
+const InjectionToken = (name: string | ConstructorType<any>, target: Record<string, any>) => {
+  const token = typeof name === 'string' ? { name } : name;
+  Injector.register(token, target);
+  return token;
 };
 
 export { Component, Injectable, InjectionToken };
