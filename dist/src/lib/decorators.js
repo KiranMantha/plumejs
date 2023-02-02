@@ -23,6 +23,8 @@ const Injectable = (options = {}) => (target) => {
     Injector.register(target, instance);
 };
 const InjectionToken = (name, target) => {
-    Injector.register({ name }, target);
+    const token = typeof name === 'string' ? { name } : name;
+    Injector.register(token, target);
+    return token;
 };
 export { Component, Injectable, InjectionToken };
