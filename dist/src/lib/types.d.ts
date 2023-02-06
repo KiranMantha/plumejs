@@ -17,8 +17,8 @@ interface IHooks {
     beforeMount?: () => void;
     mount?: () => void;
     unmount?: () => void;
-    onPropsChanged?: () => void;
-    onNativeAttributeChanged?: (name: string, oldValue: string, newValue: string) => void;
+    onPropertiesChanged?: () => void;
+    onAttributesChanged?: (name: string, oldValue: string, newValue: string) => void;
 }
 declare class Renderer {
     shadowRoot: ShadowRoot;

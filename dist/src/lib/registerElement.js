@@ -71,7 +71,7 @@ const registerElement = (options, target) => {
             for (const [key, value] of Object.entries(propsObj)) {
                 this.klass[key] = value;
             }
-            this.klass.onPropsChanged?.();
+            this.klass.onPropertiesChanged?.();
             this.update();
         }
         getInstance() {
@@ -101,7 +101,7 @@ const registerElement = (options, target) => {
             }));
         }
         attributeChangedCallback(name, oldValue, newValue) {
-            this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+            this.klass.onAttributesChanged?.(name, oldValue, newValue);
         }
         disconnectedCallback() {
             this.componentStyleTag && this.componentStyleTag.remove();

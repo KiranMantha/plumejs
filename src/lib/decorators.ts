@@ -3,7 +3,7 @@
 import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
-import { ComponentDecoratorOptions, ConstructorType, ServiceDecoratorOptions } from './types';
+import { ComponentDecoratorOptions, ConstructorType, IHooks, ServiceDecoratorOptions } from './types';
 
 const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
   deps: []
@@ -19,7 +19,7 @@ const Component = (options: ComponentDecoratorOptions) => (target: new (...args:
         return options.selector;
       }
     });
-    registerElement(options, target);
+    registerElement(options, target as Partial<IHooks>);
   }
 };
 

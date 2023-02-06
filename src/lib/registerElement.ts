@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentDecoratorOptions, ComponentRef, Renderer } from './types';
+import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
 import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
@@ -19,7 +19,7 @@ const createStyleTag = (content: string, where: Node = null) => {
   return tag;
 };
 
-const registerElement = (options: ComponentDecoratorOptions, target) => {
+const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHooks>) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   options.styles = options.styles.toString();
@@ -87,7 +87,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         for (const [key, value] of Object.entries(propsObj)) {
           this.klass[key] = value;
         }
-        this.klass.onPropsChanged?.();
+        this.klass.onPropertiesChanged?.();
         this.update();
       }
 
@@ -126,7 +126,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+        this.klass.onAttributesChanged?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {
