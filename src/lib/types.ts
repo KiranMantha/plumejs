@@ -23,11 +23,27 @@ interface IHooks {
 }
 
 class Renderer {
-  shadowRoot: ShadowRoot;
-  update: () => void;
-  emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+  private _hostElement: HTMLElement;
+  private _shadowRoot: ShadowRoot;
+
   static get __metadata__() {
     return { name: 'Renderer' };
+  }
+
+  get hostElement() {
+    return this._hostElement;
+  }
+
+  get shadowRoot() {
+    return this._shadowRoot;
+  }
+
+  update: () => void;
+  emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+
+  constructor(_hostElement: HTMLElement, _shadowRoot: ShadowRoot) {
+    this._hostElement = _hostElement;
+    this._shadowRoot = _shadowRoot;
   }
 }
 

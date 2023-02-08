@@ -36,7 +36,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
   window.customElements.define(
     options.selector,
-    class extends HTMLElement implements Renderer, ComponentRef<any> {
+    class extends HTMLElement implements ComponentRef<any> {
       private klass: Record<string, any>;
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
@@ -97,11 +97,10 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
       connectedCallback() {
         this.emulateComponent();
-        const rendererInstance = new Renderer();
+        const rendererInstance = new Renderer(this, this.shadow);
         rendererInstance.update = () => {
           this.update();
         };
-        rendererInstance.shadowRoot = this.shadow;
         rendererInstance.emitEvent = (eventName: string, data: any) => {
           this.emitEvent(eventName, data);
         };

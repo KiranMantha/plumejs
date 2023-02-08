@@ -21,12 +21,16 @@ interface IHooks {
     onAttributesChanged?: (name: string, oldValue: string, newValue: string) => void;
 }
 declare class Renderer {
-    shadowRoot: ShadowRoot;
-    update: () => void;
-    emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+    private _hostElement;
+    private _shadowRoot;
     static get __metadata__(): {
         name: string;
     };
+    get hostElement(): HTMLElement;
+    get shadowRoot(): ShadowRoot;
+    update: () => void;
+    emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+    constructor(_hostElement: HTMLElement, _shadowRoot: ShadowRoot);
 }
 type InputProps<T> = {
     [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;

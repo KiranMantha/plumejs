@@ -79,11 +79,10 @@ const registerElement = (options, target) => {
         }
         connectedCallback() {
             this.emulateComponent();
-            const rendererInstance = new Renderer();
+            const rendererInstance = new Renderer(this, this.shadow);
             rendererInstance.update = () => {
                 this.update();
             };
-            rendererInstance.shadowRoot = this.shadow;
             rendererInstance.emitEvent = (eventName, data) => {
                 this.emitEvent(eventName, data);
             };
