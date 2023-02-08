@@ -19,6 +19,9 @@ const Component = (options) => (target) => {
 };
 const Injectable = (options = {}) => (target) => {
     options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
+    if (options.deps.some((dep) => dep.__metadata__ === 'Renderer')) {
+        throw Error('Renderer cannot be a dependency for a service. It should be used with component');
+    }
     const instance = instantiate(target, options.deps);
     Injector.register(target, instance);
 };
