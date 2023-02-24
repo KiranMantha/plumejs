@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent } from './utils';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -52,13 +52,7 @@ const registerElement = (options, target) => {
             }
         }
         update() {
-            const renderValue = this.klass.render();
-            if (typeof renderValue === 'string') {
-                this.shadow.innerHTML = sanitizeHTML(renderValue);
-            }
-            else {
-                render(this.shadow, renderValue);
-            }
+            render(this.shadow, (() => this.klass.render())());
             if (CSS_SHEET_NOT_SUPPORTED) {
                 options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
                 if (componentRegistry.globalStyleTag && !options.standalone) {
