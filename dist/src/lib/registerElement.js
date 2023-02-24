@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent } from './utils';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -95,7 +95,7 @@ const registerElement = (options, target) => {
                     this.setProps(propsObj);
                 }
             }, false);
-            this.eventSubscriptions.push(fromVanillaEvent(window, 'onLanguageChange', () => {
+            this.eventSubscriptions.push(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
         }

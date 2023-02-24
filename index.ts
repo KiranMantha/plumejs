@@ -1,21 +1,21 @@
 export {
   Component,
-  ComponentRef,
   ComponentDecoratorOptions,
-  ServiceDecoratorOptions,
+  ComponentRef,
   DomTransition,
+  Form,
+  fromEvent,
   html,
   IHooks,
   Injectable,
-  Injector,
   InjectionToken,
+  Injector,
+  InputProps,
   render,
   Renderer,
-  useState,
+  ServiceDecoratorOptions,
   useFormFields,
-  Form,
-  Validators,
-  InputProps,
-  fromVanillaEvent
+  useState,
+  Validators
 } from './src/plume';
-export { TestBed, Fixture } from './testBed';
+export { Fixture, TestBed } from './testBed';

@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -118,7 +118,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           false
         );
         this.eventSubscriptions.push(
-          fromVanillaEvent(window, 'onLanguageChange', () => {
+          fromEvent(window, 'onLanguageChange', () => {
             this.update();
           })
         );

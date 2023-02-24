@@ -12,7 +12,7 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
   }
 })();
 
-const fromVanillaEvent = (
+const fromEvent = (
   target: HTMLElement | Window,
   eventName: string,
   onNext: EventListenerOrEventListenerObject,
@@ -25,4 +25,4 @@ const fromVanillaEvent = (
   return unsubscribe;
 };
 
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent };
+export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent };
