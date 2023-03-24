@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -33,6 +33,7 @@ const registerElement = (options, target) => {
         klass;
         shadow;
         componentStyleTag = null;
+        renderCount = 0;
         eventSubscriptions = [];
         static get observedAttributes() {
             return target.observedAttributes || [];
@@ -92,7 +93,7 @@ const registerElement = (options, target) => {
             rendererInstance.emitEvent = (eventName, data) => {
                 this.emitEvent(eventName, data);
             };
-            this.klass = instantiate(target, options.deps, rendererInstance);
+            this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
             this.klass.beforeMount && this.klass.beforeMount();
             this.update();
             this.klass.mount && this.klass.mount();
@@ -109,6 +110,7 @@ const registerElement = (options, target) => {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);
         }
         disconnectedCallback() {
+            this.renderCount = 1;
             this.componentStyleTag && this.componentStyleTag.remove();
             this.klass.unmount?.();
             if (this.eventSubscriptions?.length) {

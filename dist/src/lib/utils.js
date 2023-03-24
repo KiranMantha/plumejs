@@ -59,4 +59,30 @@ const sanitizeHTML = (htmlString) => {
     cleanAttributes(html);
     return html.innerHTML;
 };
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML };
+const debounceRender = function (elementInstance) {
+    if (elementInstance.renderCount === 1) {
+        queueMicrotask(() => {
+            elementInstance.update();
+            elementInstance.renderCount = 0;
+        });
+    }
+};
+const proxifiedClass = (elementInstance, target) => {
+    return class extends target {
+        constructor(...args) {
+            super(...args);
+            return new Proxy(this, {
+                get(obj, prop, receiver) {
+                    return Reflect.get(obj, prop, receiver);
+                },
+                set(obj, prop, value, receiver) {
+                    Reflect.set(obj, prop, value, receiver);
+                    ++elementInstance.renderCount;
+                    debounceRender(elementInstance);
+                    return true;
+                }
+            });
+        }
+    };
+};
+export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass };

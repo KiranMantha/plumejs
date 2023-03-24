@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -40,6 +40,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       private klass: Record<string, any>;
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
+      renderCount = 0;
       eventSubscriptions: (() => void)[] = [];
 
       static get observedAttributes() {
@@ -109,7 +110,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         rendererInstance.emitEvent = (eventName: string, data: any) => {
           this.emitEvent(eventName, data);
         };
-        this.klass = instantiate(target, options.deps, rendererInstance);
+        this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();
@@ -134,6 +135,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       }
 
       disconnectedCallback() {
+        this.renderCount = 1;
         this.componentStyleTag && this.componentStyleTag.remove();
         this.klass.unmount?.();
         if (this.eventSubscriptions?.length) {
