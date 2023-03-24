@@ -3,7 +3,7 @@
 import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
-import { ComponentDecoratorOptions, ServiceDecoratorOptions } from './types';
+import { ComponentDecoratorOptions, ConstructorType, IHooks, ServiceDecoratorOptions } from './types';
 
 const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
   deps: []
@@ -19,7 +19,7 @@ const Component = (options: ComponentDecoratorOptions) => (target: new (...args:
         return options.selector;
       }
     });
-    registerElement(options, target);
+    registerElement(options, target as Partial<IHooks>);
   }
 };
 
@@ -27,12 +27,17 @@ const Injectable =
   (options: ServiceDecoratorOptions = {}) =>
   (target: new (...args: any[]) => any) => {
     options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
+    if (options.deps.some((dep) => dep.__metadata__?.name === 'Renderer')) {
+      throw Error('Renderer cannot be a dependency for a service. It should be used with component');
+    }
     const instance = instantiate(target, options.deps);
     Injector.register(target, instance);
   };
 
-const InjectionToken = (name: string, target: Record<string, any>) => {
-  Injector.register({ name }, target);
+const InjectionToken = (name: string | ConstructorType<any>, target: Record<string, any>) => {
+  const token = typeof name === 'string' ? { name } : name;
+  Injector.register(token, target);
+  return token;
 };
 
 export { Component, Injectable, InjectionToken };

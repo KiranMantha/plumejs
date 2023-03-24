@@ -13,26 +13,45 @@ interface ServiceDecoratorOptions {
 }
 
 interface IHooks {
-  ObservedProperties?: readonly string[];
+  observedAttributes?: readonly string[];
+  observedProperties?: readonly string[];
+  render: () => DocumentFragment | string;
   beforeMount?: () => void;
   mount?: () => void;
   unmount?: () => void;
-  onPropsChanged?: () => void;
+  onPropertiesChanged?: () => void;
+  onAttributesChanged?: (name: string, oldValue: string, newValue: string) => void;
 }
 
 class Renderer {
-  shadowRoot: ShadowRoot;
-  update: () => void;
-  emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+  private _hostElement: HTMLElement;
+  private _shadowRoot: ShadowRoot;
+
   static get __metadata__() {
     return { name: 'Renderer' };
+  }
+
+  get hostElement() {
+    return this._hostElement;
+  }
+
+  get shadowRoot() {
+    return this._shadowRoot;
+  }
+
+  update: () => void;
+  emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+
+  constructor(_hostElement: HTMLElement, _shadowRoot: ShadowRoot) {
+    this._hostElement = _hostElement;
+    this._shadowRoot = _shadowRoot;
   }
 }
 
 type InputProps<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+  [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 
 interface ComponentRef<T> {

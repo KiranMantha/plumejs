@@ -1,8 +1,9 @@
 import { ConstructorType } from './types';
 
 interface IInjector {
-  getService(klass: ConstructorType<any>): Record<string, any>;
   register(klass: any, instance: ConstructorType<any>): void;
+  getService(klass: ConstructorType<any>): Record<string, any>;
+  removeService(klass: ConstructorType<any>);
   clear(): void;
 }
 
@@ -24,6 +25,10 @@ const Injector: IInjector = new (class implements IInjector {
     } else {
       throw Error(`${klass} is not a registered provider.`);
     }
+  }
+
+  public removeService(klass: ConstructorType<any>) {
+    this.map.delete(klass);
   }
 
   public clear(): void {

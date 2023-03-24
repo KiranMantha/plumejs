@@ -1,8 +1,8 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentDecoratorOptions, ComponentRef, Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromVanillaEvent } from './utils';
+import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
+import { CSS_SHEET_NOT_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -19,7 +19,7 @@ const createStyleTag = (content: string, where: Node = null) => {
   return tag;
 };
 
-const registerElement = (options: ComponentDecoratorOptions, target) => {
+const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHooks>) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   options.styles = options.styles.toString();
@@ -36,10 +36,11 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
 
   window.customElements.define(
     options.selector,
-    class extends HTMLElement implements Renderer, ComponentRef<any> {
+    class extends HTMLElement implements ComponentRef<any> {
       private klass: Record<string, any>;
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
+      renderCount = 0;
       eventSubscriptions: (() => void)[] = [];
 
       static get observedAttributes() {
@@ -63,7 +64,12 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
       }
 
       update() {
-        render(this.shadow, (() => this.klass.render())());
+        const renderValue = this.klass.render();
+        if (typeof renderValue === 'string') {
+          this.shadow.innerHTML = sanitizeHTML(renderValue);
+        } else {
+          render(this.shadow, renderValue);
+        }
         if (CSS_SHEET_NOT_SUPPORTED) {
           options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
           if (componentRegistry.globalStyleTag && !options.standalone) {
@@ -87,7 +93,7 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
         for (const [key, value] of Object.entries(propsObj)) {
           this.klass[key] = value;
         }
-        this.klass.onPropsChanged?.();
+        this.klass.onPropertiesChanged?.();
         this.update();
       }
 
@@ -97,15 +103,14 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
 
       connectedCallback() {
         this.emulateComponent();
-        const rendererInstance = new Renderer();
+        const rendererInstance = new Renderer(this, this.shadow);
         rendererInstance.update = () => {
           this.update();
         };
-        rendererInstance.shadowRoot = this.shadow;
         rendererInstance.emitEvent = (eventName: string, data: any) => {
           this.emitEvent(eventName, data);
         };
-        this.klass = instantiate(target, options.deps, rendererInstance);
+        this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();
@@ -119,17 +124,18 @@ const registerElement = (options: ComponentDecoratorOptions, target) => {
           false
         );
         this.eventSubscriptions.push(
-          fromVanillaEvent(window, 'onLanguageChange', () => {
+          fromEvent(window, 'onLanguageChange', () => {
             this.update();
           })
         );
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        this.klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+        this.klass.onAttributesChanged?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {
+        this.renderCount = 1;
         this.componentStyleTag && this.componentStyleTag.remove();
         this.klass.unmount?.();
         if (this.eventSubscriptions?.length) {

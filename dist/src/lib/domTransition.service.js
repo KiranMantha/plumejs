@@ -1,6 +1,6 @@
 import { __decorate, __metadata } from "tslib";
 import { Injectable } from './decorators';
-import { fromVanillaEvent } from './utils';
+import { fromEvent } from './utils';
 let DomTransition = class DomTransition {
     transition = '';
     constructor() {
@@ -17,7 +17,7 @@ let DomTransition = class DomTransition {
                 unSubscribeEvent = null;
             }
         };
-        unSubscribeEvent = fromVanillaEvent(element, this.transition, () => {
+        unSubscribeEvent = fromEvent(element, this.transition, () => {
             _fn();
         });
         setTimeout(_fn, duration);

@@ -17,6 +17,9 @@ const Injector = new (class {
             throw Error(`${klass} is not a registered provider.`);
         }
     }
+    removeService(klass) {
+        this.map.delete(klass);
+    }
     clear() {
         this.map = new WeakMap();
     }
