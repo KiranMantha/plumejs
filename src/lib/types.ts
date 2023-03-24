@@ -15,6 +15,7 @@ interface ServiceDecoratorOptions {
 interface IHooks {
   observedAttributes?: readonly string[];
   observedProperties?: readonly string[];
+  render: () => DocumentFragment | string;
   beforeMount?: () => void;
   mount?: () => void;
   unmount?: () => void;
