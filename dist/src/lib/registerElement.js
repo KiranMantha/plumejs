@@ -45,12 +45,24 @@ const registerElement = (options, target) => {
                 const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
                 this.shadow.adoptedStyleSheets = adoptedStyleSheets;
             }
+            this.createProxyInstance();
             this.getInstance = this.getInstance.bind(this);
+            this.update = this.update.bind(this);
         }
         emulateComponent() {
             if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
                 this.componentStyleTag = createStyleTag(options.styles);
             }
+        }
+        createProxyInstance() {
+            const rendererInstance = new Renderer(this, this.shadow);
+            rendererInstance.update = () => {
+                this.update();
+            };
+            rendererInstance.emitEvent = (eventName, data) => {
+                this.emitEvent(eventName, data);
+            };
+            this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
         }
         update() {
             const renderValue = this.klass.render();
@@ -86,14 +98,6 @@ const registerElement = (options, target) => {
         }
         connectedCallback() {
             this.emulateComponent();
-            const rendererInstance = new Renderer(this, this.shadow);
-            rendererInstance.update = () => {
-                this.update();
-            };
-            rendererInstance.emitEvent = (eventName, data) => {
-                this.emitEvent(eventName, data);
-            };
-            this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
             this.klass.beforeMount && this.klass.beforeMount();
             this.update();
             this.klass.mount && this.klass.mount();

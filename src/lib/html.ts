@@ -144,30 +144,14 @@ const { html, render } = (() => {
     const existingAtts = domNode.attributes;
 
     for (const { name, value } of templateAtts) {
-      if (/class/.test(name)) {
-        Array.from(templateNode.classList).every((className) => {
-          if (!domNode.classList.contains(className)) {
-            domNode.classList.add(className);
-          }
-        });
-      } else {
-        if (!existingAtts[name] || existingAtts[name] !== value) {
-          domNode.setAttribute(name, value);
-        }
+      if (!existingAtts[name] || existingAtts[name] !== value) {
+        domNode.setAttribute(name, value);
       }
     }
 
     for (const { name } of existingAtts) {
-      if (/class/.test(name)) {
-        Array.from(domNode.classList).every((className) => {
-          if (!templateNode.classList.contains(className)) {
-            domNode.classList.remove(className);
-          }
-        });
-      } else {
-        if (!templateAtts[name]) {
-          domNode.removeAttribute(name);
-        }
+      if (!templateAtts[name]) {
+        domNode.removeAttribute(name);
       }
     }
   };
