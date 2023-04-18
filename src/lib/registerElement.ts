@@ -54,13 +54,26 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
           this.shadow.adoptedStyleSheets = adoptedStyleSheets;
         }
+        this.createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
+        this.update = this.update.bind(this);
       }
 
       private emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
           this.componentStyleTag = createStyleTag(options.styles);
         }
+      }
+
+      private createProxyInstance() {
+        const rendererInstance = new Renderer(this, this.shadow);
+        rendererInstance.update = () => {
+          this.update();
+        };
+        rendererInstance.emitEvent = (eventName: string, data: any) => {
+          this.emitEvent(eventName, data);
+        };
+        this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
       }
 
       update() {
@@ -103,14 +116,6 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
       connectedCallback() {
         this.emulateComponent();
-        const rendererInstance = new Renderer(this, this.shadow);
-        rendererInstance.update = () => {
-          this.update();
-        };
-        rendererInstance.emitEvent = (eventName: string, data: any) => {
-          this.emitEvent(eventName, data);
-        };
-        this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();
