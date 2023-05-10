@@ -22,7 +22,7 @@ const Injectable = (options = {}) => (target) => {
     target.prototype.__metadata__ = {
         name: 'SERVICE'
     };
-    if (options.deps.some((dep) => dep.__metadata__?.name === 'RENDERER')) {
+    if (options.deps.some((dep) => dep.prototype.__metadata__?.name === 'RENDERER')) {
         throw Error('Renderer cannot be a dependency for a service. It should be used with component');
     }
     const instance = instantiate(target, options.deps);
