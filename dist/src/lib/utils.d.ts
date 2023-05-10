@@ -4,11 +4,12 @@ declare const isFunction: (value: any) => boolean;
 declare const isUndefined: (value: any) => boolean;
 declare const CSS_SHEET_NOT_SUPPORTED: boolean;
 declare const fromEvent: (target: HTMLElement | Window, eventName: string, onNext: EventListenerOrEventListenerObject, options?: boolean) => (() => void);
-declare const sanitizeHTML: (htmlString: any) => string;
+declare const sanitizeHTML: (htmlString: string) => string;
 declare const proxifiedClass: (elementInstance: any, target: any) => {
     new (...args: any[]): {
         [x: string]: any;
     };
     [x: string]: any;
 };
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass };
+declare const promisify: () => any[];
+export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass, promisify };

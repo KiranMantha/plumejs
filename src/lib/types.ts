@@ -27,8 +27,8 @@ class Renderer {
   private _hostElement: HTMLElement;
   private _shadowRoot: ShadowRoot;
 
-  static get __metadata__() {
-    return { name: 'Renderer' };
+  get __metadata__() {
+    return { name: 'RENDERER' };
   }
 
   get hostElement() {

@@ -68,21 +68,33 @@ const debounceRender = function (elementInstance) {
     }
 };
 const proxifiedClass = (elementInstance, target) => {
+    const handler = () => ({
+        get(obj, prop) {
+            const propertyType = Object.prototype.toString.call(obj[prop]);
+            if (['[object Object]', '[object Array]'].indexOf(propertyType) > -1 && !('__metadata__' in obj[prop])) {
+                return new Proxy(obj[prop], handler());
+            }
+            return obj[prop];
+        },
+        set(obj, prop, value) {
+            obj[prop] = value;
+            ++elementInstance.renderCount;
+            debounceRender(elementInstance);
+            return true;
+        }
+    });
     return class extends target {
         constructor(...args) {
             super(...args);
-            return new Proxy(this, {
-                get(obj, prop, receiver) {
-                    return Reflect.get(obj, prop, receiver);
-                },
-                set(obj, prop, value, receiver) {
-                    Reflect.set(obj, prop, value, receiver);
-                    ++elementInstance.renderCount;
-                    debounceRender(elementInstance);
-                    return true;
-                }
-            });
+            return new Proxy(this, handler());
         }
     };
 };
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass };
+const promisify = () => {
+    let resolver;
+    const promise = new Promise((resolve) => {
+        resolver = resolve;
+    });
+    return [promise, resolver];
+};
+export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass, promisify };
