@@ -25,7 +25,7 @@ const fromEvent = (
   return unsubscribe;
 };
 
-const sanitizeHTML = (htmlString) => {
+const sanitizeHTML = (htmlString: string) => {
   /**
    * Convert the string to an HTML document
    * @return {Node} An HTML document
@@ -109,22 +109,48 @@ const debounceRender = function (elementInstance) {
 };
 
 const proxifiedClass = (elementInstance, target) => {
+  const handler = () => ({
+    get(obj: object, prop: string) {
+      if (
+        ['[object Object]', '[object Array]'].indexOf(Object.prototype.toString.call(obj[prop])) > -1 &&
+        !('__metadata__' in obj[prop])
+      ) {
+        return new Proxy(obj[prop], handler());
+      }
+      return obj[prop];
+    },
+    set(obj: object, prop: string, value: unknown) {
+      obj[prop] = value;
+      ++elementInstance.renderCount;
+      debounceRender(elementInstance);
+      return true;
+    }
+  });
+
   return class extends target {
     constructor(...args) {
       super(...args);
-      return new Proxy(this, {
-        get(obj, prop, receiver) {
-          return Reflect.get(obj, prop, receiver);
-        },
-        set(obj, prop, value, receiver) {
-          Reflect.set(obj, prop, value, receiver);
-          ++elementInstance.renderCount;
-          debounceRender(elementInstance);
-          return true;
-        }
-      });
+      return new Proxy(this, handler());
     }
   };
 };
 
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass };
+const promisify = () => {
+  let resolver;
+  const promise = new Promise((resolve) => {
+    resolver = resolve;
+  });
+  return [promise, resolver];
+};
+
+export {
+  isObject,
+  isFunction,
+  isUndefined,
+  klass,
+  CSS_SHEET_NOT_SUPPORTED,
+  fromEvent,
+  sanitizeHTML,
+  proxifiedClass,
+  promisify
+};

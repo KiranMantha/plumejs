@@ -24,7 +24,7 @@ interface IHooks {
 declare class Renderer {
     private _hostElement;
     private _shadowRoot;
-    static get __metadata__(): {
+    get __metadata__(): {
         name: string;
     };
     get hostElement(): HTMLElement;

@@ -1,8 +1,8 @@
 class Renderer {
     _hostElement;
     _shadowRoot;
-    static get __metadata__() {
-        return { name: 'Renderer' };
+    get __metadata__() {
+        return { name: 'RENDERER' };
     }
     get hostElement() {
         return this._hostElement;
