@@ -1,6 +1,6 @@
 # @plumejs/core
 
-[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://GitHub.com/KiranMantha/plumejs/pulls) [![HitCount](https://hits.dwyl.com/KiranMantha/plumejs.svg?style=flat-square)](http://hits.dwyl.com/KiranMantha/plumejs) [![Static Badge](https://img.shields.io/badge/Channel-Discord--Server-blue)](https://discord.com/channels/1124230781439578172/1124230781909348475)
+[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://GitHub.com/KiranMantha/plumejs/pulls) [![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2Fkiranmantha%2Fplumejs.json&label=Hits&color=blue)](http://hits.dwyl.com/KiranMantha/plumejs) [![Discord](https://img.shields.io/discord/1124230781439578172)](https://discord.com/channels/1124230781439578172/1124230781909348475)
 
 [![npm](https://img.shields.io/npm/dw/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core) [![npm](https://img.shields.io/npm/v/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core)
 
