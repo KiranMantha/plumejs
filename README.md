@@ -1,6 +1,6 @@
 # @plumejs/core
 
-[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://GitHub.com/KiranMantha/plumejs/pulls)
+[![GitHub contributors](https://img.shields.io/github/contributors/kiranmantha/plumejs)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://GitHub.com/KiranMantha/plumejs/pulls) [![HitCount](https://hits.dwyl.com/KiranMantha/plumejs.svg?style=flat-square)](http://hits.dwyl.com/KiranMantha/plumejs)
 
 [![npm](https://img.shields.io/npm/dw/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core) [![npm](https://img.shields.io/npm/v/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core)
 
