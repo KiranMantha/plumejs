@@ -1,7 +1,4 @@
-<div align="center">
-    <h1>@plumejs/core</h1>
-    <img alt="logo" src="./logo.svg"/>
-</div>
+![](./logo.svg)
 
 <hr />
 
