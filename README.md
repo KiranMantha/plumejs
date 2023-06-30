@@ -1,6 +1,6 @@
 <div align="center">
     <h1>@plumejs/core</h1>
-    ![](./logo.svg)
+    <img alt="logo" src="./logo.svg"/>
 </div>
 
 <hr />
