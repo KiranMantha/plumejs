@@ -8,7 +8,7 @@
 [![GitHub contributors badge](https://img.shields.io/github/contributors/kiranmantha/plumejs?color=blue)](https://GitHub.com/KiranMantha/plumejs/graphs/contributors/)
 [![PRs Welcome badge](https://img.shields.io/badge/PRs-welcome-blue.svg)](https://GitHub.com/KiranMantha/plumejs/pulls)
 [![Number of hits badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fhits.dwyl.com%2Fkiranmantha%2Fplumejs.json&label=hits&color=blue)](http://hits.dwyl.com/KiranMantha/plumejs)
-[![Discord badge](https://img.shields.io/discord/1124230781439578172?label=discord&color=blue)](https://discord.com/channels/1124230781439578172/1124230781909348475)
+[![Discord badge](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.com/channels/1124230781439578172/1124230781909348475)
 
 [![NPM version badge](https://img.shields.io/npm/v/@plumejs/core)](https://www.npmjs.com/package/@plumejs/core)
 [![NPM downloads badge](https://img.shields.io/npm/dw/%40plumejs/core?color=blue)](https://www.npmjs.com/package/@plumejs/core)
