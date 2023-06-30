@@ -12,6 +12,6 @@ PlumeJs is a conceptual combination of angularjs and react. Just like angular on
 
 PlumeJs has very few syntaxes enabling faster learning curve.
 
-# Documentation
+## Documentation
 
 For documentation please visit [wiki](https://github.com/KiranMantha/plumejs/wiki)
