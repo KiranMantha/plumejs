@@ -1,8 +1,7 @@
 import { Injectable } from './decorators';
 import { fromEvent } from './utils';
 
-@Injectable()
-export class DomTransition {
+class DomTransition {
   private transition = '';
 
   constructor() {
@@ -52,3 +51,7 @@ export class DomTransition {
     }
   }
 }
+
+Injectable()(DomTransition);
+
+export { DomTransition };
