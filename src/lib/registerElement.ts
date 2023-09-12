@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -49,20 +49,16 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
       constructor() {
         super();
-        this.shadow = this.attachShadow({ mode: 'open' });
-        if (!CSS_SHEET_NOT_SUPPORTED) {
-          const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
-          this.shadow.adoptedStyleSheets = adoptedStyleSheets;
+        if (CSS_SHEET_SUPPORTED) {
+          this.shadow = this.attachShadow({ mode: 'open' });
+          this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
+        } else {
+          this.shadow = this;
+          this.componentStyleTag = createStyleTag(options.styles, document.head);
         }
         this.createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
-      }
-
-      private emulateComponent() {
-        if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
-          this.componentStyleTag = createStyleTag(options.styles);
-        }
       }
 
       private createProxyInstance() {
@@ -82,15 +78,6 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           this.shadow.innerHTML = sanitizeHTML(renderValue);
         } else {
           render(this.shadow, renderValue);
-        }
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-          if (componentRegistry.globalStyleTag && !options.standalone) {
-            this.shadow.insertBefore(
-              document.importNode(componentRegistry.globalStyleTag, true),
-              this.shadow.childNodes[0]
-            );
-          }
         }
       }
 
@@ -115,7 +102,6 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       }
 
       connectedCallback() {
-        this.emulateComponent();
         this.klass.beforeMount && this.klass.beforeMount();
         this.update();
         this.klass.mount && this.klass.mount();

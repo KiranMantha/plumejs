@@ -3,12 +3,12 @@ const isObject = (value: any) => value !== null && typeof value === 'object';
 const isFunction = (value: any) => typeof value === 'function';
 const isUndefined = (value: any) => typeof value == 'undefined';
 
-const CSS_SHEET_NOT_SUPPORTED = (() => {
+const CSS_SHEET_SUPPORTED = (() => {
   try {
     new CSSStyleSheet();
-    return false;
-  } catch (e) {
     return true;
+  } catch (e) {
+    return false;
   }
 })();
 
@@ -142,13 +142,13 @@ const promisify = () => {
 };
 
 export {
-  isObject,
+  CSS_SHEET_SUPPORTED,
+  fromEvent,
   isFunction,
+  isObject,
   isUndefined,
   klass,
-  CSS_SHEET_NOT_SUPPORTED,
-  fromEvent,
-  sanitizeHTML,
+  promisify,
   proxifiedClass,
-  promisify
+  sanitizeHTML
 };

@@ -2,13 +2,13 @@ const klass = Symbol('klass');
 const isObject = (value) => value !== null && typeof value === 'object';
 const isFunction = (value) => typeof value === 'function';
 const isUndefined = (value) => typeof value == 'undefined';
-const CSS_SHEET_NOT_SUPPORTED = (() => {
+const CSS_SHEET_SUPPORTED = (() => {
     try {
         new CSSStyleSheet();
-        return false;
+        return true;
     }
     catch (e) {
-        return true;
+        return false;
     }
 })();
 const fromEvent = (target, eventName, onNext, options = false) => {
@@ -97,4 +97,4 @@ const promisify = () => {
     });
     return [promise, resolver];
 };
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass, promisify };
+export { CSS_SHEET_SUPPORTED, fromEvent, isFunction, isObject, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML };
