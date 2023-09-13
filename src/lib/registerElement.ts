@@ -127,7 +127,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
       disconnectedCallback() {
         this.renderCount = 1;
-        this.componentStyleTag && this.componentStyleTag.remove();
+        this.componentStyleTag?.remove();
         this.klass.unmount?.();
         if (this.eventSubscriptions?.length) {
           for (const unsubscribe of this.eventSubscriptions) {
