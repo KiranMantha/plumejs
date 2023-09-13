@@ -106,8 +106,8 @@ const registerElement = (options, target) => {
         }
         disconnectedCallback() {
             this.renderCount = 1;
-            this.componentStyleTag?.remove();
             this.klass.unmount?.();
+            this.componentStyleTag?.remove();
             if (this.eventSubscriptions?.length) {
                 for (const unsubscribe of this.eventSubscriptions) {
                     unsubscribe();
