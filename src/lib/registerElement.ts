@@ -54,7 +54,8 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
         } else {
           this.shadow = this;
-          this.componentStyleTag = createStyleTag(options.styles, document.head);
+          const styles = options.styles.replaceAll(':host', options.selector);
+          this.componentStyleTag = createStyleTag(styles, document.head);
         }
         this.createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
