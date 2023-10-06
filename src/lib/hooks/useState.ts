@@ -1,8 +1,10 @@
 import { isFunction } from '../utils';
 
-const useState = <T extends Record<string, any>>(obj: T): [T, (obj: (fn: T) => void | Partial<T>) => void] => {
+const useState = <T extends Record<string, unknown>>(
+  obj: T
+): [T, (obj: (fn: T) => Partial<T> | Partial<T>) => void] => {
   const initialState = obj;
-  const reducer = (fn: (k: T) => void | Partial<T>) => {
+  const reducer = (fn: (k: T) => Partial<T> | Partial<T>) => {
     let newState;
     if (isFunction(fn)) {
       newState = fn(initialState);
