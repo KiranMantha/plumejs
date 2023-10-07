@@ -135,14 +135,18 @@ const { html, render } = (() => {
             return;
         const templateAtts = templateNode.attributes;
         const existingAtts = domNode.attributes;
+        const preserveAttributesAttr = domNode.getAttribute('data-preserve-attributes');
+        const preserveExistingAttributes = preserveAttributesAttr && preserveAttributesAttr === 'true';
         for (const { name, value } of templateAtts) {
             if (!existingAtts[name] || existingAtts[name] !== value) {
                 domNode.setAttribute(name, value);
             }
         }
-        for (const { name } of existingAtts) {
-            if (!templateAtts[name]) {
-                domNode.removeAttribute(name);
+        if (!preserveExistingAttributes) {
+            for (const { name } of existingAtts) {
+                if (!templateAtts[name]) {
+                    domNode.removeAttribute(name);
+                }
             }
         }
     };
