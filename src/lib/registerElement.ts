@@ -40,6 +40,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       private klass: Record<string, any>;
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
+      private refreashEventUnSubscription: () => void;
       renderCount = 0;
       eventSubscriptions: (() => void)[] = [];
 
@@ -120,6 +121,9 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
             this.update();
           })
         );
+        this.refreashEventUnSubscription = fromEvent(this, 'refresh_component', () => {
+          this.klass.mount?.();
+        });
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -130,6 +134,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         this.renderCount = 1;
         this.klass.unmount?.();
         this.componentStyleTag?.remove();
+        this.refreashEventUnSubscription();
         if (this.eventSubscriptions?.length) {
           for (const unsubscribe of this.eventSubscriptions) {
             unsubscribe();

@@ -33,6 +33,7 @@ const registerElement = (options, target) => {
         klass;
         shadow;
         componentStyleTag = null;
+        refreashEventUnSubscription;
         renderCount = 0;
         eventSubscriptions = [];
         static get observedAttributes() {
@@ -101,6 +102,9 @@ const registerElement = (options, target) => {
             this.eventSubscriptions.push(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
+            this.refreashEventUnSubscription = fromEvent(this, 'refresh_component', () => {
+                this.klass.mount?.();
+            });
         }
         attributeChangedCallback(name, oldValue, newValue) {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);
@@ -109,6 +113,7 @@ const registerElement = (options, target) => {
             this.renderCount = 1;
             this.klass.unmount?.();
             this.componentStyleTag?.remove();
+            this.refreashEventUnSubscription();
             if (this.eventSubscriptions?.length) {
                 for (const unsubscribe of this.eventSubscriptions) {
                     unsubscribe();
