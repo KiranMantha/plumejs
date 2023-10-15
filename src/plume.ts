@@ -15,4 +15,4 @@ export {
   Renderer,
   ServiceDecoratorOptions
 } from './lib/types';
-export { fromEvent } from './lib/utils';
+export { BehaviourSubjectObs, SubjectObs, Subscriptions, fromEvent, promisify, wrapIntoObservable } from './lib/utils';

@@ -186,7 +186,11 @@ const { html, render } = (() => {
    * @param  {Node} template The template HTML
    * @param  {Node} elem     The UI HTML
    */
-  const _diff = (template: HTMLElement | DocumentFragment, element: HTMLElement | DocumentFragment) => {
+  const _diff = (
+    template: HTMLElement | DocumentFragment,
+    element: HTMLElement | DocumentFragment,
+    isChildDiffing: boolean
+  ) => {
     // Get arrays of child nodes
     const domNodes = element ? Array.from(element.childNodes) : [];
     const templateNodes = template ? Array.from(template.childNodes) : [];
@@ -202,6 +206,12 @@ const { html, render } = (() => {
     // Diff each item in the templateNodes
     templateNodes.forEach((node: HTMLElement, index) => {
       const domNode = domNodes[index] as HTMLElement;
+
+      // Discard diffing of children custom elements
+      if (isChildDiffing && domNode && domNode.nodeType === 1 && domNode.tagName.indexOf('-') > -1) {
+        return;
+      }
+
       _diffAttributes(node, domNode);
 
       // If element doesn't exist, create it
@@ -233,14 +243,14 @@ const { html, render } = (() => {
       // This uses a document fragment to minimize reflows
       if (domNode.childNodes.length < 1 && node.childNodes.length > 0) {
         const fragment = document.createDocumentFragment();
-        _diff(node, fragment);
+        _diff(node, fragment, false);
         domNode.appendChild(fragment);
         return;
       }
 
       // If there are existing child elements that need to be modified, diff them
       if (node.childNodes.length > 0) {
-        _diff(node, domNode);
+        _diff(node, domNode, true);
         return;
       }
     });
@@ -283,7 +293,7 @@ const { html, render } = (() => {
       where.innerHTML = '';
       where.appendChild(what);
     } else {
-      _diff(what, where);
+      _diff(what, where, false);
     }
     refNodes.forEach((closure) => {
       closure();

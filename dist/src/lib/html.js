@@ -162,7 +162,7 @@ const { html, render } = (() => {
             return null;
         return node.textContent;
     };
-    const _diff = (template, element) => {
+    const _diff = (template, element, isChildDiffing) => {
         const domNodes = element ? Array.from(element.childNodes) : [];
         const templateNodes = template ? Array.from(template.childNodes) : [];
         let count = domNodes.length - templateNodes.length;
@@ -173,6 +173,9 @@ const { html, render } = (() => {
         }
         templateNodes.forEach((node, index) => {
             const domNode = domNodes[index];
+            if (isChildDiffing && domNode && domNode.nodeType === 1 && domNode.tagName.indexOf('-') > -1) {
+                return;
+            }
             _diffAttributes(node, domNode);
             if (!domNode) {
                 element && element.appendChild(node);
@@ -193,12 +196,12 @@ const { html, render } = (() => {
             }
             if (domNode.childNodes.length < 1 && node.childNodes.length > 0) {
                 const fragment = document.createDocumentFragment();
-                _diff(node, fragment);
+                _diff(node, fragment, false);
                 domNode.appendChild(fragment);
                 return;
             }
             if (node.childNodes.length > 0) {
-                _diff(node, domNode);
+                _diff(node, domNode, true);
                 return;
             }
         });
@@ -235,7 +238,7 @@ const { html, render } = (() => {
             where.appendChild(what);
         }
         else {
-            _diff(what, where);
+            _diff(what, where, false);
         }
         refNodes.forEach((closure) => {
             closure();

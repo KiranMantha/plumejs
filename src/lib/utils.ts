@@ -2,6 +2,8 @@ const klass = Symbol('klass');
 const isObject = (value: any) => value !== null && typeof value === 'object';
 const isFunction = (value: any) => typeof value === 'function';
 const isUndefined = (value: any) => typeof value == 'undefined';
+const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 
 const CSS_SHEET_SUPPORTED = (() => {
   try {
@@ -11,6 +13,89 @@ const CSS_SHEET_SUPPORTED = (() => {
     return false;
   }
 })();
+
+const ofObs = <T>(input: T) => ({
+  subscribe: (fn: (param: T) => void) => {
+    fn(input);
+  }
+});
+
+const fromPromiseObs = <T>(input: T) => ({
+  subscribe: (fn: (param: T) => void) => {
+    Promise.resolve(input).then((value) => {
+      fn(value);
+    });
+  }
+});
+
+class SubjectObs<T> {
+  _callbacks: Array<(param?: T) => void> = [];
+
+  asObservable() {
+    return {
+      subscribe: (fn: (param?: T) => void) => this.subscribe(fn)
+    };
+  }
+
+  subscribe(fn: (param?: T) => void) {
+    this._callbacks.push(fn);
+    return this.unsubscribe;
+  }
+
+  unsubscribe() {
+    this._callbacks = [];
+  }
+
+  next(value: T) {
+    for (const callback of this._callbacks) {
+      callback(value);
+    }
+  }
+}
+
+/**
+ *
+ */
+class BehaviourSubjectObs<T> extends SubjectObs<T> {
+  _initialValue: T;
+  constructor(initialValue: T) {
+    super();
+    this._initialValue = initialValue;
+  }
+
+  subscribe(fn: (param?: T) => void) {
+    const unsub = super.subscribe(fn);
+    this.next(this._initialValue);
+    return unsub;
+  }
+}
+
+class Subscriptions {
+  _subcribers: Array<() => void> = [];
+
+  add(fn: () => void) {
+    this._subcribers.push(fn);
+  }
+
+  unsubscribe() {
+    for (const fn of this._subcribers) {
+      fn();
+    }
+    this._subcribers = [];
+  }
+}
+
+const wrapIntoObservable = (value) => {
+  if (isObservable(value)) {
+    return value;
+  }
+
+  if (isPromise(value)) {
+    return fromPromiseObs(Promise.resolve(value));
+  }
+
+  return ofObs(value);
+};
 
 const fromEvent = (
   target: HTMLElement | Window,
@@ -142,7 +227,10 @@ const promisify = () => {
 };
 
 export {
+  BehaviourSubjectObs,
   CSS_SHEET_SUPPORTED,
+  SubjectObs,
+  Subscriptions,
   fromEvent,
   isFunction,
   isObject,
@@ -150,5 +238,6 @@ export {
   klass,
   promisify,
   proxifiedClass,
-  sanitizeHTML
+  sanitizeHTML,
+  wrapIntoObservable
 };
