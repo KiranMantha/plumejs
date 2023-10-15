@@ -21,6 +21,5 @@ export {
   render,
   useFormFields,
   useSearchParams,
-  useState,
   wrapIntoObservable
 } from './src/plume';
