@@ -1,4 +1,5 @@
 export {
+  BehaviourSubjectObs,
   Component,
   ComponentDecoratorOptions,
   ComponentRef,
@@ -11,10 +12,15 @@ export {
   InputProps,
   Renderer,
   ServiceDecoratorOptions,
+  SubjectObs,
+  Subscriptions,
   Validators,
   fromEvent,
   html,
+  promisify,
   render,
   useFormFields,
-  useState
+  useSearchParams,
+  useState,
+  wrapIntoObservable
 } from './src/plume';
