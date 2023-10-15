@@ -29,7 +29,7 @@ const fromPromiseObs = <T>(input: T) => ({
 });
 
 class SubjectObs<T> {
-  _callbacks: Array<(param?: T) => void> = [];
+  private _callbacks: Array<(param?: T) => void> = [];
 
   asObservable() {
     return {
@@ -53,11 +53,9 @@ class SubjectObs<T> {
   }
 }
 
-/**
- *
- */
 class BehaviourSubjectObs<T> extends SubjectObs<T> {
-  _initialValue: T;
+  private _initialValue: T;
+
   constructor(initialValue: T) {
     super();
     this._initialValue = initialValue;
@@ -71,7 +69,7 @@ class BehaviourSubjectObs<T> extends SubjectObs<T> {
 }
 
 class Subscriptions {
-  _subcribers: Array<() => void> = [];
+  private _subcribers: Array<() => void> = [];
 
   add(fn: () => void) {
     this._subcribers.push(fn);
