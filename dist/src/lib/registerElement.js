@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
-import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, Subscriptions, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -35,7 +35,7 @@ const registerElement = (options, target) => {
         componentStyleTag = null;
         refreashEventUnSubscription;
         renderCount = 0;
-        eventSubscriptions = [];
+        eventSubscriptions = new Subscriptions();
         static get observedAttributes() {
             return target.observedAttributes || [];
         }
@@ -99,12 +99,12 @@ const registerElement = (options, target) => {
                     this.setProps(propsObj);
                 }
             }, false);
-            this.eventSubscriptions.push(fromEvent(window, 'onLanguageChange', () => {
+            this.eventSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
-            this.refreashEventUnSubscription = fromEvent(this, 'refresh_component', () => {
+            this.eventSubscriptions.add(fromEvent(this, 'refresh_component', () => {
                 this.klass.mount?.();
-            });
+            }));
         }
         attributeChangedCallback(name, oldValue, newValue) {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);
@@ -113,12 +113,7 @@ const registerElement = (options, target) => {
             this.renderCount = 1;
             this.klass.unmount?.();
             this.componentStyleTag?.remove();
-            this.refreashEventUnSubscription();
-            if (this.eventSubscriptions?.length) {
-                for (const unsubscribe of this.eventSubscriptions) {
-                    unsubscribe();
-                }
-            }
+            this.eventSubscriptions.unsubscribe();
         }
     });
 };

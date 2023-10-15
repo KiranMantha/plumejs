@@ -2,7 +2,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
-import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, Subscriptions, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -42,7 +42,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       private componentStyleTag: HTMLStyleElement = null;
       private refreashEventUnSubscription: () => void;
       renderCount = 0;
-      eventSubscriptions: (() => void)[] = [];
+      eventSubscriptions = new Subscriptions();
 
       static get observedAttributes() {
         return target.observedAttributes || [];
@@ -116,14 +116,16 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           },
           false
         );
-        this.eventSubscriptions.push(
+        this.eventSubscriptions.add(
           fromEvent(window, 'onLanguageChange', () => {
             this.update();
           })
         );
-        this.refreashEventUnSubscription = fromEvent(this, 'refresh_component', () => {
-          this.klass.mount?.();
-        });
+        this.eventSubscriptions.add(
+          fromEvent(this, 'refresh_component', () => {
+            this.klass.mount?.();
+          })
+        );
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -134,12 +136,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         this.renderCount = 1;
         this.klass.unmount?.();
         this.componentStyleTag?.remove();
-        this.refreashEventUnSubscription();
-        if (this.eventSubscriptions?.length) {
-          for (const unsubscribe of this.eventSubscriptions) {
-            unsubscribe();
-          }
-        }
+        this.eventSubscriptions.unsubscribe();
       }
     }
   );
