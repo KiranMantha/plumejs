@@ -33,9 +33,8 @@ const registerElement = (options, target) => {
         klass;
         shadow;
         componentStyleTag = null;
-        refreashEventUnSubscription;
+        internalSubscriptions = new Subscriptions();
         renderCount = 0;
-        eventSubscriptions = new Subscriptions();
         static get observedAttributes() {
             return target.observedAttributes || [];
         }
@@ -91,20 +90,19 @@ const registerElement = (options, target) => {
             return this.klass;
         }
         connectedCallback() {
+            this.internalSubscriptions.add(fromEvent(this, 'bindprops', (e) => {
+                const propsObj = e.detail.props;
+                propsObj && this.setProps(propsObj);
+            }));
+            this.internalSubscriptions.add(fromEvent(this, 'refresh_component', () => {
+                this.klass.mount?.();
+            }));
+            this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
+                this.update();
+            }));
             this.klass.beforeMount && this.klass.beforeMount();
             this.update();
             this.klass.mount && this.klass.mount();
-            this.emitEvent('bindprops', {
-                setProps: (propsObj) => {
-                    this.setProps(propsObj);
-                }
-            }, false);
-            this.eventSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
-                this.update();
-            }));
-            this.eventSubscriptions.add(fromEvent(this, 'refresh_component', () => {
-                this.klass.mount?.();
-            }));
         }
         attributeChangedCallback(name, oldValue, newValue) {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);
@@ -113,7 +111,7 @@ const registerElement = (options, target) => {
             this.renderCount = 1;
             this.klass.unmount?.();
             this.componentStyleTag?.remove();
-            this.eventSubscriptions.unsubscribe();
+            this.internalSubscriptions.unsubscribe();
         }
     });
 };

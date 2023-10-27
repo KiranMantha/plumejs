@@ -40,9 +40,8 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       private klass: Record<string, any>;
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
-      private refreashEventUnSubscription: () => void;
+      private internalSubscriptions = new Subscriptions();
       renderCount = 0;
-      eventSubscriptions = new Subscriptions();
 
       static get observedAttributes() {
         return target.observedAttributes || [];
@@ -104,28 +103,25 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       }
 
       connectedCallback() {
-        this.klass.beforeMount && this.klass.beforeMount();
-        this.update();
-        this.klass.mount && this.klass.mount();
-        this.emitEvent(
-          'bindprops',
-          {
-            setProps: (propsObj: Record<string, any>) => {
-              this.setProps(propsObj);
-            }
-          },
-          false
-        );
-        this.eventSubscriptions.add(
-          fromEvent(window, 'onLanguageChange', () => {
-            this.update();
+        this.internalSubscriptions.add(
+          fromEvent(this, 'bindprops', (e: CustomEvent) => {
+            const propsObj = e.detail.props;
+            propsObj && this.setProps(propsObj);
           })
         );
-        this.eventSubscriptions.add(
+        this.internalSubscriptions.add(
           fromEvent(this, 'refresh_component', () => {
             this.klass.mount?.();
           })
         );
+        this.internalSubscriptions.add(
+          fromEvent(window, 'onLanguageChange', () => {
+            this.update();
+          })
+        );
+        this.klass.beforeMount && this.klass.beforeMount();
+        this.update();
+        this.klass.mount && this.klass.mount();
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -136,7 +132,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         this.renderCount = 1;
         this.klass.unmount?.();
         this.componentStyleTag?.remove();
-        this.eventSubscriptions.unsubscribe();
+        this.internalSubscriptions.unsubscribe();
       }
     }
   );

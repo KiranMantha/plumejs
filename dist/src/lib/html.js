@@ -6,6 +6,7 @@ const { html, render } = (() => {
     const insertNodePrefix = 'insertNode';
     const insertNodeRegex = /^insertNode([^ ]+)/;
     let refNodes = [];
+    let inputPropsNodes = [];
     const _sanitize = (data) => {
         const tagsToReplace = {
             '&': '&amp;',
@@ -52,31 +53,45 @@ const { html, render } = (() => {
                         case /^on+/.test(nodeValue): {
                             const eventName = nodeValue.slice(2).toLowerCase();
                             node.removeEventListener(eventName, values[i]);
-                            if (eventName !== 'bindprops') {
-                                node.addEventListener(eventName, values[i]);
-                            }
-                            else {
-                                node.addEventListener(eventName, (event) => {
-                                    event.detail.setProps(values[i]());
-                                });
-                            }
+                            node.addEventListener(eventName, values[i]);
                             break;
                         }
                         case /ref/.test(nodeValue): {
-                            const closure = ((node) => {
-                                const _node = node;
+                            const closure = ((node, fn) => {
+                                const refNode = node;
+                                const _fn = fn;
                                 return () => {
-                                    if (_node.isConnected) {
-                                        values[i](_node);
+                                    if (refNode.isConnected) {
+                                        _fn(refNode);
                                     }
                                 };
-                            })(node);
+                            })(node, values[i]);
                             refNodes.push(closure);
                             break;
                         }
                         case /^data-+/.test(nodeValue):
                         case /^aria-+/.test(nodeValue): {
-                            node.setAttribute(nodeValue, _sanitize(values[i]));
+                            if (nodeValue === 'data-input') {
+                                const closure = ((node, props) => {
+                                    const inputNode = node;
+                                    const input = props;
+                                    return () => {
+                                        if (inputNode.isConnected) {
+                                            const event = new CustomEvent('bindprops', {
+                                                detail: {
+                                                    props: input
+                                                },
+                                                bubbles: false
+                                            });
+                                            inputNode.dispatchEvent(event);
+                                        }
+                                    };
+                                })(node, values[i]);
+                                inputPropsNodes.push(closure);
+                            }
+                            else {
+                                node.setAttribute(nodeValue, _sanitize(values[i]));
+                            }
                             break;
                         }
                         case /class/.test(nodeValue): {
@@ -244,6 +259,10 @@ const { html, render } = (() => {
             closure();
         });
         refNodes = [];
+        inputPropsNodes.forEach((closure) => {
+            closure();
+        });
+        inputPropsNodes = [];
     };
     return { html, render };
 })();
