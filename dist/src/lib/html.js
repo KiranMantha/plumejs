@@ -40,19 +40,20 @@ const { html, render } = (() => {
         temp.innerHTML = markup;
         return temp.content;
     };
-    const _bindDataInput = (node, val) => {
-        const closure = function () {
-            if (this.node.isConnected) {
+    const _bindDataInput = (node, val, symbol) => {
+        const fn = () => {
+            if (node.isConnected) {
                 const event = new CustomEvent('bindprops', {
                     detail: {
-                        props: this.input
+                        props: val
                     },
                     bubbles: false
                 });
-                this.node.dispatchEvent(event);
+                node.dispatchEvent(event);
             }
-        }.bind({ node, input: val });
-        inputPropsNodes.push(closure);
+        };
+        node[symbol] = JSON.stringify(val);
+        inputPropsNodes.push(fn);
     };
     const _bindFragments = (fragment, values) => {
         const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
@@ -82,8 +83,7 @@ const { html, render } = (() => {
                         case /^data-+/.test(nodeValue):
                         case /^aria-+/.test(nodeValue): {
                             if (nodeValue === 'data-input') {
-                                _bindDataInput(node, values[i]);
-                                node[Symbol('input')] = JSON.stringify(values[i]);
+                                _bindDataInput(node, values[i], Symbol('input'));
                             }
                             else {
                                 node.setAttribute(nodeValue, _sanitize(values[i]));
@@ -166,7 +166,7 @@ const { html, render } = (() => {
             const templateInput = templateSymbols.length ? templateNode[templateSymbols[0]] : '';
             const domInput = domSymbols.length ? domNode[domSymbols[0]] : '';
             if (templateInput && domInput && templateInput !== domInput) {
-                _bindDataInput(domNode, JSON.parse(templateInput));
+                _bindDataInput(domNode, JSON.parse(templateInput), domSymbols[0]);
             }
         }
     };
@@ -260,12 +260,12 @@ const { html, render } = (() => {
         else {
             _diff(what, where, false);
         }
-        refNodes.forEach((closure) => {
-            closure();
+        refNodes.forEach((fn) => {
+            fn();
         });
         refNodes = [];
-        inputPropsNodes.forEach((closure) => {
-            closure();
+        inputPropsNodes.forEach((fn) => {
+            fn();
         });
         inputPropsNodes = [];
     };
