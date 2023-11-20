@@ -44,7 +44,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       renderCount = 0;
 
       static get observedAttributes() {
-        return target.ObservedAttributes || [];
+        return target.observedAttributes || [];
       }
 
       constructor() {
@@ -92,7 +92,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
       setProps(propsObj: Record<string, any>) {
         for (const [key, value] of Object.entries(propsObj)) {
-          if (target.ObservedProperties.find((property) => property === key)) {
+          if (target.observedProperties.find((property) => property === key)) {
             this.klass[key] = value;
           }
         }

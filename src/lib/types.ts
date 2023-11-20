@@ -13,8 +13,8 @@ interface ServiceDecoratorOptions {
 }
 
 interface IHooks {
-  ObservedAttributes?: readonly string[];
-  ObservedProperties?: readonly string[];
+  observedAttributes?: readonly string[];
+  observedProperties?: readonly string[];
   render: () => DocumentFragment | string;
   beforeMount?: () => void;
   mount?: () => void;
@@ -51,7 +51,7 @@ class Renderer {
 type InputProps<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+  [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 
 interface ComponentRef<T> {

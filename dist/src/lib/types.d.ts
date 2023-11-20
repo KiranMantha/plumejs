@@ -12,8 +12,8 @@ interface ServiceDecoratorOptions {
     deps?: ConstructorType<any>[];
 }
 interface IHooks {
-    ObservedAttributes?: readonly string[];
-    ObservedProperties?: readonly string[];
+    observedAttributes?: readonly string[];
+    observedProperties?: readonly string[];
     render: () => DocumentFragment | string;
     beforeMount?: () => void;
     mount?: () => void;
@@ -34,7 +34,7 @@ declare class Renderer {
     constructor(_hostElement: HTMLElement, _shadowRoot: ShadowRoot);
 }
 type InputProps<T> = {
-    [K in Extract<T, IHooks>['ObservedProperties'][number]]?: K extends keyof T ? T[K] : never;
+    [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 interface ComponentRef<T> {
     setProps(propertiesObject: InputProps<T>): void;

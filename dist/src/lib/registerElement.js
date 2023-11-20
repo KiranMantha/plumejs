@@ -36,7 +36,7 @@ const registerElement = (options, target) => {
         internalSubscriptions = new Subscriptions();
         renderCount = 0;
         static get observedAttributes() {
-            return target.ObservedAttributes || [];
+            return target.observedAttributes || [];
         }
         constructor() {
             super();
@@ -81,7 +81,7 @@ const registerElement = (options, target) => {
         }
         setProps(propsObj) {
             for (const [key, value] of Object.entries(propsObj)) {
-                if (target.ObservedProperties.find((property) => property === key)) {
+                if (target.observedProperties.find((property) => property === key)) {
                     this.klass[key] = value;
                 }
             }
