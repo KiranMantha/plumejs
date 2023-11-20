@@ -84,9 +84,7 @@ const { html, render } = (() => {
             }
             case /ref/.test(nodeValue): {
               const closure = function () {
-                if (this.node.isConnected) {
-                  this.fn(this.node);
-                }
+                this.node.isConnected && this.fn(this.node);
               }.bind({ node, fn: values[i] });
               refNodes.push(closure);
               break;
@@ -138,8 +136,8 @@ const { html, render } = (() => {
 
   const _replaceInsertNodeComments = (fragment: DocumentFragment, values: Array<any>) => {
     const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
-    let node = commentsWalker.nextNode() as Comment;
-    let match;
+    let node = commentsWalker.nextNode() as Comment,
+      match: RegExpExecArray;
     while (node) {
       if ((match = insertNodeRegex.exec(node.data))) {
         const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
@@ -150,6 +148,11 @@ const { html, render } = (() => {
     }
   };
 
+  /**
+   * update node attributes y comparing present node and compiled node
+   * @param {HTMLElement} templateNode
+   * @param {HTMLElement} domNode
+   */
   const _diffAttributes = (templateNode: HTMLElement, domNode: HTMLElement) => {
     if (!templateNode || !domNode || templateNode.nodeType !== 1 || domNode.nodeType !== 1) return;
     const templateAtts = templateNode.attributes;
@@ -196,8 +199,8 @@ const { html, render } = (() => {
 
   /**
    * Get the content from a node
-   * @param  {Node}   node The node
-   * @return {String}      The type
+   * @param  {Node} node The node
+   * @return {String} The type
    */
   const _getNodeContent = (node: HTMLElement) => {
     if (node.childNodes && node.childNodes.length > 0) return null;
@@ -207,7 +210,7 @@ const { html, render } = (() => {
   /**
    * Compare the template to the UI and make updates
    * @param  {Node} template The template HTML
-   * @param  {Node} elem     The UI HTML
+   * @param  {Node} element The UI HTML
    */
   const _diff = (
     template: HTMLElement | DocumentFragment,
@@ -279,6 +282,12 @@ const { html, render } = (() => {
     });
   };
 
+  /**
+   * tagged literals which construct dom nodes
+   * @param {.*} templates
+   * @param {...any[]} values
+   * @return DocumentFragment
+   */
   const html = (templates: TemplateStringsArray, ...values: Array<any>): DocumentFragment => {
     let result = '';
     const { length } = templates;
@@ -296,10 +305,21 @@ const { html, render } = (() => {
       }
 
       if (!isAttributePart) {
-        if (Array.isArray(variable) || variable instanceof DocumentFragment) {
-          result += `<!--${insertNodePrefix}${i - 1}-->`;
-        } else {
-          result += variable;
+        switch (true) {
+          case Array.isArray(variable):
+          case variable instanceof DocumentFragment: {
+            result += `<!--${insertNodePrefix}${i - 1}-->`;
+            break;
+          }
+          case typeof variable === 'object' && variable !== null: {
+            if ('html' in variable) {
+              result += variable['html'];
+            }
+            break;
+          }
+          default: {
+            result += variable || '';
+          }
         }
       }
     }
@@ -311,8 +331,13 @@ const { html, render } = (() => {
     return fragment;
   };
 
-  const render = (where: HTMLElement, what: DocumentFragment) => {
-    if (!where.children.length) {
+  /**
+   * Renders template literals to target dom node
+   * @param {HTMLElement} where
+   * @param {(templates: any, ...values: any[]) => DocumentFragment} what
+   */
+  const render = (where, what) => {
+    if (where && !where.children.length) {
       where.innerHTML = '';
       where.appendChild(what);
     } else {

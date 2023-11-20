@@ -44,7 +44,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       renderCount = 0;
 
       static get observedAttributes() {
-        return target.observedAttributes || [];
+        return target.ObservedAttributes || [];
       }
 
       constructor() {
@@ -82,7 +82,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         }
       }
 
-      emitEvent(eventName: string, data: any, allowBubbling = true) {
+      emitEvent(eventName: string, data: any, allowBubbling = false) {
         const event = new CustomEvent(eventName, {
           detail: data,
           bubbles: allowBubbling
@@ -92,10 +92,11 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
 
       setProps(propsObj: Record<string, any>) {
         for (const [key, value] of Object.entries(propsObj)) {
-          this.klass[key] = value;
+          if (target.ObservedProperties.find((property) => property === key)) {
+            this.klass[key] = value;
+          }
         }
         this.klass.onPropertiesChanged?.();
-        this.update();
       }
 
       getInstance() {
@@ -119,9 +120,9 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
             this.update();
           })
         );
-        this.klass.beforeMount && this.klass.beforeMount();
+        this.klass.beforeMount?.();
         this.update();
-        this.klass.mount && this.klass.mount();
+        this.klass.mount?.();
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {

@@ -36,7 +36,7 @@ const registerElement = (options, target) => {
         internalSubscriptions = new Subscriptions();
         renderCount = 0;
         static get observedAttributes() {
-            return target.observedAttributes || [];
+            return target.ObservedAttributes || [];
         }
         constructor() {
             super();
@@ -72,7 +72,7 @@ const registerElement = (options, target) => {
                 render(this.shadow, renderValue);
             }
         }
-        emitEvent(eventName, data, allowBubbling = true) {
+        emitEvent(eventName, data, allowBubbling = false) {
             const event = new CustomEvent(eventName, {
                 detail: data,
                 bubbles: allowBubbling
@@ -81,10 +81,11 @@ const registerElement = (options, target) => {
         }
         setProps(propsObj) {
             for (const [key, value] of Object.entries(propsObj)) {
-                this.klass[key] = value;
+                if (target.ObservedProperties.find((property) => property === key)) {
+                    this.klass[key] = value;
+                }
             }
             this.klass.onPropertiesChanged?.();
-            this.update();
         }
         getInstance() {
             return this.klass;
@@ -100,9 +101,9 @@ const registerElement = (options, target) => {
             this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
-            this.klass.beforeMount && this.klass.beforeMount();
+            this.klass.beforeMount?.();
             this.update();
-            this.klass.mount && this.klass.mount();
+            this.klass.mount?.();
         }
         attributeChangedCallback(name, oldValue, newValue) {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);

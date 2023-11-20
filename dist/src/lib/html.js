@@ -73,9 +73,7 @@ const { html, render } = (() => {
                         }
                         case /ref/.test(nodeValue): {
                             const closure = function () {
-                                if (this.node.isConnected) {
-                                    this.fn(this.node);
-                                }
+                                this.node.isConnected && this.fn(this.node);
                             }.bind({ node, fn: values[i] });
                             refNodes.push(closure);
                             break;
@@ -130,8 +128,7 @@ const { html, render } = (() => {
     };
     const _replaceInsertNodeComments = (fragment, values) => {
         const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
-        let node = commentsWalker.nextNode();
-        let match;
+        let node = commentsWalker.nextNode(), match;
         while (node) {
             if ((match = insertNodeRegex.exec(node.data))) {
                 const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
@@ -238,11 +235,21 @@ const { html, render } = (() => {
                 isAttributePart = true;
             }
             if (!isAttributePart) {
-                if (Array.isArray(variable) || variable instanceof DocumentFragment) {
-                    result += `<!--${insertNodePrefix}${i - 1}-->`;
-                }
-                else {
-                    result += variable;
+                switch (true) {
+                    case Array.isArray(variable):
+                    case variable instanceof DocumentFragment: {
+                        result += `<!--${insertNodePrefix}${i - 1}-->`;
+                        break;
+                    }
+                    case typeof variable === 'object' && variable !== null: {
+                        if ('html' in variable) {
+                            result += variable['html'];
+                        }
+                        break;
+                    }
+                    default: {
+                        result += variable || '';
+                    }
                 }
             }
         }
@@ -253,7 +260,7 @@ const { html, render } = (() => {
         return fragment;
     };
     const render = (where, what) => {
-        if (!where.children.length) {
+        if (where && !where.children.length) {
             where.innerHTML = '';
             where.appendChild(what);
         }
