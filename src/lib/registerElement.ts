@@ -82,10 +82,9 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         }
       }
 
-      emitEvent(eventName: string, data: any, allowBubbling = false) {
+      emitEvent(eventName: string, data: any) {
         const event = new CustomEvent(eventName, {
-          detail: data,
-          bubbles: allowBubbling
+          detail: data
         });
         this.dispatchEvent(event);
       }

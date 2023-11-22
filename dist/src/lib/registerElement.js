@@ -72,10 +72,9 @@ const registerElement = (options, target) => {
                 render(this.shadow, renderValue);
             }
         }
-        emitEvent(eventName, data, allowBubbling = false) {
+        emitEvent(eventName, data) {
             const event = new CustomEvent(eventName, {
-                detail: data,
-                bubbles: allowBubbling
+                detail: data
             });
             this.dispatchEvent(event);
         }

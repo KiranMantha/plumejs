@@ -52,15 +52,17 @@ const { html, render } = (() => {
 
   const _bindDataInput = (node: HTMLElement, val: Record<string, unknown>, symbol: symbol) => {
     const fn = () => {
-      if (node.isConnected) {
-        const event = new CustomEvent('bindprops', {
-          detail: {
-            props: val
-          },
-          bubbles: false
-        });
-        node.dispatchEvent(event);
-      }
+      setTimeout(() => {
+        if (node.isConnected) {
+          const event = new CustomEvent('bindprops', {
+            detail: {
+              props: val
+            },
+            bubbles: false
+          });
+          node.dispatchEvent(event);
+        }
+      });
     };
     node[symbol] = JSON.stringify(val);
     inputPropsNodes.push(fn);
@@ -70,7 +72,6 @@ const { html, render } = (() => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode() as unknown as HTMLElement;
     while (node) {
-      (node as any).eventSubscriptions = [];
       if (node.hasAttributes()) {
         const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
         for (const { nodeName, nodeValue } of customAttributes) {
