@@ -175,6 +175,10 @@ const { html, render } = (() => {
       }
     }
 
+    if (domNode.tagName.toLowerCase() === 'input') {
+      (domNode as HTMLInputElement).value = (templateNode as HTMLInputElement).value;
+    }
+
     if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
       const templateSymbols = Object.getOwnPropertySymbols(templateNode);
       const domSymbols = Object.getOwnPropertySymbols(domNode);
