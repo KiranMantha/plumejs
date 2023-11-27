@@ -4,7 +4,6 @@ export {
   ComponentDecoratorOptions,
   ComponentRef,
   DomTransition,
-  Form,
   IHooks,
   Injectable,
   InjectionToken,
@@ -14,12 +13,10 @@ export {
   ServiceDecoratorOptions,
   SubjectObs,
   Subscriptions,
-  Validators,
   fromEvent,
   html,
   promisify,
   render,
-  useFormFields,
   useSearchParams,
   wrapIntoObservable
 } from './src/plume';
