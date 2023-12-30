@@ -16,6 +16,7 @@ declare class BehaviourSubjectObs<T> extends SubjectObs<T> {
     private _initialValue;
     constructor(initialValue: T);
     subscribe(fn: (param?: T) => void): () => void;
+    next(newvalue: T): void;
 }
 declare class Subscriptions {
     private _subcribers;
