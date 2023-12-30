@@ -25,23 +25,30 @@ const fromPromiseObs = (input) => ({
         });
     }
 });
+const createGuid = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = (Math.random() * 16) | 0, v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+};
 class SubjectObs {
-    _callbacks = [];
+    _callbackCollection = {};
     asObservable() {
         return {
             subscribe: (fn) => this.subscribe(fn)
         };
     }
     subscribe(fn) {
-        this._callbacks.push(fn);
-        return this.unsubscribe;
+        const token = createGuid();
+        this._callbackCollection[token] = fn;
+        return () => this.unsubscribe(token);
     }
-    unsubscribe() {
-        this._callbacks = [];
+    unsubscribe(token) {
+        delete this._callbackCollection[token];
     }
     next(value) {
-        for (const callback of this._callbacks) {
-            callback(value);
+        for (const token in this._callbackCollection) {
+            this._callbackCollection[token](value);
         }
     }
 }

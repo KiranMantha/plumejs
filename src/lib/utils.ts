@@ -28,8 +28,16 @@ const fromPromiseObs = <T>(input: T) => ({
   }
 });
 
+const createGuid = (): string => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0,
+      v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 class SubjectObs<T> {
-  private _callbacks: Array<(param?: T) => void> = [];
+  private _callbackCollection: Record<string, (param?: T) => void> = {};
 
   asObservable() {
     return {
@@ -38,17 +46,18 @@ class SubjectObs<T> {
   }
 
   subscribe(fn: (param?: T) => void) {
-    this._callbacks.push(fn);
-    return this.unsubscribe;
+    const token = createGuid();
+    this._callbackCollection[token] = fn;
+    return () => this.unsubscribe(token);
   }
 
-  unsubscribe() {
-    this._callbacks = [];
+  unsubscribe(token: string) {
+    delete this._callbackCollection[token];
   }
 
   next(value: T) {
-    for (const callback of this._callbacks) {
-      callback(value);
+    for (const token in this._callbackCollection) {
+      this._callbackCollection[token](value);
     }
   }
 }

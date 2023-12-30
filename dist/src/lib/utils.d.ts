@@ -4,12 +4,12 @@ declare const isFunction: (value: any) => boolean;
 declare const isUndefined: (value: any) => boolean;
 declare const CSS_SHEET_SUPPORTED: boolean;
 declare class SubjectObs<T> {
-    private _callbacks;
+    private _callbackCollection;
     asObservable(): {
         subscribe: (fn: (param?: T) => void) => () => void;
     };
     subscribe(fn: (param?: T) => void): () => void;
-    unsubscribe(): void;
+    unsubscribe(token: string): void;
     next(value: T): void;
 }
 declare class BehaviourSubjectObs<T> extends SubjectObs<T> {
