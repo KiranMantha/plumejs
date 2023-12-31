@@ -25,12 +25,7 @@ const fromPromiseObs = (input) => ({
         });
     }
 });
-const createGuid = () => {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0, v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-};
+const createToken = () => Math.random().toString(36).substring(2);
 class SubjectObs {
     _callbackCollection = {};
     asObservable() {
@@ -39,7 +34,7 @@ class SubjectObs {
         };
     }
     subscribe(fn) {
-        const token = createGuid();
+        const token = createToken();
         this._callbackCollection[token] = fn;
         return () => this.unsubscribe(token);
     }
