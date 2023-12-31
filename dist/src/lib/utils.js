@@ -28,6 +28,9 @@ const fromPromiseObs = (input) => ({
 const createToken = () => Math.random().toString(36).substring(2);
 class SubjectObs {
     _callbackCollection = {};
+    unsubscribe(token) {
+        delete this._callbackCollection[token];
+    }
     asObservable() {
         return {
             subscribe: (fn) => this.subscribe(fn)
@@ -37,9 +40,6 @@ class SubjectObs {
         const token = createToken();
         this._callbackCollection[token] = fn;
         return () => this.unsubscribe(token);
-    }
-    unsubscribe(token) {
-        delete this._callbackCollection[token];
     }
     next(value) {
         for (const token in this._callbackCollection) {

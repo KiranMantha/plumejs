@@ -33,6 +33,10 @@ const createToken = () => Math.random().toString(36).substring(2);
 class SubjectObs<T> {
   private _callbackCollection: Record<string, (param?: T) => void> = {};
 
+  private unsubscribe(token: string) {
+    delete this._callbackCollection[token];
+  }
+
   asObservable() {
     return {
       subscribe: (fn: (param?: T) => void) => this.subscribe(fn)
@@ -43,10 +47,6 @@ class SubjectObs<T> {
     const token = createToken();
     this._callbackCollection[token] = fn;
     return () => this.unsubscribe(token);
-  }
-
-  unsubscribe(token: string) {
-    delete this._callbackCollection[token];
   }
 
   next(value: T) {
