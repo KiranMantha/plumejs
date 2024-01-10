@@ -1,4 +1,5 @@
 'use strict';
+export { signal } from './lib/augment';
 export { Component, Injectable, InjectionToken } from './lib/decorators';
 export { DomTransition } from './lib/domTransition.service';
 export { useSearchParams } from './lib/hooks';

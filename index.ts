@@ -17,6 +17,7 @@ export {
   html,
   promisify,
   render,
+  signal,
   useSearchParams,
   wrapIntoObservable
 } from './src/plume';

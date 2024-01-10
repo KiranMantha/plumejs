@@ -1,3 +1,4 @@
+import { augmentor } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
@@ -100,6 +101,9 @@ const registerElement = (options, target) => {
             this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
+            if (this.klass.beforeMount) {
+                this.internalSubscriptions.add(augmentor(this.update, this.klass.beforeMount.bind(this.klass)));
+            }
             this.klass.beforeMount?.();
             this.update();
             this.klass.mount?.();

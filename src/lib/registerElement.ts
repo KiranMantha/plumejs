@@ -1,3 +1,4 @@
+import { augmentor } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
@@ -119,6 +120,9 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
             this.update();
           })
         );
+        if (this.klass.beforeMount) {
+          this.internalSubscriptions.add(augmentor(this.update, this.klass.beforeMount.bind(this.klass)));
+        }
         this.klass.beforeMount?.();
         this.update();
         this.klass.mount?.();
