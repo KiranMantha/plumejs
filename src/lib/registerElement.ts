@@ -61,6 +61,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         this.createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
+        this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
       }
 
       private createProxyInstance() {
@@ -71,7 +72,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         rendererInstance.emitEvent = (eventName: string, data: any) => {
           this.emitEvent(eventName, data);
         };
-        this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
+        this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
       }
 
       update() {
@@ -103,6 +104,16 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         return this.klass;
       }
 
+      setRenderIntoQueue() {
+        ++this.renderCount;
+        if (this.renderCount === 1) {
+          queueMicrotask(() => {
+            this.update();
+            this.renderCount = 0;
+          });
+        }
+      }
+
       connectedCallback() {
         this.internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e: CustomEvent) => {
@@ -121,7 +132,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           })
         );
         if (this.klass.beforeMount) {
-          this.internalSubscriptions.add(augmentor(this.update, this.klass.beforeMount.bind(this.klass)));
+          this.internalSubscriptions.add(augmentor(this.setRenderIntoQueue, this.klass.beforeMount.bind(this.klass)));
         }
         this.klass.beforeMount?.();
         this.update();

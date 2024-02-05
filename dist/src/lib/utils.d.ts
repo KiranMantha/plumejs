@@ -26,7 +26,7 @@ declare class Subscriptions {
 declare const wrapIntoObservable: (value: any) => any;
 declare const fromEvent: (target: HTMLElement | Window, eventName: string, onNext: EventListenerOrEventListenerObject, options?: boolean) => (() => void);
 declare const sanitizeHTML: (htmlString: string) => string;
-declare const proxifiedClass: (elementInstance: any, target: any) => {
+declare const proxifiedClass: (setRenderIntoQueue: () => void, target: any) => {
     new (...args: any[]): {
         [x: string]: any;
     };

@@ -190,16 +190,7 @@ const sanitizeHTML = (htmlString: string) => {
   return html.innerHTML;
 };
 
-const debounceRender = function (elementInstance) {
-  if (elementInstance.renderCount === 1) {
-    queueMicrotask(() => {
-      elementInstance.update();
-      elementInstance.renderCount = 0;
-    });
-  }
-};
-
-const proxifiedClass = (elementInstance, target) => {
+const proxifiedClass = (setRenderIntoQueue: () => void, target) => {
   const handler = () => ({
     get(obj: object, prop: string) {
       const propertyType = Object.prototype.toString.call(obj[prop]);
@@ -210,8 +201,7 @@ const proxifiedClass = (elementInstance, target) => {
     },
     set(obj: object, prop: string, value: unknown) {
       obj[prop] = value;
-      ++elementInstance.renderCount;
-      debounceRender(elementInstance);
+      setRenderIntoQueue();
       return true;
     }
   });

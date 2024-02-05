@@ -1,5 +1,5 @@
 const isFunction = (value: unknown) => typeof value === 'function';
-const updateFnRegistry: Record<string, { updateFn: () => void; updates: number }> = Object.create(null);
+const updateFnRegistry: Record<string, () => void> = Object.create(null);
 let token = null;
 
 function createToken(): string {
@@ -10,7 +10,7 @@ function signalWrapper(updateFn: () => void, fn: () => void): string {
   const prev = token;
   let generatedToken: string;
   token = createToken();
-  updateFnRegistry[token] = { updateFn, updates: 0 };
+  updateFnRegistry[token] = updateFn;
   try {
     fn();
   } finally {
@@ -21,7 +21,7 @@ function signalWrapper(updateFn: () => void, fn: () => void): string {
 }
 
 function signal<T>(initialValue: T) {
-  const registery = updateFnRegistry[token];
+  const updateFn = updateFnRegistry[token];
   let value = initialValue;
   function boundSignal(): T {
     return value;
@@ -32,13 +32,7 @@ function signal<T>(initialValue: T) {
     } else {
       value = v as T;
     }
-    ++registery.updates;
-    if (registery.updates === 1) {
-      queueMicrotask(() => {
-        registery.updateFn();
-        registery.updates = 0;
-      });
-    }
+    updateFn();
   };
   return boundSignal;
 }
