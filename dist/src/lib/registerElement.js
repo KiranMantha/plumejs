@@ -50,10 +50,10 @@ const registerElement = (options, target) => {
                 const styles = options.styles.replaceAll(':host', options.selector);
                 this.componentStyleTag = createStyleTag(styles, document.head);
             }
-            this.createProxyInstance();
             this.getInstance = this.getInstance.bind(this);
             this.update = this.update.bind(this);
             this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
+            this.createProxyInstance();
         }
         createProxyInstance() {
             const rendererInstance = new Renderer(this, this.shadow);

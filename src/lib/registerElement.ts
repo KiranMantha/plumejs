@@ -58,10 +58,10 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
           const styles = options.styles.replaceAll(':host', options.selector);
           this.componentStyleTag = createStyleTag(styles, document.head);
         }
-        this.createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
         this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
+        this.createProxyInstance();
       }
 
       private createProxyInstance() {
