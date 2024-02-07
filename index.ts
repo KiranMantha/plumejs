@@ -19,4 +19,4 @@ export {
   render,
   signal,
   wrapIntoObservable
-} from './src/plume';
+} from './src';
