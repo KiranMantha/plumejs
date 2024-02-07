@@ -20,7 +20,8 @@
     "patch-update": "npm version patch",
     "tag": "git push --follow-tags",
     "tag-release": "npm run patch-update && npm run tag",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "show-dep-graph": "skott --displayMode=webapp"
   },
   "keywords": [
     "plumejs",
@@ -51,6 +52,7 @@
     "husky": "^8.0.3",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
+    "skott": "^0.32.1",
     "typescript": "^5.1.6"
   }
 }
