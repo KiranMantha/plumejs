@@ -2,15 +2,88 @@ const klass = Symbol('klass');
 const isObject = (value) => value !== null && typeof value === 'object';
 const isFunction = (value) => typeof value === 'function';
 const isUndefined = (value) => typeof value == 'undefined';
-const CSS_SHEET_NOT_SUPPORTED = (() => {
+const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj) => !!obj && typeof obj.then === 'function';
+const CSS_SHEET_SUPPORTED = (() => {
     try {
         new CSSStyleSheet();
-        return false;
-    }
-    catch (e) {
         return true;
     }
+    catch (e) {
+        return false;
+    }
 })();
+const ofObs = (input) => ({
+    subscribe: (fn) => {
+        fn(input);
+    }
+});
+const fromPromiseObs = (input) => ({
+    subscribe: (fn) => {
+        Promise.resolve(input).then((value) => {
+            fn(value);
+        });
+    }
+});
+const createToken = () => Math.random().toString(36).substring(2);
+class SubjectObs {
+    _callbackCollection = {};
+    unsubscribe(token) {
+        delete this._callbackCollection[token];
+    }
+    asObservable() {
+        return {
+            subscribe: (fn) => this.subscribe(fn)
+        };
+    }
+    subscribe(fn) {
+        const token = createToken();
+        this._callbackCollection[token] = fn;
+        return () => this.unsubscribe(token);
+    }
+    next(value) {
+        for (const token in this._callbackCollection) {
+            this._callbackCollection[token](value);
+        }
+    }
+}
+class BehaviourSubjectObs extends SubjectObs {
+    _initialValue;
+    constructor(initialValue) {
+        super();
+        this._initialValue = initialValue;
+    }
+    subscribe(fn) {
+        const unsub = super.subscribe(fn);
+        super.next(this._initialValue);
+        return unsub;
+    }
+    next(newvalue) {
+        this._initialValue = newvalue;
+        super.next(newvalue);
+    }
+}
+class Subscriptions {
+    _subcribers = [];
+    add(fn) {
+        this._subcribers.push(fn);
+    }
+    unsubscribe() {
+        for (const fn of this._subcribers) {
+            fn();
+        }
+        this._subcribers = [];
+    }
+}
+const wrapIntoObservable = (value) => {
+    if (isObservable(value)) {
+        return value;
+    }
+    if (isPromise(value)) {
+        return fromPromiseObs(Promise.resolve(value));
+    }
+    return ofObs(value);
+};
 const fromEvent = (target, eventName, onNext, options = false) => {
     target.addEventListener(eventName, onNext, options);
     const unsubscribe = () => {
@@ -59,15 +132,7 @@ const sanitizeHTML = (htmlString) => {
     cleanAttributes(html);
     return html.innerHTML;
 };
-const debounceRender = function (elementInstance) {
-    if (elementInstance.renderCount === 1) {
-        queueMicrotask(() => {
-            elementInstance.update();
-            elementInstance.renderCount = 0;
-        });
-    }
-};
-const proxifiedClass = (elementInstance, target) => {
+const proxifiedClass = (setRenderIntoQueue, target) => {
     const handler = () => ({
         get(obj, prop) {
             const propertyType = Object.prototype.toString.call(obj[prop]);
@@ -78,8 +143,7 @@ const proxifiedClass = (elementInstance, target) => {
         },
         set(obj, prop, value) {
             obj[prop] = value;
-            ++elementInstance.renderCount;
-            debounceRender(elementInstance);
+            setRenderIntoQueue();
             return true;
         }
     });
@@ -97,4 +161,4 @@ const promisify = () => {
     });
     return [promise, resolver];
 };
-export { isObject, isFunction, isUndefined, klass, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass, promisify };
+export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, fromEvent, isFunction, isObject, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };

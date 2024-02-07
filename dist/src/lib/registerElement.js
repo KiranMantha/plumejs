@@ -1,8 +1,9 @@
+import { augmentor } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
-import { CSS_SHEET_NOT_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, Subscriptions, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -33,26 +34,26 @@ const registerElement = (options, target) => {
         klass;
         shadow;
         componentStyleTag = null;
+        internalSubscriptions = new Subscriptions();
         renderCount = 0;
-        eventSubscriptions = [];
         static get observedAttributes() {
             return target.observedAttributes || [];
         }
         constructor() {
             super();
-            this.shadow = this.attachShadow({ mode: 'open' });
-            if (!CSS_SHEET_NOT_SUPPORTED) {
-                const adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
-                this.shadow.adoptedStyleSheets = adoptedStyleSheets;
+            if (CSS_SHEET_SUPPORTED) {
+                this.shadow = this.attachShadow({ mode: 'open' });
+                this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
             }
-            this.createProxyInstance();
+            else {
+                this.shadow = this;
+                const styles = options.styles.replaceAll(':host', options.selector);
+                this.componentStyleTag = createStyleTag(styles, document.head);
+            }
             this.getInstance = this.getInstance.bind(this);
             this.update = this.update.bind(this);
-        }
-        emulateComponent() {
-            if (CSS_SHEET_NOT_SUPPORTED && options.styles) {
-                this.componentStyleTag = createStyleTag(options.styles);
-            }
+            this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
+            this.createProxyInstance();
         }
         createProxyInstance() {
             const rendererInstance = new Renderer(this, this.shadow);
@@ -62,7 +63,7 @@ const registerElement = (options, target) => {
             rendererInstance.emitEvent = (eventName, data) => {
                 this.emitEvent(eventName, data);
             };
-            this.klass = instantiate(proxifiedClass(this, target), options.deps, rendererInstance);
+            this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
         }
         update() {
             const renderValue = this.klass.render();
@@ -72,56 +73,59 @@ const registerElement = (options, target) => {
             else {
                 render(this.shadow, renderValue);
             }
-            if (CSS_SHEET_NOT_SUPPORTED) {
-                options.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-                if (componentRegistry.globalStyleTag && !options.standalone) {
-                    this.shadow.insertBefore(document.importNode(componentRegistry.globalStyleTag, true), this.shadow.childNodes[0]);
-                }
-            }
         }
-        emitEvent(eventName, data, allowBubbling = true) {
+        emitEvent(eventName, data) {
             const event = new CustomEvent(eventName, {
-                detail: data,
-                bubbles: allowBubbling
+                detail: data
             });
             this.dispatchEvent(event);
         }
         setProps(propsObj) {
             for (const [key, value] of Object.entries(propsObj)) {
-                this.klass[key] = value;
+                if (target.observedProperties.find((property) => property === key)) {
+                    this.klass[key] = value;
+                }
             }
             this.klass.onPropertiesChanged?.();
-            this.update();
         }
         getInstance() {
             return this.klass;
         }
+        setRenderIntoQueue() {
+            ++this.renderCount;
+            if (this.renderCount === 1) {
+                queueMicrotask(() => {
+                    this.update();
+                    this.renderCount = 0;
+                });
+            }
+        }
         connectedCallback() {
-            this.emulateComponent();
-            this.klass.beforeMount && this.klass.beforeMount();
-            this.update();
-            this.klass.mount && this.klass.mount();
-            this.emitEvent('bindprops', {
-                setProps: (propsObj) => {
-                    this.setProps(propsObj);
-                }
-            }, false);
-            this.eventSubscriptions.push(fromEvent(window, 'onLanguageChange', () => {
+            this.internalSubscriptions.add(fromEvent(this, 'bindprops', (e) => {
+                const propsObj = e.detail.props;
+                propsObj && this.setProps(propsObj);
+            }));
+            this.internalSubscriptions.add(fromEvent(this, 'refresh_component', () => {
+                this.klass.mount?.();
+            }));
+            this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
+            if (this.klass.beforeMount) {
+                this.internalSubscriptions.add(augmentor(this.setRenderIntoQueue, this.klass.beforeMount.bind(this.klass)));
+            }
+            this.klass.beforeMount?.();
+            this.update();
+            this.klass.mount?.();
         }
         attributeChangedCallback(name, oldValue, newValue) {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);
         }
         disconnectedCallback() {
             this.renderCount = 1;
-            this.componentStyleTag && this.componentStyleTag.remove();
             this.klass.unmount?.();
-            if (this.eventSubscriptions?.length) {
-                for (const unsubscribe of this.eventSubscriptions) {
-                    unsubscribe();
-                }
-            }
+            this.componentStyleTag?.remove();
+            this.internalSubscriptions.unsubscribe();
         }
     });
 };

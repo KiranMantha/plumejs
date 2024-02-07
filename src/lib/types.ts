@@ -61,10 +61,10 @@ interface ComponentRef<T> {
 
 export {
   ComponentDecoratorOptions,
-  ServiceDecoratorOptions,
-  IHooks,
-  Renderer,
   ComponentRef,
   ConstructorType,
-  InputProps
+  IHooks,
+  InputProps,
+  Renderer,
+  ServiceDecoratorOptions
 };

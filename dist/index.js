@@ -1,1 +1,1 @@
-export { Component, DomTransition, Form, Injectable, InjectionToken, Injector, Renderer, Validators, fromEvent, html, render, useFormFields, useState } from './src/plume';
+export { BehaviourSubjectObs, Component, DomTransition, Injectable, InjectionToken, Injector, Renderer, SubjectObs, Subscriptions, fromEvent, html, promisify, render, signal, useSearchParams, wrapIntoObservable } from './src/plume';

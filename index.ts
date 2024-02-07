@@ -1,9 +1,9 @@
 export {
+  BehaviourSubjectObs,
   Component,
   ComponentDecoratorOptions,
   ComponentRef,
   DomTransition,
-  Form,
   IHooks,
   Injectable,
   InjectionToken,
@@ -11,10 +11,13 @@ export {
   InputProps,
   Renderer,
   ServiceDecoratorOptions,
-  Validators,
+  SubjectObs,
+  Subscriptions,
   fromEvent,
   html,
+  promisify,
   render,
-  useFormFields,
-  useState
+  signal,
+  useSearchParams,
+  wrapIntoObservable
 } from './src/plume';

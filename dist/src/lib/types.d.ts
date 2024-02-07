@@ -40,4 +40,4 @@ interface ComponentRef<T> {
     setProps(propertiesObject: InputProps<T>): void;
     getInstance(): T;
 }
-export { ComponentDecoratorOptions, ServiceDecoratorOptions, IHooks, Renderer, ComponentRef, ConstructorType, InputProps };
+export { ComponentDecoratorOptions, ComponentRef, ConstructorType, IHooks, InputProps, Renderer, ServiceDecoratorOptions };

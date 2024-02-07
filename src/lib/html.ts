@@ -6,6 +6,7 @@ const { html, render } = (() => {
   const insertNodePrefix = 'insertNode';
   const insertNodeRegex = /^insertNode([^ ]+)/;
   let refNodes = [];
+  let inputPropsNodes = [];
 
   const _sanitize = (data) => {
     const tagsToReplace = {
@@ -49,11 +50,28 @@ const { html, render } = (() => {
     return temp.content;
   };
 
+  const _bindDataInput = (node: HTMLElement, val: Record<string, unknown>, symbol: symbol) => {
+    const fn = () => {
+      setTimeout(() => {
+        if (node.isConnected) {
+          const event = new CustomEvent('bindprops', {
+            detail: {
+              props: val
+            },
+            bubbles: false
+          });
+          node.dispatchEvent(event);
+        }
+      });
+    };
+    node[symbol] = JSON.stringify(val);
+    inputPropsNodes.push(fn);
+  };
+
   const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode() as unknown as HTMLElement;
     while (node) {
-      (node as any).eventSubscriptions = [];
       if (node.hasAttributes()) {
         const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
         for (const { nodeName, nodeValue } of customAttributes) {
@@ -62,30 +80,23 @@ const { html, render } = (() => {
             case /^on+/.test(nodeValue): {
               const eventName = nodeValue.slice(2).toLowerCase();
               node.removeEventListener(eventName, values[i]);
-              if (eventName !== 'bindprops') {
-                node.addEventListener(eventName, values[i]);
-              } else {
-                node.addEventListener(eventName, (event: CustomEvent) => {
-                  event.detail.setProps(values[i]());
-                });
-              }
+              node.addEventListener(eventName, values[i]);
               break;
             }
             case /ref/.test(nodeValue): {
-              const closure = ((node) => {
-                const _node = node;
-                return () => {
-                  if (_node.isConnected) {
-                    values[i](_node);
-                  }
-                };
-              })(node);
+              const closure = function () {
+                this.node.isConnected && this.fn(this.node);
+              }.bind({ node, fn: values[i] });
               refNodes.push(closure);
               break;
             }
             case /^data-+/.test(nodeValue):
             case /^aria-+/.test(nodeValue): {
-              node.setAttribute(nodeValue, _sanitize(values[i]));
+              if (nodeValue === 'data-input') {
+                _bindDataInput(node, values[i], Symbol('input'));
+              } else {
+                node.setAttribute(nodeValue, _sanitize(values[i]));
+              }
               break;
             }
             case /class/.test(nodeValue): {
@@ -126,8 +137,8 @@ const { html, render } = (() => {
 
   const _replaceInsertNodeComments = (fragment: DocumentFragment, values: Array<any>) => {
     const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
-    let node = commentsWalker.nextNode() as Comment;
-    let match;
+    let node = commentsWalker.nextNode() as Comment,
+      match: RegExpExecArray;
     while (node) {
       if ((match = insertNodeRegex.exec(node.data))) {
         const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
@@ -138,10 +149,17 @@ const { html, render } = (() => {
     }
   };
 
+  /**
+   * update node attributes y comparing present node and compiled node
+   * @param {HTMLElement} templateNode
+   * @param {HTMLElement} domNode
+   */
   const _diffAttributes = (templateNode: HTMLElement, domNode: HTMLElement) => {
     if (!templateNode || !domNode || templateNode.nodeType !== 1 || domNode.nodeType !== 1) return;
     const templateAtts = templateNode.attributes;
     const existingAtts = domNode.attributes;
+    const preserveAttributesAttr = domNode.getAttribute('data-preserve-attributes');
+    const preserveExistingAttributes = preserveAttributesAttr && preserveAttributesAttr === 'true';
 
     for (const { name, value } of templateAtts) {
       if (!existingAtts[name] || existingAtts[name] !== value) {
@@ -149,9 +167,26 @@ const { html, render } = (() => {
       }
     }
 
-    for (const { name } of existingAtts) {
-      if (!templateAtts[name]) {
-        domNode.removeAttribute(name);
+    if (!preserveExistingAttributes) {
+      for (const { name } of existingAtts) {
+        if (!templateAtts[name]) {
+          domNode.removeAttribute(name);
+        }
+      }
+    }
+
+    if (domNode.tagName.toLowerCase() === 'input') {
+      (domNode as HTMLInputElement).value = (templateNode as HTMLInputElement).value;
+    }
+
+    if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
+      const templateSymbols = Object.getOwnPropertySymbols(templateNode);
+      const domSymbols = Object.getOwnPropertySymbols(domNode);
+
+      const templateInput = templateSymbols.length ? templateNode[templateSymbols[0]] : '';
+      const domInput = domSymbols.length ? domNode[domSymbols[0]] : '';
+      if (templateInput && domInput && templateInput !== domInput) {
+        _bindDataInput(domNode, JSON.parse(templateInput), domSymbols[0]);
       }
     }
   };
@@ -169,8 +204,8 @@ const { html, render } = (() => {
 
   /**
    * Get the content from a node
-   * @param  {Node}   node The node
-   * @return {String}      The type
+   * @param  {Node} node The node
+   * @return {String} The type
    */
   const _getNodeContent = (node: HTMLElement) => {
     if (node.childNodes && node.childNodes.length > 0) return null;
@@ -180,9 +215,13 @@ const { html, render } = (() => {
   /**
    * Compare the template to the UI and make updates
    * @param  {Node} template The template HTML
-   * @param  {Node} elem     The UI HTML
+   * @param  {Node} element The UI HTML
    */
-  const _diff = (template: HTMLElement | DocumentFragment, element: HTMLElement | DocumentFragment) => {
+  const _diff = (
+    template: HTMLElement | DocumentFragment,
+    element: HTMLElement | DocumentFragment,
+    isChildDiffing: boolean
+  ) => {
     // Get arrays of child nodes
     const domNodes = element ? Array.from(element.childNodes) : [];
     const templateNodes = template ? Array.from(template.childNodes) : [];
@@ -198,7 +237,13 @@ const { html, render } = (() => {
     // Diff each item in the templateNodes
     templateNodes.forEach((node: HTMLElement, index) => {
       const domNode = domNodes[index] as HTMLElement;
+
       _diffAttributes(node, domNode);
+
+      // Discard diffing of children custom elements
+      if (isChildDiffing && domNode && domNode.nodeType === 1 && domNode.tagName.indexOf('-') > -1) {
+        return;
+      }
 
       // If element doesn't exist, create it
       if (!domNode) {
@@ -229,19 +274,25 @@ const { html, render } = (() => {
       // This uses a document fragment to minimize reflows
       if (domNode.childNodes.length < 1 && node.childNodes.length > 0) {
         const fragment = document.createDocumentFragment();
-        _diff(node, fragment);
+        _diff(node, fragment, false);
         domNode.appendChild(fragment);
         return;
       }
 
       // If there are existing child elements that need to be modified, diff them
       if (node.childNodes.length > 0) {
-        _diff(node, domNode);
+        _diff(node, domNode, true);
         return;
       }
     });
   };
 
+  /**
+   * tagged literals which construct dom nodes
+   * @param {.*} templates
+   * @param {...any[]} values
+   * @return DocumentFragment
+   */
   const html = (templates: TemplateStringsArray, ...values: Array<any>): DocumentFragment => {
     let result = '';
     const { length } = templates;
@@ -259,10 +310,21 @@ const { html, render } = (() => {
       }
 
       if (!isAttributePart) {
-        if (Array.isArray(variable) || variable instanceof DocumentFragment) {
-          result += `<!--${insertNodePrefix}${i - 1}-->`;
-        } else {
-          result += variable;
+        switch (true) {
+          case Array.isArray(variable):
+          case variable instanceof DocumentFragment: {
+            result += `<!--${insertNodePrefix}${i - 1}-->`;
+            break;
+          }
+          case typeof variable === 'object' && variable !== null: {
+            if ('html' in variable) {
+              result += variable['html'];
+            }
+            break;
+          }
+          default: {
+            result += variable || '';
+          }
         }
       }
     }
@@ -274,17 +336,27 @@ const { html, render } = (() => {
     return fragment;
   };
 
-  const render = (where: HTMLElement, what: DocumentFragment) => {
-    if (!where.children.length) {
+  /**
+   * Renders template literals to target dom node
+   * @param {HTMLElement} where
+   * @param {(templates: any, ...values: any[]) => DocumentFragment} what
+   */
+  const render = (where, what) => {
+    if (where && !where.children.length) {
       where.innerHTML = '';
       where.appendChild(what);
     } else {
-      _diff(what, where);
+      _diff(what, where, false);
     }
-    refNodes.forEach((closure) => {
-      closure();
+    refNodes.forEach((fn) => {
+      fn();
     });
     refNodes = [];
+
+    inputPropsNodes.forEach((fn) => {
+      fn();
+    });
+    inputPropsNodes = [];
   };
 
   return { html, render };

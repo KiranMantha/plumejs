@@ -6,6 +6,7 @@ const { html, render } = (() => {
     const insertNodePrefix = 'insertNode';
     const insertNodeRegex = /^insertNode([^ ]+)/;
     let refNodes = [];
+    let inputPropsNodes = [];
     const _sanitize = (data) => {
         const tagsToReplace = {
             '&': '&amp;',
@@ -39,11 +40,27 @@ const { html, render } = (() => {
         temp.innerHTML = markup;
         return temp.content;
     };
+    const _bindDataInput = (node, val, symbol) => {
+        const fn = () => {
+            setTimeout(() => {
+                if (node.isConnected) {
+                    const event = new CustomEvent('bindprops', {
+                        detail: {
+                            props: val
+                        },
+                        bubbles: false
+                    });
+                    node.dispatchEvent(event);
+                }
+            });
+        };
+        node[symbol] = JSON.stringify(val);
+        inputPropsNodes.push(fn);
+    };
     const _bindFragments = (fragment, values) => {
         const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
         let node = elementsWalker.nextNode();
         while (node) {
-            node.eventSubscriptions = [];
             if (node.hasAttributes()) {
                 const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
                 for (const { nodeName, nodeValue } of customAttributes) {
@@ -52,31 +69,24 @@ const { html, render } = (() => {
                         case /^on+/.test(nodeValue): {
                             const eventName = nodeValue.slice(2).toLowerCase();
                             node.removeEventListener(eventName, values[i]);
-                            if (eventName !== 'bindprops') {
-                                node.addEventListener(eventName, values[i]);
-                            }
-                            else {
-                                node.addEventListener(eventName, (event) => {
-                                    event.detail.setProps(values[i]());
-                                });
-                            }
+                            node.addEventListener(eventName, values[i]);
                             break;
                         }
                         case /ref/.test(nodeValue): {
-                            const closure = ((node) => {
-                                const _node = node;
-                                return () => {
-                                    if (_node.isConnected) {
-                                        values[i](_node);
-                                    }
-                                };
-                            })(node);
+                            const closure = function () {
+                                this.node.isConnected && this.fn(this.node);
+                            }.bind({ node, fn: values[i] });
                             refNodes.push(closure);
                             break;
                         }
                         case /^data-+/.test(nodeValue):
                         case /^aria-+/.test(nodeValue): {
-                            node.setAttribute(nodeValue, _sanitize(values[i]));
+                            if (nodeValue === 'data-input') {
+                                _bindDataInput(node, values[i], Symbol('input'));
+                            }
+                            else {
+                                node.setAttribute(nodeValue, _sanitize(values[i]));
+                            }
                             break;
                         }
                         case /class/.test(nodeValue): {
@@ -119,8 +129,7 @@ const { html, render } = (() => {
     };
     const _replaceInsertNodeComments = (fragment, values) => {
         const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
-        let node = commentsWalker.nextNode();
-        let match;
+        let node = commentsWalker.nextNode(), match;
         while (node) {
             if ((match = insertNodeRegex.exec(node.data))) {
                 const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
@@ -135,14 +144,30 @@ const { html, render } = (() => {
             return;
         const templateAtts = templateNode.attributes;
         const existingAtts = domNode.attributes;
+        const preserveAttributesAttr = domNode.getAttribute('data-preserve-attributes');
+        const preserveExistingAttributes = preserveAttributesAttr && preserveAttributesAttr === 'true';
         for (const { name, value } of templateAtts) {
             if (!existingAtts[name] || existingAtts[name] !== value) {
                 domNode.setAttribute(name, value);
             }
         }
-        for (const { name } of existingAtts) {
-            if (!templateAtts[name]) {
-                domNode.removeAttribute(name);
+        if (!preserveExistingAttributes) {
+            for (const { name } of existingAtts) {
+                if (!templateAtts[name]) {
+                    domNode.removeAttribute(name);
+                }
+            }
+        }
+        if (domNode.tagName.toLowerCase() === 'input') {
+            domNode.value = templateNode.value;
+        }
+        if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
+            const templateSymbols = Object.getOwnPropertySymbols(templateNode);
+            const domSymbols = Object.getOwnPropertySymbols(domNode);
+            const templateInput = templateSymbols.length ? templateNode[templateSymbols[0]] : '';
+            const domInput = domSymbols.length ? domNode[domSymbols[0]] : '';
+            if (templateInput && domInput && templateInput !== domInput) {
+                _bindDataInput(domNode, JSON.parse(templateInput), domSymbols[0]);
             }
         }
     };
@@ -158,7 +183,7 @@ const { html, render } = (() => {
             return null;
         return node.textContent;
     };
-    const _diff = (template, element) => {
+    const _diff = (template, element, isChildDiffing) => {
         const domNodes = element ? Array.from(element.childNodes) : [];
         const templateNodes = template ? Array.from(template.childNodes) : [];
         let count = domNodes.length - templateNodes.length;
@@ -170,6 +195,9 @@ const { html, render } = (() => {
         templateNodes.forEach((node, index) => {
             const domNode = domNodes[index];
             _diffAttributes(node, domNode);
+            if (isChildDiffing && domNode && domNode.nodeType === 1 && domNode.tagName.indexOf('-') > -1) {
+                return;
+            }
             if (!domNode) {
                 element && element.appendChild(node);
                 return;
@@ -189,12 +217,12 @@ const { html, render } = (() => {
             }
             if (domNode.childNodes.length < 1 && node.childNodes.length > 0) {
                 const fragment = document.createDocumentFragment();
-                _diff(node, fragment);
+                _diff(node, fragment, false);
                 domNode.appendChild(fragment);
                 return;
             }
             if (node.childNodes.length > 0) {
-                _diff(node, domNode);
+                _diff(node, domNode, true);
                 return;
             }
         });
@@ -211,11 +239,21 @@ const { html, render } = (() => {
                 isAttributePart = true;
             }
             if (!isAttributePart) {
-                if (Array.isArray(variable) || variable instanceof DocumentFragment) {
-                    result += `<!--${insertNodePrefix}${i - 1}-->`;
-                }
-                else {
-                    result += variable;
+                switch (true) {
+                    case Array.isArray(variable):
+                    case variable instanceof DocumentFragment: {
+                        result += `<!--${insertNodePrefix}${i - 1}-->`;
+                        break;
+                    }
+                    case typeof variable === 'object' && variable !== null: {
+                        if ('html' in variable) {
+                            result += variable['html'];
+                        }
+                        break;
+                    }
+                    default: {
+                        result += variable || '';
+                    }
                 }
             }
         }
@@ -226,17 +264,21 @@ const { html, render } = (() => {
         return fragment;
     };
     const render = (where, what) => {
-        if (!where.children.length) {
+        if (where && !where.children.length) {
             where.innerHTML = '';
             where.appendChild(what);
         }
         else {
-            _diff(what, where);
+            _diff(what, where, false);
         }
-        refNodes.forEach((closure) => {
-            closure();
+        refNodes.forEach((fn) => {
+            fn();
         });
         refNodes = [];
+        inputPropsNodes.forEach((fn) => {
+            fn();
+        });
+        inputPropsNodes = [];
     };
     return { html, render };
 })();

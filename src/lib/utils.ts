@@ -2,15 +2,106 @@ const klass = Symbol('klass');
 const isObject = (value: any) => value !== null && typeof value === 'object';
 const isFunction = (value: any) => typeof value === 'function';
 const isUndefined = (value: any) => typeof value == 'undefined';
+const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 
-const CSS_SHEET_NOT_SUPPORTED = (() => {
+const CSS_SHEET_SUPPORTED = (() => {
   try {
     new CSSStyleSheet();
-    return false;
-  } catch (e) {
     return true;
+  } catch (e) {
+    return false;
   }
 })();
+
+const ofObs = <T>(input: T) => ({
+  subscribe: (fn: (param: T) => void) => {
+    fn(input);
+  }
+});
+
+const fromPromiseObs = <T>(input: T) => ({
+  subscribe: (fn: (param: T) => void) => {
+    Promise.resolve(input).then((value) => {
+      fn(value);
+    });
+  }
+});
+
+const createToken = () => Math.random().toString(36).substring(2);
+
+class SubjectObs<T> {
+  private _callbackCollection: Record<string, (param?: T) => void> = {};
+
+  private unsubscribe(token: string) {
+    delete this._callbackCollection[token];
+  }
+
+  asObservable() {
+    return {
+      subscribe: (fn: (param?: T) => void) => this.subscribe(fn)
+    };
+  }
+
+  subscribe(fn: (param?: T) => void) {
+    const token = createToken();
+    this._callbackCollection[token] = fn;
+    return () => this.unsubscribe(token);
+  }
+
+  next(value: T) {
+    for (const token in this._callbackCollection) {
+      this._callbackCollection[token](value);
+    }
+  }
+}
+
+class BehaviourSubjectObs<T> extends SubjectObs<T> {
+  private _initialValue: T;
+
+  constructor(initialValue: T) {
+    super();
+    this._initialValue = initialValue;
+  }
+
+  subscribe(fn: (param?: T) => void) {
+    const unsub = super.subscribe(fn);
+    super.next(this._initialValue);
+    return unsub;
+  }
+
+  next(newvalue: T): void {
+    this._initialValue = newvalue;
+    super.next(newvalue);
+  }
+}
+
+class Subscriptions {
+  private _subcribers: Array<() => void> = [];
+
+  add(fn: () => void) {
+    this._subcribers.push(fn);
+  }
+
+  unsubscribe() {
+    for (const fn of this._subcribers) {
+      fn();
+    }
+    this._subcribers = [];
+  }
+}
+
+const wrapIntoObservable = (value) => {
+  if (isObservable(value)) {
+    return value;
+  }
+
+  if (isPromise(value)) {
+    return fromPromiseObs(Promise.resolve(value));
+  }
+
+  return ofObs(value);
+};
 
 const fromEvent = (
   target: HTMLElement | Window,
@@ -99,16 +190,7 @@ const sanitizeHTML = (htmlString: string) => {
   return html.innerHTML;
 };
 
-const debounceRender = function (elementInstance) {
-  if (elementInstance.renderCount === 1) {
-    queueMicrotask(() => {
-      elementInstance.update();
-      elementInstance.renderCount = 0;
-    });
-  }
-};
-
-const proxifiedClass = (elementInstance, target) => {
+const proxifiedClass = (setRenderIntoQueue: () => void, target) => {
   const handler = () => ({
     get(obj: object, prop: string) {
       const propertyType = Object.prototype.toString.call(obj[prop]);
@@ -119,8 +201,7 @@ const proxifiedClass = (elementInstance, target) => {
     },
     set(obj: object, prop: string, value: unknown) {
       obj[prop] = value;
-      ++elementInstance.renderCount;
-      debounceRender(elementInstance);
+      setRenderIntoQueue();
       return true;
     }
   });
@@ -142,13 +223,17 @@ const promisify = () => {
 };
 
 export {
-  isObject,
+  BehaviourSubjectObs,
+  CSS_SHEET_SUPPORTED,
+  SubjectObs,
+  Subscriptions,
+  fromEvent,
   isFunction,
+  isObject,
   isUndefined,
   klass,
-  CSS_SHEET_NOT_SUPPORTED,
-  fromEvent,
-  sanitizeHTML,
+  promisify,
   proxifiedClass,
-  promisify
+  sanitizeHTML,
+  wrapIntoObservable
 };
