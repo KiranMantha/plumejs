@@ -114,7 +114,6 @@ const registerElement = (options, target) => {
             if (this.klass.beforeMount) {
                 this.internalSubscriptions.add(augmentor(this.setRenderIntoQueue, this.klass.beforeMount.bind(this.klass)));
             }
-            this.klass.beforeMount?.();
             this.update();
             this.klass.mount?.();
         }
