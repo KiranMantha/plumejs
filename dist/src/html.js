@@ -162,12 +162,12 @@ const { html, render } = (() => {
             domNode.value = templateNode.value;
         }
         if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
-            const templateSymbols = Object.getOwnPropertySymbols(templateNode);
-            const domSymbols = Object.getOwnPropertySymbols(domNode);
-            const templateInput = templateSymbols.length ? templateNode[templateSymbols[0]] : '';
-            const domInput = domSymbols.length ? domNode[domSymbols[0]] : '';
+            const templateInputSymbol = Object.getOwnPropertySymbols(templateNode).find((symbol) => symbol.description === 'input');
+            const domInputSymbol = Object.getOwnPropertySymbols(domNode).find((symbol) => symbol.description === 'input');
+            const templateInput = templateInputSymbol ? templateNode[templateInputSymbol] : '';
+            const domInput = domInputSymbol ? domNode[domInputSymbol] : '';
             if (templateInput && domInput && templateInput !== domInput) {
-                _bindDataInput(domNode, JSON.parse(templateInput), domSymbols[0]);
+                _bindDataInput(domNode, JSON.parse(templateInput), domInputSymbol);
             }
         }
     };
