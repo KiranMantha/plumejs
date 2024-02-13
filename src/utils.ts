@@ -1,3 +1,5 @@
+import { ConstructorType } from './types';
+
 const klass = Symbol('klass');
 const isObject = (value: any) => value !== null && typeof value === 'object';
 const isFunction = (value: any) => typeof value === 'function';
@@ -116,12 +118,12 @@ const fromEvent = (
   return unsubscribe;
 };
 
-const sanitizeHTML = (htmlString: string) => {
+const sanitizeHTML = (htmlString: string): string => {
   /**
    * Convert the string to an HTML document
    * @return {Node} An HTML document
    */
-  const stringToHTML = () => {
+  const stringToHTML = (): HTMLElement => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
     return doc.body || document.createElement('body');
@@ -131,7 +133,7 @@ const sanitizeHTML = (htmlString: string) => {
    * Remove <script> elements
    * @param  {Node} html The HTML
    */
-  const removeScripts = (html) => {
+  const removeScripts = (html: HTMLElement) => {
     const scripts = html.querySelectorAll('script');
     for (const script of scripts) {
       script.remove();
@@ -144,7 +146,7 @@ const sanitizeHTML = (htmlString: string) => {
    * @param  {String}  value The attribute value
    * @return {Boolean}       If true, the attribute is potentially dangerous
    */
-  const isPossiblyDangerous = (name, value) => {
+  const isPossiblyDangerous = (name: string, value: string) => {
     value = value.replace(/\s+/g, '').toLowerCase();
     if (['src', 'href', 'xlink:href'].includes(name)) {
       if (value.includes('javascript:') || value.includes('data:')) return true;
@@ -156,7 +158,7 @@ const sanitizeHTML = (htmlString: string) => {
    * Remove potentially dangerous attributes from an element
    * @param  {Node} elem The element
    */
-  const removeAttributes = (element) => {
+  const removeAttributes = (element: Element) => {
     // Loop through each attribute
     // If it's dangerous, remove it
     const attributes = element.attributes;
@@ -170,7 +172,7 @@ const sanitizeHTML = (htmlString: string) => {
    * Remove dangerous stuff from the HTML document's nodes
    * @param  {Node} html The HTML document
    */
-  const cleanAttributes = (html) => {
+  const cleanAttributes = (html: Element) => {
     const nodes = html.children;
     for (const node of nodes) {
       removeAttributes(node);
@@ -190,7 +192,7 @@ const sanitizeHTML = (htmlString: string) => {
   return html.innerHTML;
 };
 
-const proxifiedClass = (setRenderIntoQueue: () => void, target) => {
+const proxifiedClass = (setRenderIntoQueue: () => void, target: ConstructorType<any>) => {
   const handler = () => ({
     get(obj: object, prop: string) {
       const propertyType = Object.prototype.toString.call(obj[prop]);
@@ -214,9 +216,9 @@ const proxifiedClass = (setRenderIntoQueue: () => void, target) => {
   };
 };
 
-const promisify = () => {
-  let resolver;
-  const promise = new Promise((resolve) => {
+const promisify = <T = unknown>(): [Promise<T>, (value?: T | PromiseLike<T>) => void] => {
+  let resolver: (value?: T | PromiseLike<T>) => void;
+  const promise = new Promise<T>((resolve) => {
     resolver = resolve;
   });
   return [promise, resolver];

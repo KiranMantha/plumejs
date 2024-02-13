@@ -1,6 +1,7 @@
-declare function signal<T>(initialValue: T): {
+type Signal<T> = {
     (): T;
     set(v: T | ((initialValue: T) => T)): void;
 };
+declare function signal<T>(initialValue: T): Signal<T>;
 declare function augmentor(updateFn: () => void, fn: () => void): () => void;
-export { augmentor, signal };
+export { Signal, augmentor, signal };

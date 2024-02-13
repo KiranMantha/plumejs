@@ -121,7 +121,7 @@ const registerElement = (options, target) => {
             this.klass.onAttributesChanged?.(name, oldValue, newValue);
         }
         disconnectedCallback() {
-            this.renderCount = 1;
+            this.renderCount = 0;
             this.klass.unmount?.();
             this.componentStyleTag?.remove();
             this.internalSubscriptions.unsubscribe();

@@ -2,6 +2,11 @@ const isFunction = (value: unknown) => typeof value === 'function';
 const updateFnRegistry: Record<string, () => void> = Object.create(null);
 let token = null;
 
+type Signal<T> = {
+  (): T;
+  set(v: T | ((initialValue: T) => T)): void;
+};
+
 function createToken(): string {
   return Math.random().toString(36).substring(2);
 }
@@ -20,7 +25,7 @@ function signalWrapper(updateFn: () => void, fn: () => void): string {
   return generatedToken;
 }
 
-function signal<T>(initialValue: T) {
+function signal<T>(initialValue: T): Signal<T> {
   const updateFn = updateFnRegistry[token];
   let value = initialValue;
   function boundSignal(): T {
@@ -44,4 +49,4 @@ function augmentor(updateFn: () => void, fn: () => void): () => void {
   };
 }
 
-export { augmentor, signal };
+export { Signal, augmentor, signal };
