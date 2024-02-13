@@ -143,7 +143,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
       }
 
       disconnectedCallback() {
-        this.renderCount = 1;
+        this.renderCount = 0;
         this.klass.unmount?.();
         this.componentStyleTag?.remove();
         this.internalSubscriptions.unsubscribe();

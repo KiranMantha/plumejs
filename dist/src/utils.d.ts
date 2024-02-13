@@ -1,3 +1,4 @@
+import { ConstructorType } from './types';
 declare const klass: unique symbol;
 declare const isObject: (value: any) => boolean;
 declare const isFunction: (value: any) => boolean;
@@ -26,11 +27,11 @@ declare class Subscriptions {
 declare const wrapIntoObservable: (value: any) => any;
 declare const fromEvent: (target: HTMLElement | Window, eventName: string, onNext: EventListenerOrEventListenerObject, options?: boolean) => (() => void);
 declare const sanitizeHTML: (htmlString: string) => string;
-declare const proxifiedClass: (setRenderIntoQueue: () => void, target: any) => {
+declare const proxifiedClass: (setRenderIntoQueue: () => void, target: ConstructorType<any>) => {
     new (...args: any[]): {
         [x: string]: any;
     };
     [x: string]: any;
 };
-declare const promisify: () => any[];
+declare const promisify: <T = unknown>() => [Promise<T>, (value?: T | PromiseLike<T>) => void];
 export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, fromEvent, isFunction, isObject, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };

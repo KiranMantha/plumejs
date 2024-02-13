@@ -1,10 +1,10 @@
 import { ConstructorType } from './types';
 
 interface IInjector {
-  register(klass: any, instance: ConstructorType<any>): void;
-  getService(klass: ConstructorType<any>): Record<string, any>;
-  removeService(klass: ConstructorType<any>);
-  clear(): void;
+  register: (klass: any, instance: ConstructorType<any>) => void;
+  getService: (klass: ConstructorType<any>) => Record<string, any>;
+  removeService: (klass: ConstructorType<any>) => void;
+  clear: () => void;
 }
 
 const Injector: IInjector = new (class implements IInjector {

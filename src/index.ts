@@ -2,7 +2,7 @@
 //https://medium.com/@gilfink/creating-a-custom-element-decorator-using-typescript-302e7ed3a3d1
 'use strict';
 
-export { signal } from './augment';
+export { Signal, signal } from './augment';
 export { Component, Injectable, InjectionToken } from './decorators';
 export { DomTransition } from './domTransition.service';
 export { html, render } from './html';

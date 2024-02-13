@@ -8,7 +8,7 @@ const { html, render } = (() => {
   let refNodes = [];
   let inputPropsNodes = [];
 
-  const _sanitize = (data) => {
+  const _sanitize = (data: string) => {
     const tagsToReplace = {
       '&': '&amp;',
       '<': '&lt;',
@@ -17,8 +17,8 @@ const { html, render } = (() => {
       ')': '%29'
     };
     let str = JSON.stringify(data);
-    const replaceTag = (tag) => tagsToReplace[tag] || tag;
-    const safe_tags_replace = (str) => str.replace(/[&<>\(\)]/g, replaceTag);
+    const replaceTag = (tag: string) => tagsToReplace[tag] || tag;
+    const safe_tags_replace = (str: string) => str.replace(/[&<>\(\)]/g, replaceTag);
     str = safe_tags_replace(str);
     return JSON.parse(str);
   };
@@ -342,7 +342,7 @@ const { html, render } = (() => {
    * @param {HTMLElement} where
    * @param {(templates: any, ...values: any[]) => DocumentFragment} what
    */
-  const render = (where, what) => {
+  const render = (where: HTMLElement | HTMLUnknownElement, what: DocumentFragment) => {
     if (where && !where.children.length) {
       where.innerHTML = '';
       where.appendChild(what);
