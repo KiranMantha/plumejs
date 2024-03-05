@@ -8,15 +8,15 @@ declare class SubjectObs<T> {
     private _callbackCollection;
     private unsubscribe;
     asObservable(): {
-        subscribe: (fn: (param?: T) => void) => () => void;
+        subscribe: (fn: (() => void) | ((param: T) => void)) => () => void;
     };
-    subscribe(fn: (param?: T) => void): () => void;
+    subscribe(fn: (() => void) | ((param: T) => void)): () => void;
     next(value: T): void;
 }
 declare class BehaviourSubjectObs<T> extends SubjectObs<T> {
     private _initialValue;
     constructor(initialValue: T);
-    subscribe(fn: (param?: T) => void): () => void;
+    subscribe(fn: (() => void) | ((param: T) => void)): () => void;
     next(newvalue: T): void;
 }
 declare class Subscriptions {

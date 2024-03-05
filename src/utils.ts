@@ -33,7 +33,7 @@ const fromPromiseObs = <T>(input: T) => ({
 const createToken = () => Math.random().toString(36).substring(2);
 
 class SubjectObs<T> {
-  private _callbackCollection: Record<string, (param?: T) => void> = {};
+  private _callbackCollection: Record<string, (param: T) => void> = {};
 
   private unsubscribe(token: string) {
     delete this._callbackCollection[token];
@@ -41,11 +41,11 @@ class SubjectObs<T> {
 
   asObservable() {
     return {
-      subscribe: (fn: (param?: T) => void) => this.subscribe(fn)
+      subscribe: (fn: (() => void) | ((param: T) => void)) => this.subscribe(fn)
     };
   }
 
-  subscribe(fn: (param?: T) => void) {
+  subscribe(fn: (() => void) | ((param: T) => void)) {
     const token = createToken();
     this._callbackCollection[token] = fn;
     return () => this.unsubscribe(token);
@@ -66,7 +66,7 @@ class BehaviourSubjectObs<T> extends SubjectObs<T> {
     this._initialValue = initialValue;
   }
 
-  subscribe(fn: (param?: T) => void) {
+  subscribe(fn: (() => void) | ((param: T) => void)) {
     const unsub = super.subscribe(fn);
     super.next(this._initialValue);
     return unsub;
