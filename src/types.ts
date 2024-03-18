@@ -1,8 +1,9 @@
 type ConstructorType<T extends { new (...args: any[]): T }> = T;
+type DynamicCssImport = Promise<typeof import('*.scss') | typeof import('*.css') | typeof import('*.less')>;
 
 interface ComponentDecoratorOptions {
   selector: string;
-  styles?: string;
+  styles?: string | DynamicCssImport;
   root?: boolean;
   deps?: ConstructorType<any>[];
   standalone?: boolean;
@@ -61,6 +62,7 @@ export {
   ComponentDecoratorOptions,
   ComponentRef,
   ConstructorType,
+  DynamicCssImport,
   IHooks,
   InputProps,
   Renderer,

@@ -1,3 +1,5 @@
+import { createToken } from './utils';
+
 const isFunction = (value: unknown) => typeof value === 'function';
 const updateFnRegistry: Record<string, () => void> = Object.create(null);
 let token = null;
@@ -6,10 +8,6 @@ type Signal<T> = {
   (): T;
   set(v: T | ((initialValue: T) => T)): void;
 };
-
-function createToken(): string {
-  return Math.random().toString(36).substring(2);
-}
 
 function signalWrapper(updateFn: () => void, fn: () => void): string {
   const prev = token;

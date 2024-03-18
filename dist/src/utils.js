@@ -161,4 +161,4 @@ const promisify = () => {
     });
     return [promise, resolver];
 };
-export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, fromEvent, isFunction, isObject, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };
+export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, createToken, fromEvent, isFunction, isObject, isPromise, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };
