@@ -140,7 +140,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         );
         this.internalSubscriptions.add(
           fromEvent(this, 'refresh_component', () => {
-            this.klass.mount?.();
+            this.update();
           })
         );
         this.internalSubscriptions.add(

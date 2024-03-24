@@ -112,7 +112,7 @@ const registerElement = async (options, target) => {
                 propsObj && this.setProps(propsObj);
             }));
             this.internalSubscriptions.add(fromEvent(this, 'refresh_component', () => {
-                this.klass.mount?.();
+                this.update();
             }));
             this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
