@@ -3,7 +3,9 @@ declare const klass: unique symbol;
 declare const isObject: (value: any) => boolean;
 declare const isFunction: (value: any) => boolean;
 declare const isUndefined: (value: any) => boolean;
+declare const isPromise: (obj: any) => boolean;
 declare const CSS_SHEET_SUPPORTED: boolean;
+declare const createToken: () => string;
 declare class SubjectObs<T> {
     private _callbackCollection;
     private unsubscribe;
@@ -34,4 +36,4 @@ declare const proxifiedClass: (setRenderIntoQueue: () => void, target: Construct
     [x: string]: any;
 };
 declare const promisify: <T = unknown>() => [Promise<T>, (value?: T | PromiseLike<T>) => void];
-export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, fromEvent, isFunction, isObject, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };
+export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, createToken, fromEvent, isFunction, isObject, isPromise, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };

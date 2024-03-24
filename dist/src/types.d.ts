@@ -1,9 +1,11 @@
+/// <reference path="../../@types/typings.d.ts" />
 type ConstructorType<T extends {
     new (...args: any[]): T;
 }> = T;
+type DynamicCssImport = Promise<typeof import('*.scss') | typeof import('*.css') | typeof import('*.less')>;
 interface ComponentDecoratorOptions {
     selector: string;
-    styles?: string;
+    styles?: string | DynamicCssImport;
     root?: boolean;
     deps?: ConstructorType<any>[];
     standalone?: boolean;
@@ -40,4 +42,4 @@ interface ComponentRef<T> {
     setProps(propertiesObject: InputProps<T>): void;
     getInstance(): T;
 }
-export { ComponentDecoratorOptions, ComponentRef, ConstructorType, IHooks, InputProps, Renderer, ServiceDecoratorOptions };
+export { ComponentDecoratorOptions, ComponentRef, ConstructorType, DynamicCssImport, IHooks, InputProps, Renderer, ServiceDecoratorOptions };

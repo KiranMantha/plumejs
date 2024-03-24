@@ -2,8 +2,16 @@ import { augmentor } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentDecoratorOptions, ComponentRef, IHooks, Renderer } from './types';
-import { CSS_SHEET_SUPPORTED, Subscriptions, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { ComponentDecoratorOptions, ComponentRef, DynamicCssImport, IHooks, Renderer } from './types';
+import {
+  CSS_SHEET_SUPPORTED,
+  Subscriptions,
+  createToken,
+  fromEvent,
+  isPromise,
+  proxifiedClass,
+  sanitizeHTML
+} from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -20,9 +28,13 @@ const createStyleTag = (content: string, where: Node = null) => {
   return tag;
 };
 
-const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHooks>) => {
+const registerElement = async (options: ComponentDecoratorOptions, target: Partial<IHooks>) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
+  if (isPromise(options.styles)) {
+    const dynamicStyles = await (options.styles as DynamicCssImport);
+    options.styles = dynamicStyles.default.toString();
+  }
   options.styles = options.styles.toString();
 
   if (options.root && !componentRegistry.isRootNodeSet) {
@@ -52,10 +64,15 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         super();
         if (CSS_SHEET_SUPPORTED) {
           this.shadow = this.attachShadow({ mode: 'open' });
-          this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
+          this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
+            options.styles as string,
+            options.standalone
+          );
         } else {
           this.shadow = this;
-          const styles = options.styles.replaceAll(':host', options.selector);
+          const id = createToken();
+          this.setAttribute('data-did', id);
+          const styles = (options.styles as string).replaceAll(':host', `${options.selector}[data-did='${id}']`);
           this.componentStyleTag = createStyleTag(styles, document.head);
         }
         this.getInstance = this.getInstance.bind(this);
@@ -123,7 +140,7 @@ const registerElement = (options: ComponentDecoratorOptions, target: Partial<IHo
         );
         this.internalSubscriptions.add(
           fromEvent(this, 'refresh_component', () => {
-            this.klass.mount?.();
+            this.update();
           })
         );
         this.internalSubscriptions.add(

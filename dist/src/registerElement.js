@@ -3,7 +3,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
 import { Renderer } from './types';
-import { CSS_SHEET_SUPPORTED, Subscriptions, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, Subscriptions, createToken, fromEvent, isPromise, proxifiedClass, sanitizeHTML } from './utils';
 const DEFAULT_COMPONENT_OPTIONS = {
     selector: '',
     root: false,
@@ -17,8 +17,12 @@ const createStyleTag = (content, where = null) => {
     where && where.appendChild(tag);
     return tag;
 };
-const registerElement = (options, target) => {
+const registerElement = async (options, target) => {
     options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
+    if (isPromise(options.styles)) {
+        const dynamicStyles = await options.styles;
+        options.styles = dynamicStyles.default.toString();
+    }
     options.styles = options.styles.toString();
     if (options.root && !componentRegistry.isRootNodeSet) {
         componentRegistry.isRootNodeSet = true;
@@ -47,7 +51,9 @@ const registerElement = (options, target) => {
             }
             else {
                 this.shadow = this;
-                const styles = options.styles.replaceAll(':host', options.selector);
+                const id = createToken();
+                this.setAttribute('data-did', id);
+                const styles = options.styles.replaceAll(':host', `${options.selector}[data-did='${id}']`);
                 this.componentStyleTag = createStyleTag(styles, document.head);
             }
             this.getInstance = this.getInstance.bind(this);
@@ -106,7 +112,7 @@ const registerElement = (options, target) => {
                 propsObj && this.setProps(propsObj);
             }));
             this.internalSubscriptions.add(fromEvent(this, 'refresh_component', () => {
-                this.klass.mount?.();
+                this.update();
             }));
             this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
