@@ -9,6 +9,7 @@ interface ComponentDecoratorOptions {
     root?: boolean;
     deps?: ConstructorType<any>[];
     standalone?: boolean;
+    shadowDomEncapsulation?: boolean;
 }
 interface ServiceDecoratorOptions {
     deps?: ConstructorType<any>[];
