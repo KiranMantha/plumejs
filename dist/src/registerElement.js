@@ -9,7 +9,8 @@ const DEFAULT_COMPONENT_OPTIONS = {
     root: false,
     styles: '',
     deps: [],
-    standalone: false
+    standalone: false,
+    shadowDomEncapsulation: true
 };
 const createStyleTag = (content, where = null) => {
     const tag = document.createElement('style');
@@ -45,7 +46,7 @@ const registerElement = async (options, target) => {
         }
         constructor() {
             super();
-            if (CSS_SHEET_SUPPORTED) {
+            if (options.shadowDomEncapsulation && CSS_SHEET_SUPPORTED) {
                 this.shadow = this.attachShadow({ mode: 'open' });
                 this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(options.styles, options.standalone);
             }

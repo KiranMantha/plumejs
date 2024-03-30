@@ -18,7 +18,8 @@ const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   root: false,
   styles: '',
   deps: [],
-  standalone: false
+  standalone: false,
+  shadowDomEncapsulation: true
 };
 
 const createStyleTag = (content: string, where: Node = null) => {
@@ -62,7 +63,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
 
       constructor() {
         super();
-        if (CSS_SHEET_SUPPORTED) {
+        if (options.shadowDomEncapsulation && CSS_SHEET_SUPPORTED) {
           this.shadow = this.attachShadow({ mode: 'open' });
           this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             options.styles as string,
