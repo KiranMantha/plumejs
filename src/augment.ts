@@ -6,7 +6,7 @@ let token = null;
 
 type Signal<T> = {
   (): T;
-  set(v: T | ((previousValue: T) => T)): void;
+  set(value: T | ((previousValue: T) => T)): void;
 };
 
 function signalWrapper(updateFn: () => void, fn: () => void): string {
