@@ -6,7 +6,7 @@ let token = null;
 
 type Signal<T> = {
   (): T;
-  set(v: T | ((initialValue: T) => T)): void;
+  set(value: T | ((previousValue: T) => T)): void;
 };
 
 function signalWrapper(updateFn: () => void, fn: () => void): string {
@@ -31,7 +31,7 @@ function signal<T>(initialValue: T): Signal<T> {
   }
   boundSignal.set = function (v: T | ((initialValue: T) => T)) {
     if (isFunction(v)) {
-      value = (v as (initialValue: T) => T)(value);
+      value = (v as (previousValue: T) => T)(value);
     } else {
       value = v as T;
     }
