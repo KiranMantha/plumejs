@@ -70,9 +70,7 @@ const registerElement = async (options, target) => {
             rendererInstance.emitEvent = (eventName, data) => {
                 this.emitEvent(eventName, data);
             };
-            this.internalSubscriptions.add(augmentor(this.setRenderIntoQueue, () => {
-                this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
-            }));
+            this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
         }
         update() {
             const renderValue = this.klass.render();
@@ -120,7 +118,9 @@ const registerElement = async (options, target) => {
             this.internalSubscriptions.add(fromEvent(window, 'onLanguageChange', () => {
                 this.update();
             }));
-            this.klass.beforeMount?.();
+            if (this.klass.beforeMount) {
+                this.internalSubscriptions.add(augmentor(this.setRenderIntoQueue, this.klass.beforeMount.bind(this.klass)));
+            }
             this.update();
             this.klass.mount?.();
         }

@@ -90,11 +90,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         rendererInstance.emitEvent = (eventName: string, data: any) => {
           this.emitEvent(eventName, data);
         };
-        this.internalSubscriptions.add(
-          augmentor(this.setRenderIntoQueue, () => {
-            this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
-          })
-        );
+        this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
       }
 
       update() {
@@ -153,7 +149,9 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
             this.update();
           })
         );
-        this.klass.beforeMount?.();
+        if (this.klass.beforeMount) {
+          this.internalSubscriptions.add(augmentor(this.setRenderIntoQueue, this.klass.beforeMount.bind(this.klass)));
+        }
         this.update();
         this.klass.mount?.();
       }
