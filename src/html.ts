@@ -68,6 +68,74 @@ const { html, render } = (() => {
     inputPropsNodes.push(fn);
   };
 
+  /**
+   * bind attribute and its value to node
+   * @param {HTMLElement} node
+   * @param {String} attributeName
+   * @param {any} attributeValue
+   */
+  const _bindAttributes = (node: HTMLElement, attributeName: string, attributeValue: any) => {
+    switch (true) {
+      case /attrs/.test(attributeName): {
+        const attributesList = attributeValue.attrs;
+        for (const attr in attributesList) {
+          _bindAttributes(node, attr, attributesList[attr]);
+        }
+        break;
+      }
+      case /^on+/.test(attributeName): {
+        const eventName = attributeName.slice(2).toLowerCase();
+        node.removeEventListener(eventName, attributeValue);
+        node.addEventListener(eventName, attributeValue);
+        break;
+      }
+      case /ref/.test(attributeName): {
+        const closure = function () {
+          this.node.isConnected && this.fn(this.node);
+        }.bind({ node, fn: attributeValue });
+        refNodes.push(closure);
+        break;
+      }
+      case /^data-+/.test(attributeName):
+      case /^aria-+/.test(attributeName): {
+        if (attributeName === 'data-input') {
+          _bindDataInput(node, attributeValue, Symbol('input'));
+        } else {
+          node.setAttribute(attributeName, _sanitize(attributeValue));
+        }
+        break;
+      }
+      case /class/.test(attributeName): {
+        if (attributeValue) {
+          node.classList.add(...attributeValue.split(' '));
+        } else {
+          node.setAttribute('class', '');
+        }
+        break;
+      }
+      case /value/.test(attributeName): {
+        if (node.nodeName.toLowerCase() === 'select') {
+          _setValuesForDropdown(node as any, attributeValue);
+        } else {
+          (node as any).value = _sanitize(attributeValue);
+        }
+        break;
+      }
+      case /disabled/.test(attributeName):
+      case /checked/.test(attributeName): {
+        if (attributeValue) {
+          node.setAttribute(attributeName, attributeValue);
+        } else {
+          node.removeAttribute(attributeName);
+        }
+        break;
+      }
+      default: {
+        node.setAttribute(attributeName, _sanitize(attributeValue));
+      }
+    }
+  };
+
   const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode() as unknown as HTMLElement;
@@ -76,58 +144,7 @@ const { html, render } = (() => {
         const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
         for (const { nodeName, nodeValue } of customAttributes) {
           const i = attributeRegex.exec(nodeName)[1];
-          switch (true) {
-            case /^on+/.test(nodeValue): {
-              const eventName = nodeValue.slice(2).toLowerCase();
-              node.removeEventListener(eventName, values[i]);
-              node.addEventListener(eventName, values[i]);
-              break;
-            }
-            case /ref/.test(nodeValue): {
-              const closure = function () {
-                this.node.isConnected && this.fn(this.node);
-              }.bind({ node, fn: values[i] });
-              refNodes.push(closure);
-              break;
-            }
-            case /^data-+/.test(nodeValue):
-            case /^aria-+/.test(nodeValue): {
-              if (nodeValue === 'data-input') {
-                _bindDataInput(node, values[i], Symbol('input'));
-              } else {
-                node.setAttribute(nodeValue, _sanitize(values[i]));
-              }
-              break;
-            }
-            case /class/.test(nodeValue): {
-              if (values[i]) {
-                node.classList.add(...values[i].split(' '));
-              } else {
-                node.setAttribute('class', '');
-              }
-              break;
-            }
-            case /value/.test(nodeValue): {
-              if (node.nodeName.toLowerCase() === 'select') {
-                _setValuesForDropdown(node as any, values[i]);
-              } else {
-                (node as any).value = _sanitize(values[i]);
-              }
-              break;
-            }
-            case /disabled/.test(nodeValue):
-            case /checked/.test(nodeValue): {
-              if (values[i]) {
-                node.setAttribute(nodeValue, values[i]);
-              } else {
-                node.removeAttribute(nodeValue);
-              }
-              break;
-            }
-            default: {
-              node.setAttribute(nodeValue, _sanitize(values[i]));
-            }
-          }
+          _bindAttributes(node, nodeValue, values[i]);
           node.removeAttribute(nodeName);
         }
       }
@@ -320,6 +337,9 @@ const { html, render } = (() => {
           case typeof variable === 'object' && variable !== null: {
             if ('html' in variable) {
               result += variable['html'];
+            }
+            if ('attrs' in variable) {
+              result += `${attributePrefix}${i - 1}="attrs"`;
             }
             break;
           }
