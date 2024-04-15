@@ -335,9 +335,6 @@ const { html, render } = (() => {
             break;
           }
           case typeof variable === 'object' && variable !== null: {
-            if ('html' in variable) {
-              result += variable['html'];
-            }
             if ('attrs' in variable) {
               result += `${attributePrefix}${i - 1}="attrs"`;
             }
