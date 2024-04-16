@@ -192,7 +192,7 @@ const { html, render } = (() => {
       }
     }
 
-    if (domNode.tagName.toLowerCase() === 'input') {
+    if (['input', 'textarea'].includes(domNode.tagName.toLowerCase())) {
       (domNode as HTMLInputElement).value = (templateNode as HTMLInputElement).value;
     }
 
