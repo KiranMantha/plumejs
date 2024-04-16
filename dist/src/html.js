@@ -168,7 +168,7 @@ const { html, render } = (() => {
                 }
             }
         }
-        if (domNode.tagName.toLowerCase() === 'input') {
+        if (['input', 'textarea'].includes(domNode.tagName.toLowerCase())) {
             domNode.value = templateNode.value;
         }
         if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
