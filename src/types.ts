@@ -1,7 +1,7 @@
-type ConstructorType<T extends { new (...args: any[]): T }> = T;
-type DynamicCssImport = Promise<typeof import('*.scss') | typeof import('*.css') | typeof import('*.less')>;
+export type ConstructorType<T extends { new (...args: any[]): T }> = T;
+export type DynamicCssImport = Promise<typeof import('*.scss') | typeof import('*.css') | typeof import('*.less')>;
 
-interface ComponentDecoratorOptions {
+export interface ComponentDecoratorOptions {
   selector: string;
   styles?: string | DynamicCssImport;
   root?: boolean;
@@ -10,11 +10,11 @@ interface ComponentDecoratorOptions {
   shadowDomEncapsulation?: boolean;
 }
 
-interface ServiceDecoratorOptions {
+export interface ServiceDecoratorOptions {
   deps?: ConstructorType<any>[];
 }
 
-interface IHooks {
+export interface IHooks {
   observedAttributes?: readonly string[];
   observedProperties?: readonly string[];
   render: () => DocumentFragment | string;
@@ -25,7 +25,7 @@ interface IHooks {
   onAttributesChanged?: (name: string, oldValue: string, newValue: string) => void;
 }
 
-class Renderer {
+export class Renderer {
   private _hostElement: HTMLElement;
   private _shadowRoot: ShadowRoot;
 
@@ -50,22 +50,22 @@ class Renderer {
   }
 }
 
-type InputProps<T> = {
+export type InputProps<T> = {
   [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
 };
 
-interface ComponentRef<T> {
+export interface ComponentRef<T> {
   setProps(propertiesObject: InputProps<T>): void;
   getInstance(): T;
 }
 
-export {
-  ComponentDecoratorOptions,
-  ComponentRef,
-  ConstructorType,
-  DynamicCssImport,
-  IHooks,
-  InputProps,
-  Renderer,
-  ServiceDecoratorOptions
-};
+// export {
+//   ComponentDecoratorOptions,
+//   ComponentRef,
+//   ConstructorType,
+//   DynamicCssImport,
+//   IHooks,
+//   InputProps,
+//   Renderer,
+//   ServiceDecoratorOptions
+// };

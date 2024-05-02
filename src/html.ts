@@ -96,6 +96,10 @@ const { html, render } = (() => {
         refNodes.push(closure);
         break;
       }
+      case /key/.test(attributeName): {
+        node[Symbol('key')] = attributeValue;
+        break;
+      }
       case /^data-+/.test(attributeName):
       case /^aria-+/.test(attributeName): {
         if (attributeName === 'data-input') {
@@ -166,6 +170,15 @@ const { html, render } = (() => {
     }
   };
 
+  const _getSymbolFromNode = (node: HTMLElement, symbolName: string) => {
+    if (!node) {
+      return [null, ''];
+    }
+    const namedSymbol = Object.getOwnPropertySymbols(node).find((symbol) => symbol.description === symbolName);
+    const symbolValue = namedSymbol ? node[namedSymbol] : '';
+    return [namedSymbol, symbolValue];
+  };
+
   /**
    * update node attributes y comparing present node and compiled node
    * @param {HTMLElement} templateNode
@@ -197,14 +210,10 @@ const { html, render } = (() => {
     }
 
     if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
-      const templateInputSymbol = Object.getOwnPropertySymbols(templateNode).find(
-        (symbol) => symbol.description === 'input'
-      );
-      const domInputSymbol = Object.getOwnPropertySymbols(domNode).find((symbol) => symbol.description === 'input');
-      const templateInput = templateInputSymbol ? templateNode[templateInputSymbol] : '';
-      const domInput = domInputSymbol ? domNode[domInputSymbol] : '';
-      if (templateInput && domInput && templateInput !== domInput) {
-        _bindDataInput(domNode, JSON.parse(templateInput), domInputSymbol);
+      const templateInput = _getSymbolFromNode(templateNode, 'input')[1];
+      const domSymbol = _getSymbolFromNode(domNode, 'input');
+      if (templateInput && domSymbol[1] && templateInput !== domSymbol[1]) {
+        _bindDataInput(domNode, JSON.parse(templateInput), domSymbol[0]);
       }
     }
   };
@@ -255,6 +264,8 @@ const { html, render } = (() => {
     // Diff each item in the templateNodes
     templateNodes.forEach((node: HTMLElement, index) => {
       const domNode = domNodes[index] as HTMLElement;
+      const templateNodeKeyValue = _getSymbolFromNode(node, 'key')[1];
+      const domNodeKeyValue = _getSymbolFromNode(domNode, 'key')[1];
 
       _diffAttributes(node, domNode);
 
@@ -269,8 +280,11 @@ const { html, render } = (() => {
         return;
       }
 
-      // If element is not the same type, replace it with new element
-      if (_getNodeType(node) !== _getNodeType(domNode)) {
+      // If element is not the same type or the keys are different then replace it with new element
+      if (
+        (templateNodeKeyValue && domNodeKeyValue && templateNodeKeyValue !== domNodeKeyValue) ||
+        _getNodeType(node) !== _getNodeType(domNode)
+      ) {
         domNode.replaceWith(node);
         return;
       }

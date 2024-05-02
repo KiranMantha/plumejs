@@ -55,6 +55,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
       private shadow: any;
       private componentStyleTag: HTMLStyleElement = null;
       private internalSubscriptions = new Subscriptions();
+      private isEmulated = false;
       renderCount = 0;
 
       static get observedAttributes() {
@@ -64,17 +65,15 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
       constructor() {
         super();
         if (options.shadowDomEncapsulation && CSS_SHEET_SUPPORTED) {
+          this.isEmulated = false;
           this.shadow = this.attachShadow({ mode: 'open' });
           this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             options.styles as string,
             options.standalone
           );
         } else {
+          this.isEmulated = false;
           this.shadow = this;
-          const id = createToken();
-          this.setAttribute('data-did', id);
-          const styles = (options.styles as string).replaceAll(':host', `${options.selector}[data-did='${id}']`);
-          this.componentStyleTag = createStyleTag(styles, document.head);
         }
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
@@ -137,6 +136,14 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
       }
 
       connectedCallback() {
+        if (this.isEmulated) {
+          const id = createToken();
+          this.setAttribute('data-did', id);
+          const styles = (options.styles as string).replaceAll(':host', `${options.selector}[data-did='${id}']`);
+          if (!options.root && styles) {
+            this.componentStyleTag = createStyleTag(styles, document.head);
+          }
+        }
         this.internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e: CustomEvent) => {
             const propsObj = e.detail.props;
