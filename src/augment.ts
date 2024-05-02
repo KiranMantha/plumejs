@@ -4,7 +4,7 @@ const isFunction = (value: unknown) => typeof value === 'function';
 const updateFnRegistry: Record<string, () => void> = Object.create(null);
 let token = null;
 
-type Signal<T> = {
+export type Signal<T> = {
   (): T;
   set(value: T | ((previousValue: T) => T)): void;
 };
@@ -35,7 +35,9 @@ function signal<T>(initialValue: T): Signal<T> {
     } else {
       value = v as T;
     }
-    updateFn();
+    try {
+      updateFn();
+    } catch (e) {}
   };
   return boundSignal;
 }
@@ -47,4 +49,4 @@ function augmentor(updateFn: () => void, fn: () => void): () => void {
   };
 }
 
-export { Signal, augmentor, signal };
+export { augmentor, signal };

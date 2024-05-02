@@ -1,16 +1,11 @@
 export {
   BehaviourSubjectObs,
   Component,
-  ComponentDecoratorOptions,
-  ComponentRef,
   DomTransition,
-  IHooks,
   Injectable,
   InjectionToken,
   Injector,
-  InputProps,
   Renderer,
-  ServiceDecoratorOptions,
   SubjectObs,
   Subscriptions,
   fromEvent,
@@ -20,3 +15,4 @@ export {
   signal,
   wrapIntoObservable
 } from './src';
+export type { ComponentDecoratorOptions, ComponentRef, IHooks, InputProps, ServiceDecoratorOptions } from './src';
