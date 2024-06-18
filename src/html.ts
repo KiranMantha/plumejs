@@ -355,7 +355,7 @@ const { html, render } = (() => {
             break;
           }
           default: {
-            result += variable || '';
+            result += variable ?? '';
           }
         }
       }
