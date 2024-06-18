@@ -377,7 +377,7 @@ const N = new class {
             break;
           }
           default:
-            o += l || "";
+            o += l ?? "";
         }
     }
     o += n[a - 1];

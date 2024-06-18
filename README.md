@@ -23,3 +23,7 @@ PlumeJs has very few syntaxes enabling faster learning curve.
 ## Documentation
 
 For documentation please visit [wiki](https://github.com/KiranMantha/plumejs/wiki)
+
+## Playground
+
+Want to try before you install?? play at [Stackblitz](https://stackblitz.com/edit/vitejs-vite-viqqh9?file=src%2Fmain.ts)
