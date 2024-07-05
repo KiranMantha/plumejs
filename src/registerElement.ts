@@ -52,7 +52,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
     options.selector,
     class extends HTMLElement implements ComponentRef<unknown> {
       private klass: Partial<IHooks>;
-      private shadow;
+      private shadow: ShadowRoot;
       private componentStyleTag: HTMLStyleElement = null;
       private internalSubscriptions = new Subscriptions();
       private isEmulated = false;
@@ -73,11 +73,8 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
           );
         } else {
           this.isEmulated = false;
-          this.shadow = this;
+          this.shadow = this as unknown as ShadowRoot;
         }
-        this.getInstance = this.getInstance.bind(this);
-        this.update = this.update.bind(this);
-        this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
         this.createProxyInstance();
       }
 
@@ -100,14 +97,14 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         );
       }
 
-      update() {
+      update = () => {
         const renderValue = this.klass.render();
         if (typeof renderValue === 'string') {
           this.shadow.innerHTML = sanitizeHTML(renderValue);
         } else {
-          render(this.shadow, renderValue);
+          render(this.shadow as unknown as HTMLElement, renderValue);
         }
-      }
+      };
 
       emitEvent<T>(eventName: string, data: T) {
         const event = new CustomEvent(eventName, {
@@ -125,11 +122,11 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         this.klass.onPropertiesChanged?.();
       }
 
-      getInstance() {
+      getInstance = () => {
         return this.klass;
-      }
+      };
 
-      setRenderIntoQueue() {
+      setRenderIntoQueue = () => {
         ++this.renderCount;
         if (this.renderCount === 1) {
           queueMicrotask(() => {
@@ -137,7 +134,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
             this.renderCount = 0;
           });
         }
-      }
+      };
 
       connectedCallback() {
         if (this.isEmulated) {
@@ -150,7 +147,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         }
         this.internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e: CustomEvent) => {
-            const propsObj = e.detail.props;
+            const propsObj = (e.detail as { props: Record<string, unknown> }).props;
             propsObj && this.setProps(propsObj);
           })
         );

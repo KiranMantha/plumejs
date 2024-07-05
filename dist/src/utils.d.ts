@@ -35,4 +35,4 @@ declare const proxifiedClass: (setRenderIntoQueue: () => void, target: any) => {
     [x: string]: any;
 };
 declare const promisify: <T = unknown>() => [Promise<T>, (value?: T | PromiseLike<T>) => void];
-export { BehaviourSubjectObs, createToken, CSS_SHEET_SUPPORTED, fromEvent, isFunction, isObject, isPromise, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, SubjectObs, Subscriptions, wrapIntoObservable };
+export { BehaviourSubjectObs, CSS_SHEET_SUPPORTED, SubjectObs, Subscriptions, createToken, fromEvent, isFunction, isObject, isPromise, isUndefined, klass, promisify, proxifiedClass, sanitizeHTML, wrapIntoObservable };

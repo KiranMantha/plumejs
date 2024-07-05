@@ -5,11 +5,11 @@ const { html, render } = (() => {
   const attributeRegex = /^attr([^ ]+)/;
   const insertNodePrefix = 'insertNode';
   const insertNodeRegex = /^insertNode([^ ]+)/;
-  let refNodes = [];
-  let inputPropsNodes = [];
+  let refNodes: Array<() => void> = [];
+  let inputPropsNodes: Array<() => void> = [];
 
   const _sanitize = (data: string) => {
-    const tagsToReplace = {
+    const tagsToReplace: Record<string, string> = {
       '&': '&amp;',
       '<': '&lt;',
       '>': '&gt;',
@@ -20,14 +20,15 @@ const { html, render } = (() => {
     const replaceTag = (tag: string) => tagsToReplace[tag] || tag;
     const safe_tags_replace = (str: string) => str.replace(/[&<>()]/g, replaceTag);
     str = safe_tags_replace(str);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return JSON.parse(str);
   };
 
   const _setValuesForDropdown = (node: HTMLSelectElement, value) => {
     const options = node.options,
       values = Array.isArray(value) ? value : [value];
-    let optionSet,
-      option,
+    let optionSet: boolean,
+      option: HTMLOptionElement,
       i = options.length;
 
     while (i--) {
@@ -77,7 +78,7 @@ const { html, render } = (() => {
   const _bindAttributes = (node: HTMLElement, attributeName: string, attributeValue) => {
     switch (true) {
       case /attrs/.test(attributeName): {
-        const attributesList = attributeValue.attrs;
+        const attributesList = (attributeValue as { attrs: Record<string, unknown> }).attrs;
         for (const attr in attributesList) {
           _bindAttributes(node, attr, attributesList[attr]);
         }
@@ -91,13 +92,13 @@ const { html, render } = (() => {
       }
       case /ref/.test(attributeName): {
         const closure = function () {
-          this.node.isConnected && this.fn(this.node);
-        }.bind({ node, fn: attributeValue });
+          (this.node as HTMLElement).isConnected && (this.fn as (node: HTMLElement) => void)(this.node);
+        }.bind({ node, fn: attributeValue as (node: HTMLElement) => void }) as () => void;
         refNodes.push(closure);
         break;
       }
       case /key/.test(attributeName): {
-        node[Symbol('key')] = attributeValue;
+        node[Symbol('key')] = attributeValue as unknown;
         break;
       }
       case /^data-+/.test(attributeName):
@@ -111,7 +112,7 @@ const { html, render } = (() => {
       }
       case /class/.test(attributeName): {
         if (attributeValue) {
-          node.classList.add(...attributeValue.split(' '));
+          node.classList.add(...(attributeValue as string).split(' '));
         } else {
           node.setAttribute('class', '');
         }
@@ -121,7 +122,7 @@ const { html, render } = (() => {
         if (node.nodeName.toLowerCase() === 'select') {
           _setValuesForDropdown(node as HTMLSelectElement, attributeValue);
         } else {
-          (node as HTMLInputElement).value = _sanitize(attributeValue);
+          (node as HTMLInputElement).value = _sanitize(attributeValue) as string;
         }
         break;
       }
@@ -162,6 +163,7 @@ const { html, render } = (() => {
       match: RegExpExecArray;
     while (node) {
       if ((match = insertNodeRegex.exec(node.data))) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
         node.replaceWith(...nodesList);
         commentsWalker.currentNode = fragment;
@@ -170,12 +172,12 @@ const { html, render } = (() => {
     }
   };
 
-  const _getSymbolFromNode = (node: HTMLElement, symbolName: string) => {
+  const _getSymbolFromNode = (node: HTMLElement, symbolName: string): [symbol, string] => {
     if (!node) {
       return [null, ''];
     }
     const namedSymbol = Object.getOwnPropertySymbols(node).find((symbol) => symbol.description === symbolName);
-    const symbolValue = namedSymbol ? node[namedSymbol] : '';
+    const symbolValue = namedSymbol ? (node[namedSymbol] as string) : '';
     return [namedSymbol, symbolValue];
   };
 

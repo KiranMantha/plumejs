@@ -1,8 +1,8 @@
 import { createToken } from './utils';
 
 const isFunction = (value: unknown) => typeof value === 'function';
-const updateFnRegistry: Record<string, () => void> = Object.create(null);
-let token = null;
+const updateFnRegistry: Record<string, () => void> = {};
+let token: string = null;
 
 export type Signal<T> = {
   (): T;

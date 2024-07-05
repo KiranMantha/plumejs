@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 const klass = Symbol('klass');
 const isObject = (value: unknown) => value !== null && typeof value === 'object';
 const isFunction = (value: unknown) => typeof value === 'function';
@@ -224,8 +227,10 @@ const promisify = <T = unknown>(): [Promise<T>, (value?: T | PromiseLike<T>) => 
 
 export {
   BehaviourSubjectObs,
-  createToken,
   CSS_SHEET_SUPPORTED,
+  SubjectObs,
+  Subscriptions,
+  createToken,
   fromEvent,
   isFunction,
   isObject,
@@ -235,7 +240,5 @@ export {
   promisify,
   proxifiedClass,
   sanitizeHTML,
-  SubjectObs,
-  Subscriptions,
   wrapIntoObservable
 };

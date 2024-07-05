@@ -23,11 +23,11 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
     this.globalStyleTag = null;
   }
 
-  getComputedCss = (styles = '', standalone: boolean) => {
-    let csoArray = [];
+  getComputedCss = (styles = '', standalone: boolean): CSSStyleSheet[] => {
+    let csoArray: CSSStyleSheet[] = [];
     const defaultStyles = new CSSStyleSheet();
     defaultStyles.insertRule(`:host { display: block; }`);
-    csoArray = standalone ? [defaultStyles] : [this.globalStyles, defaultStyles];
+    csoArray = standalone ? [defaultStyles] : [this.globalStyles as CSSStyleSheet, defaultStyles];
     if (styles) {
       const sheet = new CSSStyleSheet();
       sheet.replace(styles);

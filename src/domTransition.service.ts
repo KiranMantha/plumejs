@@ -10,7 +10,7 @@ class DomTransition {
 
   onTransitionEnd(element: HTMLElement, callback: () => void, duration: number) {
     let called = false;
-    let unSubscribeEvent = null;
+    let unSubscribeEvent: () => void = null;
     const _fn = () => {
       if (!called) {
         called = true;
