@@ -23,17 +23,17 @@ function signalWrapper(updateFn: () => void, fn: () => void): string {
   return generatedToken;
 }
 
-function signal<T>(initialValue: T): Signal<T> {
+function signal<T>(initialValue: T, reducer?: (previousState: T, newState: T) => T): Signal<T> {
   const updateFn = updateFnRegistry[token];
   let value = initialValue;
   function boundSignal(): T {
     return value;
   }
   boundSignal.set = function (v: T | ((initialValue: T) => T)) {
-    if (isFunction(v)) {
-      value = (v as (previousValue: T) => T)(value);
+    if (reducer && isFunction(reducer)) {
+      value = reducer(value, v as T);
     } else {
-      value = v as T;
+      value = isFunction(v) ? (v as (previousValue: T) => T)(value) : (v as T);
     }
     try {
       updateFn();
