@@ -27,7 +27,7 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
     let csoArray = [];
     const defaultStyles = new CSSStyleSheet();
     defaultStyles.insertRule(`:host { display: block; }`);
-    csoArray = !!standalone ? [defaultStyles] : [this.globalStyles, defaultStyles];
+    csoArray = standalone ? [defaultStyles] : [this.globalStyles, defaultStyles];
     if (styles) {
       const sheet: any = new CSSStyleSheet();
       sheet.replace(styles);
