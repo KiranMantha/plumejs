@@ -18,7 +18,7 @@ const { html, render } = (() => {
     };
     let str = JSON.stringify(data);
     const replaceTag = (tag: string) => tagsToReplace[tag] || tag;
-    const safe_tags_replace = (str: string) => str.replace(/[&<>\(\)]/g, replaceTag);
+    const safe_tags_replace = (str: string) => str.replace(/[&<>()]/g, replaceTag);
     str = safe_tags_replace(str);
     return JSON.parse(str);
   };
@@ -74,7 +74,7 @@ const { html, render } = (() => {
    * @param {String} attributeName
    * @param {any} attributeValue
    */
-  const _bindAttributes = (node: HTMLElement, attributeName: string, attributeValue: any) => {
+  const _bindAttributes = (node: HTMLElement, attributeName: string, attributeValue) => {
     switch (true) {
       case /attrs/.test(attributeName): {
         const attributesList = attributeValue.attrs;
@@ -119,9 +119,9 @@ const { html, render } = (() => {
       }
       case /value/.test(attributeName): {
         if (node.nodeName.toLowerCase() === 'select') {
-          _setValuesForDropdown(node as any, attributeValue);
+          _setValuesForDropdown(node as HTMLSelectElement, attributeValue);
         } else {
-          (node as any).value = _sanitize(attributeValue);
+          (node as HTMLInputElement).value = _sanitize(attributeValue);
         }
         break;
       }
@@ -140,7 +140,7 @@ const { html, render } = (() => {
     }
   };
 
-  const _bindFragments = (fragment: DocumentFragment, values: Array<any>) => {
+  const _bindFragments = (fragment: DocumentFragment, values: Array<unknown>) => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode() as unknown as HTMLElement;
     while (node) {
@@ -156,7 +156,7 @@ const { html, render } = (() => {
     }
   };
 
-  const _replaceInsertNodeComments = (fragment: DocumentFragment, values: Array<any>) => {
+  const _replaceInsertNodeComments = (fragment: DocumentFragment, values: Array<unknown>) => {
     const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
     let node = commentsWalker.nextNode() as Comment,
       match: RegExpExecArray;
@@ -325,7 +325,7 @@ const { html, render } = (() => {
    * @param {...any[]} values
    * @return DocumentFragment
    */
-  const html = (templates: TemplateStringsArray, ...values: Array<any>): DocumentFragment => {
+  const html = (templates: TemplateStringsArray, ...values: Array<unknown>): DocumentFragment => {
     let result = '';
     const { length } = templates;
 

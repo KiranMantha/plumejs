@@ -1,11 +1,11 @@
 import { Injector } from './service_resolver';
 import { ConstructorType, Renderer } from './types';
 
-const instantiate = (
-  klass: ConstructorType<any>,
-  dependencies: ConstructorType<any>[],
+const instantiate = <T>(
+  klass: ConstructorType<T>,
+  dependencies: ConstructorType<unknown>[],
   rendererInstance?: Renderer
-): Record<string, any> => {
+): T => {
   if (dependencies.length) {
     const services = [];
     for (const dependency of dependencies) {

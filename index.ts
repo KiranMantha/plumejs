@@ -3,7 +3,6 @@ export {
   Component,
   DomTransition,
   Injectable,
-  InjectionToken,
   Injector,
   Renderer,
   SubjectObs,

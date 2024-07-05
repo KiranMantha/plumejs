@@ -8,13 +8,13 @@ class DomTransition {
     this.whichTransitionEnd();
   }
 
-  onTransitionEnd(element: HTMLElement, cb: () => void, duration: number) {
+  onTransitionEnd(element: HTMLElement, callback: () => void, duration: number) {
     let called = false;
     let unSubscribeEvent = null;
     const _fn = () => {
       if (!called) {
         called = true;
-        cb && cb();
+        callback && callback();
         unSubscribeEvent();
         unSubscribeEvent = null;
       }
@@ -25,18 +25,22 @@ class DomTransition {
     setTimeout(_fn, duration);
   }
 
-  animationsComplete(element: HTMLElement): Promise<any> {
-    if (element.getAnimations) {
-      return Promise.allSettled(element.getAnimations().map((animation: Animation) => animation.finished));
-    } else {
-      return Promise.allSettled([true]);
-    }
+  animationsComplete(element: HTMLElement): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      if (element.getAnimations) {
+        Promise.allSettled(element.getAnimations().map((animation: Animation) => animation.finished)).then(() => {
+          resolve(true);
+        });
+      } else {
+        resolve(true);
+      }
+    });
   }
 
   private whichTransitionEnd() {
     const element = document.createElement('div');
-    const styleobj: any = element.style;
-    const transitions: { [key: string]: string } = {
+    const styleobj = element.style;
+    const transitions: Record<string, string> = {
       transition: 'transitionend',
       WebkitTransition: 'webkitTransitionEnd',
       MozTransition: 'transitionend',

@@ -9,23 +9,25 @@ const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
   deps: []
 };
 
-const Component = (options: ComponentDecoratorOptions) => (target: new (...args: any[]) => any) => {
-  if (options.selector.indexOf('-') <= 0) {
-    throw new Error('You need at least 1 dash in the custom element name!');
-  }
-  if (!window.customElements.get(options.selector)) {
-    Object.defineProperty(target.prototype, 'selector', {
-      get() {
-        return options.selector;
-      }
-    });
-    registerElement(options, target as Partial<IHooks>);
-  }
-};
+const Component =
+  (options: ComponentDecoratorOptions) =>
+  <T>(target: ConstructorType<T>) => {
+    if (options.selector.indexOf('-') <= 0) {
+      throw new Error('You need at least 1 dash in the custom element name!');
+    }
+    if (!window.customElements.get(options.selector)) {
+      Object.defineProperty(target.prototype, 'selector', {
+        get() {
+          return options.selector;
+        }
+      });
+      registerElement(options, target as Partial<IHooks>);
+    }
+  };
 
 const Injectable =
   (options: ServiceDecoratorOptions = {}) =>
-  (target: new (...args: any[]) => any) => {
+  <T>(target: ConstructorType<T>) => {
     options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
     target.prototype.__metadata__ = {
       name: 'SERVICE'
@@ -37,10 +39,10 @@ const Injectable =
     Injector.register(target, instance);
   };
 
-const InjectionToken = (name: string | ConstructorType<any>, target: Record<string, any>) => {
-  const token = typeof name === 'string' ? { name } : name;
-  Injector.register(token, target);
-  return token;
-};
+// const InjectionToken = <T>(name: string | ConstructorType<unknown>, target: T) => {
+//   const token = typeof name === 'string' ? { name } : name;
+//   Injector.register(token as unknown, target);
+//   return token;
+// };
 
-export { Component, Injectable, InjectionToken };
+export { Component, Injectable };

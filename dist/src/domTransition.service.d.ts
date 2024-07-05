@@ -1,8 +1,8 @@
 declare class DomTransition {
     private transition;
     constructor();
-    onTransitionEnd(element: HTMLElement, cb: () => void, duration: number): void;
-    animationsComplete(element: HTMLElement): Promise<any>;
+    onTransitionEnd(element: HTMLElement, callback: () => void, duration: number): void;
+    animationsComplete(element: HTMLElement): Promise<boolean>;
     private whichTransitionEnd;
 }
 export { DomTransition };

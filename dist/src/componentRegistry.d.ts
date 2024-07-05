@@ -1,5 +1,5 @@
 interface IComponentRegistry {
-    globalStyles: any;
+    globalStyles: CSSStyleSheet | string;
     globalStyleTag: Node;
     style_registry: Map<string, string>;
     isRootNodeSet: boolean;

@@ -1,18 +1,15 @@
-/// <reference path="../../@types/typings.d.ts" />
-export type ConstructorType<T extends {
-    new (...args: any[]): T;
-}> = T;
+export type ConstructorType<T> = new (...args: unknown[]) => T;
 export type DynamicCssImport = Promise<typeof import('*.scss') | typeof import('*.css') | typeof import('*.less')>;
 export interface ComponentDecoratorOptions {
     selector: string;
     styles?: string | DynamicCssImport;
     root?: boolean;
-    deps?: ConstructorType<any>[];
+    deps?: ConstructorType<unknown>[];
     standalone?: boolean;
     shadowDomEncapsulation?: boolean;
 }
 export interface ServiceDecoratorOptions {
-    deps?: ConstructorType<any>[];
+    deps?: ConstructorType<unknown>[];
 }
 export interface IHooks {
     observedAttributes?: readonly string[];
@@ -33,7 +30,7 @@ export declare class Renderer {
     get hostElement(): HTMLElement;
     get shadowRoot(): ShadowRoot;
     update: () => void;
-    emitEvent: (eventName: string, data?: any, isBubbling?: boolean) => void;
+    emitEvent: <T>(eventName: string, data?: T, isBubbling?: boolean) => void;
     constructor(_hostElement: HTMLElement, _shadowRoot: ShadowRoot);
 }
 export type InputProps<T> = {

@@ -1,3 +1,3 @@
 import { ConstructorType, Renderer } from './types';
-declare const instantiate: (klass: ConstructorType<any>, dependencies: ConstructorType<any>[], rendererInstance?: Renderer) => Record<string, any>;
+declare const instantiate: <T>(klass: ConstructorType<T>, dependencies: ConstructorType<unknown>[], rendererInstance?: Renderer) => T;
 export { instantiate };

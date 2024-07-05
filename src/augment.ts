@@ -37,7 +37,9 @@ function signal<T>(initialValue: T, reducer?: (previousState: T, newState: T) =>
     }
     try {
       updateFn();
-    } catch (e) {}
+    } catch (e) {
+      console.trace(e);
+    }
   };
   return boundSignal;
 }
