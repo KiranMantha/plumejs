@@ -78,7 +78,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         this.createProxyInstance();
       }
 
-      private createProxyInstance() {
+      private createProxyInstance = () => {
         const rendererInstance = new Renderer(this, this.shadow);
         rendererInstance.update = () => {
           this.update();
@@ -95,7 +95,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
             );
           })
         );
-      }
+      };
 
       update = () => {
         const renderValue = this.klass.render();
@@ -106,21 +106,21 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         }
       };
 
-      emitEvent<T>(eventName: string, data: T) {
+      emitEvent = <T>(eventName: string, data: T) => {
         const event = new CustomEvent(eventName, {
           detail: data
         });
         this.dispatchEvent(event);
-      }
+      };
 
-      setProps<T>(propsObj: Record<string, T>) {
+      setProps = <T>(propsObj: Record<string, T>) => {
         for (const [key, value] of Object.entries(propsObj)) {
           if (target.observedProperties.find((property) => property === key)) {
             this.klass[key] = value;
           }
         }
         this.klass.onPropertiesChanged?.();
-      }
+      };
 
       getInstance = () => {
         return this.klass;

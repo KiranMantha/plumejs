@@ -1,6 +1,6 @@
 var Q = Object.defineProperty;
 var U = (e, t, r) => t in e ? Q(e, t, { enumerable: !0, configurable: !0, writable: !0, value: r }) : e[t] = r;
-var p = (e, t, r) => U(e, typeof t != "symbol" ? t + "" : t, r);
+var f = (e, t, r) => U(e, typeof t != "symbol" ? t + "" : t, r);
 const q = (e) => !!e && typeof e.subscribe == "function", $ = (e) => !!e && typeof e.then == "function", K = (() => {
   try {
     return new CSSStyleSheet(), !0;
@@ -20,7 +20,7 @@ const q = (e) => !!e && typeof e.subscribe == "function", $ = (e) => !!e && type
 }), O = () => Math.random().toString(36).substring(2);
 class G {
   constructor() {
-    p(this, "_callbackCollection", {});
+    f(this, "_callbackCollection", {});
   }
   unsubscribe(t) {
     delete this._callbackCollection[t];
@@ -42,7 +42,7 @@ class G {
 class he extends G {
   constructor(r) {
     super();
-    p(this, "_initialValue");
+    f(this, "_initialValue");
     this._initialValue = r;
   }
   subscribe(r) {
@@ -55,7 +55,7 @@ class he extends G {
 }
 class X {
   constructor() {
-    p(this, "_subcribers", []);
+    f(this, "_subcribers", []);
   }
   add(t) {
     this._subcribers.push(t);
@@ -69,18 +69,18 @@ class X {
 const fe = (e) => q(e) ? e : $(e) ? Y(Promise.resolve(e)) : B(e), k = (e, t, r, s = !1) => (e.addEventListener(t, r, s), () => {
   e.removeEventListener(t, r, s);
 }), Z = (e) => {
-  const t = () => new DOMParser().parseFromString(e, "text/html").body || document.createElement("body"), r = (f) => {
-    const b = f.querySelectorAll("script");
+  const t = () => new DOMParser().parseFromString(e, "text/html").body || document.createElement("body"), r = (p) => {
+    const b = p.querySelectorAll("script");
     for (const S of b)
       S.remove();
-  }, s = (f, b) => {
-    if (b = b.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(f) && (b.includes("javascript:") || b.includes("data:")) || f.startsWith("on")) return !0;
-  }, c = (f) => {
-    const b = f.attributes;
+  }, s = (p, b) => {
+    if (b = b.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(p) && (b.includes("javascript:") || b.includes("data:")) || p.startsWith("on")) return !0;
+  }, c = (p) => {
+    const b = p.attributes;
     for (const { name: S, value: A } of b)
-      s(S, A) && f.removeAttribute(S);
-  }, u = (f) => {
-    const b = f.children;
+      s(S, A) && p.removeAttribute(S);
+  }, u = (p) => {
+    const b = p.children;
     for (const S of b)
       c(S), u(S);
   }, m = t();
@@ -141,7 +141,7 @@ function te(e, t) {
 }
 const W = new class {
   constructor() {
-    p(this, "map", /* @__PURE__ */ new WeakMap());
+    f(this, "map", /* @__PURE__ */ new WeakMap());
   }
   register(e, t) {
     if (!this.map.get(e))
@@ -171,11 +171,11 @@ const W = new class {
     return new e();
 }, E = new class {
   constructor() {
-    p(this, "globalStyles");
-    p(this, "style_registry");
-    p(this, "isRootNodeSet");
-    p(this, "globalStyleTag");
-    p(this, "getComputedCss", (e = "", t) => {
+    f(this, "globalStyles");
+    f(this, "style_registry");
+    f(this, "isRootNodeSet");
+    f(this, "globalStyleTag");
+    f(this, "getComputedCss", (e = "", t) => {
       let r = [];
       const s = new CSSStyleSheet();
       if (s.insertRule(":host { display: block; }"), r = t ? [s] : [this.globalStyles, s], e) {
@@ -193,7 +193,7 @@ const W = new class {
   }
 }(), { html: me, render: se } = /* @__PURE__ */ (() => {
   const e = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/, t = /<[a-z][^>]+$/i, r = "attr", s = /^attr([^ ]+)/, c = "insertNode", u = /^insertNode([^ ]+)/;
-  let m = [], f = [];
+  let m = [], p = [];
   const b = (n) => {
     const o = {
       "&": "&amp;",
@@ -231,7 +231,7 @@ const W = new class {
         }
       });
     };
-    n[i] = JSON.stringify(o), f.push(a);
+    n[i] = JSON.stringify(o), p.push(a);
   }, P = (n, o, i) => {
     switch (!0) {
       case /attrs/.test(o): {
@@ -385,17 +385,17 @@ const W = new class {
   }, render: (n, o) => {
     n && !n.children.length ? (n.innerHTML = "", n.appendChild(o)) : v(o, n, !1), m.forEach((i) => {
       i();
-    }), m = [], f.forEach((i) => {
+    }), m = [], p.forEach((i) => {
       i();
-    }), f = [];
+    }), p = [];
   } };
 })();
 class ne {
   constructor(t, r) {
-    p(this, "_hostElement");
-    p(this, "_shadowRoot");
-    p(this, "update");
-    p(this, "emitEvent");
+    f(this, "_hostElement");
+    f(this, "_shadowRoot");
+    f(this, "update");
+    f(this, "emitEvent");
     this._hostElement = t, this._shadowRoot = r;
   }
   get __metadata__() {
@@ -432,18 +432,46 @@ const re = {
     class extends HTMLElement {
       constructor() {
         super();
-        p(this, "klass");
-        p(this, "shadow");
-        p(this, "componentStyleTag", null);
-        p(this, "internalSubscriptions", new X());
-        p(this, "isEmulated", !1);
-        p(this, "renderCount", 0);
-        p(this, "update", () => {
+        f(this, "klass");
+        f(this, "shadow");
+        f(this, "componentStyleTag", null);
+        f(this, "internalSubscriptions", new X());
+        f(this, "isEmulated", !1);
+        f(this, "renderCount", 0);
+        f(this, "createProxyInstance", () => {
+          const s = new ne(this, this.shadow);
+          s.update = () => {
+            this.update();
+          }, s.emitEvent = (c, u) => {
+            this.emitEvent(c, u);
+          }, this.internalSubscriptions.add(
+            te(this.setRenderIntoQueue, () => {
+              this.klass = H(
+                V(this.setRenderIntoQueue, t),
+                e.deps,
+                s
+              );
+            })
+          );
+        });
+        f(this, "update", () => {
           const s = this.klass.render();
           typeof s == "string" ? this.shadow.innerHTML = Z(s) : se(this.shadow, s);
         });
-        p(this, "getInstance", () => this.klass);
-        p(this, "setRenderIntoQueue", () => {
+        f(this, "emitEvent", (s, c) => {
+          const u = new CustomEvent(s, {
+            detail: c
+          });
+          this.dispatchEvent(u);
+        });
+        f(this, "setProps", (s) => {
+          var c, u;
+          for (const [m, p] of Object.entries(s))
+            t.observedProperties.find((b) => b === m) && (this.klass[m] = p);
+          (u = (c = this.klass).onPropertiesChanged) == null || u.call(c);
+        });
+        f(this, "getInstance", () => this.klass);
+        f(this, "setRenderIntoQueue", () => {
           ++this.renderCount, this.renderCount === 1 && queueMicrotask(() => {
             this.update(), this.renderCount = 0;
           });
@@ -456,45 +484,17 @@ const re = {
       static get observedAttributes() {
         return t.observedAttributes || [];
       }
-      createProxyInstance() {
-        const s = new ne(this, this.shadow);
-        s.update = () => {
-          this.update();
-        }, s.emitEvent = (c, u) => {
-          this.emitEvent(c, u);
-        }, this.internalSubscriptions.add(
-          te(this.setRenderIntoQueue, () => {
-            this.klass = H(
-              V(this.setRenderIntoQueue, t),
-              e.deps,
-              s
-            );
-          })
-        );
-      }
-      emitEvent(s, c) {
-        const u = new CustomEvent(s, {
-          detail: c
-        });
-        this.dispatchEvent(u);
-      }
-      setProps(s) {
-        var c, u;
-        for (const [m, f] of Object.entries(s))
-          t.observedProperties.find((b) => b === m) && (this.klass[m] = f);
-        (u = (c = this.klass).onPropertiesChanged) == null || u.call(c);
-      }
       connectedCallback() {
         var s, c, u, m;
         if (this.isEmulated) {
-          const f = O();
-          this.setAttribute("data-did", f);
-          const b = e.styles.replaceAll(":host", `${e.selector}[data-did='${f}']`);
+          const p = O();
+          this.setAttribute("data-did", p);
+          const b = e.styles.replaceAll(":host", `${e.selector}[data-did='${p}']`);
           !e.root && b && (this.componentStyleTag = F(b, document.head));
         }
         this.internalSubscriptions.add(
-          k(this, "bindprops", (f) => {
-            const b = f.detail.props;
+          k(this, "bindprops", (p) => {
+            const b = p.detail.props;
             b && this.setProps(b);
           })
         ), this.internalSubscriptions.add(
@@ -508,8 +508,8 @@ const re = {
         ), (c = (s = this.klass).beforeMount) == null || c.call(s), this.update(), (m = (u = this.klass).mount) == null || m.call(u);
       }
       attributeChangedCallback(s, c, u) {
-        var m, f;
-        (f = (m = this.klass).onAttributesChanged) == null || f.call(m, s, c, u);
+        var m, p;
+        (p = (m = this.klass).onAttributesChanged) == null || p.call(m, s, c, u);
       }
       disconnectedCallback() {
         var s, c, u;
@@ -540,7 +540,7 @@ const re = {
 };
 class ae {
   constructor() {
-    p(this, "transition", "");
+    f(this, "transition", "");
     this.whichTransitionEnd();
   }
   onTransitionEnd(t, r, s) {
