@@ -1,7 +1,6 @@
 export {
   BehaviourSubjectObs,
   Component,
-  DomTransition,
   Injectable,
   Injector,
   Renderer,

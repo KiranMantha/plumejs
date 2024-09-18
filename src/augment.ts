@@ -6,7 +6,7 @@ let token: string = null;
 
 export type Signal<T> = {
   (): T;
-  set(value: T | ((previousValue: T) => T)): void;
+  set(value: T | Partial<T> | ((previousValue: T) => T)): void;
 };
 
 function signalWrapper(updateFn: () => void, fn: () => void): string {
@@ -29,7 +29,7 @@ function signal<T>(initialValue: T, reducer?: (previousState: T, newState: T) =>
   function boundSignal(): T {
     return value;
   }
-  boundSignal.set = function (v: T | ((initialValue: T) => T)) {
+  boundSignal.set = function (v: T | Partial<T> | ((initialValue: T) => T)) {
     if (reducer && isFunction(reducer)) {
       value = reducer(value, v as T);
     } else {
