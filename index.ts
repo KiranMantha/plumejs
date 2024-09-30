@@ -3,6 +3,7 @@ export {
   Component,
   Injectable,
   Injector,
+  Input,
   Renderer,
   SubjectObs,
   Subscriptions,

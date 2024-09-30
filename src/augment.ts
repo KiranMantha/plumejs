@@ -1,15 +1,20 @@
-import { createToken } from './utils';
+import { createToken, isFunction } from './utils';
 
-const isFunction = (value: unknown) => typeof value === 'function';
 const updateFnRegistry: Record<string, () => void> = {};
 let token: string = null;
 
 export type Signal<T> = {
   (): T;
-  set(value: T | Partial<T> | ((previousValue: T) => T)): void;
+  set: (value: T | Partial<T> | ((previousValue: T) => T)) => void;
 };
 
-function signalWrapper(updateFn: () => void, fn: () => void): string {
+type SignalFunction = {
+  <T>(): Signal<T | undefined>;
+  <T>(initialValue: T): Signal<T>;
+  <T>(initialValue: T, reducer?: (previousState: T, newState: T) => T): Signal<T>;
+};
+
+const signalWrapper = (updateFn: () => void, fn: () => void): string => {
   const prev = token;
   let generatedToken: string;
   token = createToken();
@@ -21,15 +26,17 @@ function signalWrapper(updateFn: () => void, fn: () => void): string {
     token = prev;
   }
   return generatedToken;
-}
+};
 
-function signal<T>(initialValue: T, reducer?: (previousState: T, newState: T) => T): Signal<T> {
+const signal: SignalFunction = <T>(initialValue?: T, reducer?: (previousState: T, newState: T) => T) => {
   const updateFn = updateFnRegistry[token];
   let value = initialValue;
-  function boundSignal(): T {
+
+  const boundSignal: Signal<T> = () => {
     return value;
-  }
-  boundSignal.set = function (v: T | Partial<T> | ((initialValue: T) => T)) {
+  };
+
+  boundSignal.set = (v: T | Partial<T> | ((initialValue: T) => T)) => {
     if (reducer && isFunction(reducer)) {
       value = reducer(value, v as T);
     } else {
@@ -41,14 +48,15 @@ function signal<T>(initialValue: T, reducer?: (previousState: T, newState: T) =>
       console.trace(e);
     }
   };
-  return boundSignal;
-}
 
-function augmentor(updateFn: () => void, fn: () => void): () => void {
+  return boundSignal;
+};
+
+const augmentor = (updateFn: () => void, fn: () => void): (() => void) => {
   const generatedToken = signalWrapper(updateFn, fn);
   return function () {
     delete updateFnRegistry[generatedToken];
   };
-}
+};
 
 export { augmentor, signal };

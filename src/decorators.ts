@@ -3,7 +3,7 @@
 import { instantiate } from './instance';
 import { registerElement } from './registerElement';
 import { Injector } from './service_resolver';
-import { ComponentDecoratorOptions, ConstructorType, IHooks, ServiceDecoratorOptions } from './types';
+import { ComponentDecoratorOptions, ConstructorType, MetadataConstructor, ServiceDecoratorOptions } from './types';
 
 const SERVICE_OPTIONS_DEFAULTS: ServiceDecoratorOptions = {
   deps: []
@@ -16,23 +16,26 @@ const Component =
       throw new Error('You need at least 1 dash in the custom element name!');
     }
     if (!window.customElements.get(options.selector)) {
-      Object.defineProperty(target.prototype, 'selector', {
-        get() {
-          return options.selector;
-        }
-      });
-      registerElement(options, target as Partial<IHooks>);
+      (target as MetadataConstructor<T>).__selector__ = options.selector;
+      registerElement(options, target);
     }
   };
+
+const Input = () => (target: object, key: string) => {
+  if (!(target as MetadataConstructor<unknown>).__inputs__) {
+    (target as MetadataConstructor<unknown>).__inputs__ = [];
+  }
+  (target as MetadataConstructor<unknown>).__inputs__.push(key);
+};
 
 const Injectable =
   (options: ServiceDecoratorOptions = {}) =>
   <T>(target: ConstructorType<T>) => {
     options = { ...SERVICE_OPTIONS_DEFAULTS, ...options };
-    target.prototype.__metadata__ = {
+    (target as MetadataConstructor<T>).__metadata__ = {
       name: 'SERVICE'
     };
-    if (options.deps.some((dep) => dep.prototype.__metadata__?.name === 'RENDERER')) {
+    if (options.deps.some((dep) => (dep as MetadataConstructor<T>).__metadata__?.name === 'RENDERER')) {
       throw Error('Renderer cannot be a dependency for a service. It should be used with component');
     }
     const instance = instantiate(target, options.deps);
@@ -45,4 +48,4 @@ const Injectable =
 //   return token;
 // };
 
-export { Component, Injectable };
+export { Component, Injectable, Input };

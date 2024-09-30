@@ -1,17 +1,16 @@
-import { augmentor } from './augment';
+import { augmentor, Signal } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentDecoratorOptions, ComponentRef, DynamicCssImport, IHooks, Renderer } from './types';
 import {
-  CSS_SHEET_SUPPORTED,
-  Subscriptions,
-  createToken,
-  fromEvent,
-  isPromise,
-  proxifiedClass,
-  sanitizeHTML
-} from './utils';
+  ComponentDecoratorOptions,
+  ComponentRef,
+  DynamicCssImport,
+  IHooks,
+  MetadataConstructor,
+  Renderer
+} from './types';
+import { createToken, CSS_SHEET_SUPPORTED, fromEvent, isPromise, sanitizeHTML, Subscriptions } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -29,7 +28,7 @@ const createStyleTag = (content: string, where: Node = null) => {
   return tag;
 };
 
-const registerElement = async (options: ComponentDecoratorOptions, target: Partial<IHooks>) => {
+const registerElement = async (options: ComponentDecoratorOptions, target: MetadataConstructor<Partial<IHooks>>) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   if (isPromise(options.styles)) {
@@ -88,11 +87,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         };
         this.internalSubscriptions.add(
           augmentor(this.setRenderIntoQueue, () => {
-            this.klass = instantiate<Partial<IHooks>>(
-              proxifiedClass(this.setRenderIntoQueue, target),
-              options.deps,
-              rendererInstance
-            );
+            this.klass = instantiate<Partial<IHooks>>(target, options.deps, rendererInstance);
           })
         );
       };
@@ -115,8 +110,12 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
 
       setProps = <T>(propsObj: Record<string, T>) => {
         for (const [key, value] of Object.entries(propsObj)) {
-          if (target.observedProperties.find((property) => property === key)) {
-            this.klass[key] = value;
+          if (target.prototype.__inputs__.find((property) => property === key)) {
+            try {
+              (this.klass[key] as Signal<unknown>).set(value);
+            } catch (e) {
+              console.error(`Input ${key} of ${options.selector} should be a signal`);
+            }
           }
         }
         this.klass.onPropertiesChanged?.();

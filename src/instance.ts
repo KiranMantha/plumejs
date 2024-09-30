@@ -1,15 +1,15 @@
 import { Injector } from './service_resolver';
-import { ConstructorType, Renderer } from './types';
+import { MetadataConstructor, Renderer } from './types';
 
 const instantiate = <T>(
-  klass: ConstructorType<T>,
-  dependencies: ConstructorType<unknown>[],
+  klass: MetadataConstructor<T>,
+  dependencies: MetadataConstructor<unknown>[],
   rendererInstance?: Renderer
 ): T => {
   if (dependencies.length) {
     const services = [];
     for (const dependency of dependencies) {
-      if (dependency.prototype.__metadata__.name !== 'RENDERER') {
+      if (dependency.__metadata__.name !== 'RENDERER') {
         services.push(Injector.getService(dependency));
       } else {
         services.push(rendererInstance);

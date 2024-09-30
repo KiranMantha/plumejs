@@ -1,3 +1,3 @@
-import { ConstructorType, Renderer } from './types';
-declare const instantiate: <T>(klass: ConstructorType<T>, dependencies: ConstructorType<unknown>[], rendererInstance?: Renderer) => T;
+import { MetadataConstructor, Renderer } from './types';
+declare const instantiate: <T>(klass: MetadataConstructor<T>, dependencies: MetadataConstructor<unknown>[], rendererInstance?: Renderer) => T;
 export { instantiate };

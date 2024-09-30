@@ -1,4 +1,19 @@
 export type ConstructorType<T> = new (...args: unknown[]) => T;
+export interface MetadataConstructor<T> extends ConstructorType<T> {
+  observedAttributes?: string[];
+  __selector__?: string;
+  __inputs__?: string[];
+  __metadata__?: {
+    name: string;
+  };
+  prototype: {
+    __inputs__?: string[];
+    __metadata__?: {
+      name: string;
+    };
+  };
+}
+
 export type DynamicCssImport = Promise<typeof import('*.scss') | typeof import('*.css') | typeof import('*.less')>;
 
 export interface ComponentDecoratorOptions {
@@ -16,7 +31,6 @@ export interface ServiceDecoratorOptions {
 
 export interface IHooks {
   observedAttributes?: readonly string[];
-  observedProperties?: readonly string[];
   render: () => DocumentFragment | string;
   beforeMount?: () => void;
   mount?: () => void;
@@ -28,10 +42,6 @@ export interface IHooks {
 export class Renderer {
   private _hostElement: HTMLElement;
   private _shadowRoot: ShadowRoot;
-
-  get __metadata__() {
-    return { name: 'RENDERER' };
-  }
 
   get hostElement() {
     return this._hostElement;
@@ -50,8 +60,10 @@ export class Renderer {
   }
 }
 
+(Renderer as MetadataConstructor<Renderer>).__metadata__ = { name: 'RENDERER' };
+
 export type InputProps<T> = {
-  [K in Extract<T, IHooks>['observedProperties'][number]]?: K extends keyof T ? T[K] : never;
+  [K in Extract<T, MetadataConstructor<T>>['__inputs__'][number]]?: K extends keyof T ? T[K] : never;
 };
 
 export interface ComponentRef<T> {
