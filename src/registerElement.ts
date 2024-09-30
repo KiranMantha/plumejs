@@ -112,7 +112,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
         for (const [key, value] of Object.entries(propsObj)) {
           if (target.prototype.__inputs__.find((property) => property === key)) {
             try {
-              (this.klass[key] as Signal<unknown>).set(value);
+              (this.klass[key] as Signal<unknown>).set(value || undefined);
             } catch (e) {
               console.error(`Input ${key} of ${options.selector} should be a signal`);
             }

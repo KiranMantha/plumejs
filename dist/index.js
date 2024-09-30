@@ -183,15 +183,15 @@ const ee = (e, t) => {
       ")": "%29"
     };
     let r = JSON.stringify(s);
-    const c = (l) => n[l] || l;
-    return r = ((l) => l.replace(/[&<>()]/g, c))(r), JSON.parse(r);
+    const c = (a) => n[a] || a;
+    return r = ((a) => a.replace(/[&<>()]/g, c))(r), JSON.parse(r);
   }, _ = (s, n) => {
     const r = s.options, c = Array.isArray(n) ? n : [n];
-    let d, l, a = r.length;
-    for (; a--; ) {
-      l = r[a];
-      const y = l.getAttribute("value") ?? (l.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" ");
-      (l.selected = c.indexOf(y) > -1) && (d = !0);
+    let d, a, l = r.length;
+    for (; l--; ) {
+      a = r[l];
+      const y = a.getAttribute("value") ?? (a.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" ");
+      (a.selected = c.indexOf(y) > -1) && (d = !0);
     }
     d || (s.selectedIndex = -1);
   }, v = (s) => {
@@ -211,7 +211,7 @@ const ee = (e, t) => {
         }
       });
     };
-    s[r] = JSON.stringify(n), p.push(c);
+    s[r] = n ? JSON.stringify(n) : "", p.push(c);
   }, L = (s, n, r) => {
     switch (!0) {
       case /attrs/.test(n): {
@@ -226,9 +226,9 @@ const ee = (e, t) => {
         break;
       }
       case /ref/.test(n): {
-        const c = (function() {
-          this.node.isConnected && this.fn(this.node);
-        }).bind({ node: s, fn: r });
+        const c = /* @__PURE__ */ ((d, a) => () => {
+          d.isConnected && a(d);
+        })(s, r);
         m.push(c);
         break;
       }
@@ -262,10 +262,10 @@ const ee = (e, t) => {
     let c = r.nextNode();
     for (; c; ) {
       if (c.hasAttributes()) {
-        const d = Array.from(c.attributes).filter((l) => i.test(l.nodeName));
-        for (const { nodeName: l, nodeValue: a } of d) {
-          const y = i.exec(l)[1];
-          L(c, a, n[y]), c.removeAttribute(l);
+        const d = Array.from(c.attributes).filter((a) => i.test(a.nodeName));
+        for (const { nodeName: a, nodeValue: l } of d) {
+          const y = i.exec(a)[1];
+          L(c, l, n[y]), c.removeAttribute(a);
         }
       }
       c = r.nextNode();
@@ -275,8 +275,8 @@ const ee = (e, t) => {
     let c = r.nextNode(), d;
     for (; c; ) {
       if (d = f.exec(c.data)) {
-        const l = Array.isArray(n[d[1]]) ? n[d[1]] : [n[d[1]]];
-        c.replaceWith(...l), r.currentNode = s;
+        const a = Array.isArray(n[d[1]]) ? n[d[1]] : [n[d[1]]];
+        c.replaceWith(...a), r.currentNode = s;
       }
       c = r.nextNode();
     }
@@ -287,50 +287,50 @@ const ee = (e, t) => {
     return [r, c];
   }, U = (s, n) => {
     if (!s || !n || s.nodeType !== 1 || n.nodeType !== 1) return;
-    const r = s.attributes, c = n.attributes, d = n.getAttribute("data-preserve-attributes"), l = d && d === "true";
-    for (const { name: a, value: y } of r)
-      (!c[a] || c[a] !== y) && n.setAttribute(a, y);
-    if (!l)
-      for (const { name: a } of c)
-        r[a] || n.removeAttribute(a);
+    const r = s.attributes, c = n.attributes, d = n.getAttribute("data-preserve-attributes"), a = d && d === "true";
+    for (const { name: l, value: y } of r)
+      (!c[l] || c[l] !== y) && n.setAttribute(l, y);
+    if (!a)
+      for (const { name: l } of c)
+        r[l] || n.removeAttribute(l);
     if (["input", "textarea"].includes(n.tagName.toLowerCase()) && (n.value = s.value), n.tagName.indexOf("-") > -1 && s.tagName.indexOf("-") > -1) {
-      const a = w(s, "input")[1], y = w(n, "input");
-      a && y[1] && a !== y[1] && N(n, JSON.parse(a), y[0]);
+      const l = w(s, "input")[1], y = w(n, "input");
+      l && y[1] && l !== y[1] && N(n, JSON.parse(l), y[0]);
     }
   }, P = (s) => s.nodeType === 3 ? "text" : s.nodeType === 8 ? "comment" : s.tagName.toLowerCase(), I = (s) => s.childNodes && s.childNodes.length > 0 ? null : s.textContent, A = (s, n, r) => {
     const c = n ? Array.from(n.childNodes) : [], d = s ? Array.from(s.childNodes) : [];
-    let l = c.length - d.length;
-    if (l > 0)
-      for (; l > 0; l--)
-        c[c.length - l].parentNode.removeChild(c[c.length - l]);
-    d.forEach((a, y) => {
-      const g = c[y], k = w(a, "key")[1], C = w(g, "key")[1];
-      if (U(a, g), r && g && g.nodeType === 1 && g.tagName.indexOf("-") > -1)
+    let a = c.length - d.length;
+    if (a > 0)
+      for (; a > 0; a--)
+        c[c.length - a].parentNode.removeChild(c[c.length - a]);
+    d.forEach((l, y) => {
+      const g = c[y], k = w(l, "key")[1], C = w(g, "key")[1];
+      if (U(l, g), r && g && g.nodeType === 1 && g.tagName.indexOf("-") > -1)
         return;
       if (!g) {
-        n && n.appendChild(a);
+        n && n.appendChild(l);
         return;
       }
-      if (k && C && k !== C || P(a) !== P(g)) {
-        g.replaceWith(a);
+      if (k && C && k !== C || P(l) !== P(g)) {
+        g.replaceWith(l);
         return;
       }
-      const T = I(a);
+      const T = I(l);
       if (T && T !== I(g)) {
         g.textContent = T;
         return;
       }
-      if (g.childNodes.length > 0 && a.childNodes.length < 1) {
+      if (g.childNodes.length > 0 && l.childNodes.length < 1) {
         g.innerHTML = "";
         return;
       }
-      if (g.childNodes.length < 1 && a.childNodes.length > 0) {
+      if (g.childNodes.length < 1 && l.childNodes.length > 0) {
         const M = document.createDocumentFragment();
-        A(a, M, !1), g.appendChild(M);
+        A(l, M, !1), g.appendChild(M);
         return;
       }
-      if (a.childNodes.length > 0) {
-        A(a, g, !0);
+      if (l.childNodes.length > 0) {
+        A(l, g, !0);
         return;
       }
     });
@@ -338,25 +338,25 @@ const ee = (e, t) => {
   return { html: (s, ...n) => {
     let r = "";
     const { length: c } = s;
-    for (let l = 1; l < c; l++) {
-      const a = n[l - 1];
+    for (let a = 1; a < c; a++) {
+      const l = n[a - 1];
       let y = !1;
-      if (r += s[l - 1], e.test(r) && t.test(r) && (r = r.replace(
+      if (r += s[a - 1], e.test(r) && t.test(r) && (r = r.replace(
         e,
-        (g, k, C) => `${o}${l - 1}=${C || '"'}${k}${C ? "" : '"'}`
+        (g, k, C) => `${o}${a - 1}=${C || '"'}${k}${C ? "" : '"'}`
       ), y = !0), !y)
         switch (!0) {
-          case Array.isArray(a):
-          case a instanceof DocumentFragment: {
-            r += `<!--${u}${l - 1}-->`;
+          case Array.isArray(l):
+          case l instanceof DocumentFragment: {
+            r += `<!--${u}${a - 1}-->`;
             break;
           }
-          case (typeof a == "object" && a !== null): {
-            "attrs" in a && (r += `${o}${l - 1}="attrs"`);
+          case (typeof l == "object" && l !== null): {
+            "attrs" in l && (r += `${o}${a - 1}="attrs"`);
             break;
           }
           default:
-            r += a ?? "";
+            r += l ?? "";
         }
     }
     r += s[c - 1];
@@ -443,7 +443,7 @@ const ne = {
           for (const [m, p] of Object.entries(i))
             if (t.prototype.__inputs__.find((b) => b === m))
               try {
-                this.klass[m].set(p);
+                this.klass[m].set(p || void 0);
               } catch {
                 console.error(`Input ${m} of ${e.selector} should be a signal`);
               }

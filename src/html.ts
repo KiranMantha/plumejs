@@ -65,7 +65,7 @@ const { html, render } = (() => {
         }
       });
     };
-    node[symbol] = JSON.stringify(val);
+    node[symbol] = val ? JSON.stringify(val) : '';
     inputPropsNodes.push(fn);
   };
 
@@ -91,9 +91,11 @@ const { html, render } = (() => {
         break;
       }
       case /ref/.test(attributeName): {
-        const closure = function () {
-          (this.node as HTMLElement).isConnected && (this.fn as (node: HTMLElement) => void)(this.node);
-        }.bind({ node, fn: attributeValue as (node: HTMLElement) => void }) as () => void;
+        const closure = ((node: HTMLElement, fn: (node: HTMLElement) => void) => {
+          return () => {
+            node.isConnected && fn(node);
+          };
+        })(node, attributeValue as (node: HTMLElement) => void);
         refNodes.push(closure);
         break;
       }
