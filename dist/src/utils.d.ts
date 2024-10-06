@@ -1,8 +1,7 @@
-import { ConstructorType } from './types';
 declare const klass: unique symbol;
-declare const isObject: (value: any) => boolean;
-declare const isFunction: (value: any) => boolean;
-declare const isUndefined: (value: any) => boolean;
+declare const isObject: (value: unknown) => boolean;
+declare const isFunction: (value: unknown) => value is Function;
+declare const isUndefined: (value: unknown) => value is undefined;
 declare const isPromise: (obj: any) => boolean;
 declare const CSS_SHEET_SUPPORTED: boolean;
 declare const createToken: () => string;
@@ -29,7 +28,7 @@ declare class Subscriptions {
 declare const wrapIntoObservable: (value: any) => any;
 declare const fromEvent: (target: HTMLElement | Window, eventName: string, onNext: EventListenerOrEventListenerObject, options?: boolean) => (() => void);
 declare const sanitizeHTML: (htmlString: string) => string;
-declare const proxifiedClass: (setRenderIntoQueue: () => void, target: ConstructorType<any>) => {
+declare const proxifiedClass: (setRenderIntoQueue: () => void, target: any) => {
     new (...args: any[]): {
         [x: string]: any;
     };

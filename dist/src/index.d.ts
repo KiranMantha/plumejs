@@ -1,7 +1,6 @@
 export { signal } from './augment';
 export type { Signal } from './augment';
-export { Component, Injectable, InjectionToken } from './decorators';
-export { DomTransition } from './domTransition.service';
+export { Component, Injectable, Input } from './decorators';
 export { html, render } from './html';
 export { Injector } from './service_resolver';
 export { Renderer } from './types';

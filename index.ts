@@ -1,10 +1,9 @@
 export {
   BehaviourSubjectObs,
   Component,
-  DomTransition,
   Injectable,
-  InjectionToken,
   Injector,
+  Input,
   Renderer,
   SubjectObs,
   Subscriptions,

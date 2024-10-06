@@ -1,17 +1,16 @@
-import { augmentor } from './augment';
+import { augmentor, Signal } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html';
 import { instantiate } from './instance';
-import { ComponentDecoratorOptions, ComponentRef, DynamicCssImport, IHooks, Renderer } from './types';
 import {
-  CSS_SHEET_SUPPORTED,
-  Subscriptions,
-  createToken,
-  fromEvent,
-  isPromise,
-  proxifiedClass,
-  sanitizeHTML
-} from './utils';
+  ComponentDecoratorOptions,
+  ComponentRef,
+  DynamicCssImport,
+  IHooks,
+  MetadataConstructor,
+  Renderer
+} from './types';
+import { createToken, CSS_SHEET_SUPPORTED, fromEvent, isPromise, sanitizeHTML, Subscriptions } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
   selector: '',
@@ -29,7 +28,7 @@ const createStyleTag = (content: string, where: Node = null) => {
   return tag;
 };
 
-const registerElement = async (options: ComponentDecoratorOptions, target: Partial<IHooks>) => {
+const registerElement = async (options: ComponentDecoratorOptions, target: MetadataConstructor<Partial<IHooks>>) => {
   // mapping with defaults
   options = { ...DEFAULT_COMPONENT_OPTIONS, ...options };
   if (isPromise(options.styles)) {
@@ -42,7 +41,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
     componentRegistry.isRootNodeSet = true;
     if (options.styles) {
       componentRegistry.globalStyleTag = createStyleTag(options.styles, document.head);
-      componentRegistry.globalStyles.replace(options.styles);
+      (componentRegistry.globalStyles as CSSStyleSheet).replace(options.styles);
     }
   } else if (options.root && componentRegistry.isRootNodeSet) {
     throw Error('Cannot register duplicate root component in ' + options.selector + ' component');
@@ -50,9 +49,9 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
 
   window.customElements.define(
     options.selector,
-    class extends HTMLElement implements ComponentRef<any> {
-      private klass: Record<string, any>;
-      private shadow: any;
+    class extends HTMLElement implements ComponentRef<unknown> {
+      private klass: Partial<IHooks>;
+      private shadow: ShadowRoot;
       private componentStyleTag: HTMLStyleElement = null;
       private internalSubscriptions = new Subscriptions();
       private isEmulated = false;
@@ -73,59 +72,60 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
           );
         } else {
           this.isEmulated = false;
-          this.shadow = this;
+          this.shadow = this as unknown as ShadowRoot;
         }
-        this.getInstance = this.getInstance.bind(this);
-        this.update = this.update.bind(this);
-        this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
         this.createProxyInstance();
       }
 
-      private createProxyInstance() {
+      private createProxyInstance = () => {
         const rendererInstance = new Renderer(this, this.shadow);
         rendererInstance.update = () => {
           this.update();
         };
-        rendererInstance.emitEvent = (eventName: string, data: any) => {
+        rendererInstance.emitEvent = <T>(eventName: string, data: T) => {
           this.emitEvent(eventName, data);
         };
         this.internalSubscriptions.add(
           augmentor(this.setRenderIntoQueue, () => {
-            this.klass = instantiate(proxifiedClass(this.setRenderIntoQueue, target), options.deps, rendererInstance);
+            this.klass = instantiate<Partial<IHooks>>(target, options.deps, rendererInstance);
           })
         );
-      }
+      };
 
-      update() {
+      update = () => {
         const renderValue = this.klass.render();
         if (typeof renderValue === 'string') {
           this.shadow.innerHTML = sanitizeHTML(renderValue);
         } else {
-          render(this.shadow, renderValue);
+          render(this.shadow as unknown as HTMLElement, renderValue);
         }
-      }
+      };
 
-      emitEvent(eventName: string, data: any) {
+      emitEvent = <T>(eventName: string, data: T) => {
         const event = new CustomEvent(eventName, {
           detail: data
         });
         this.dispatchEvent(event);
-      }
+      };
 
-      setProps(propsObj: Record<string, any>) {
+      setProps = <T>(propsObj: Record<string, T>) => {
         for (const [key, value] of Object.entries(propsObj)) {
-          if (target.observedProperties.find((property) => property === key)) {
-            this.klass[key] = value;
+          if (target.prototype.__inputs__.find((property) => property === key)) {
+            try {
+              (this.klass[key] as Signal<unknown>).set(value || undefined);
+            } catch (e) {
+              console.error(`Input ${key} of ${options.selector} should be a signal`);
+            }
           }
         }
         this.klass.onPropertiesChanged?.();
-      }
+      };
 
-      getInstance() {
+      getInstance = () => {
         return this.klass;
-      }
+      };
 
-      setRenderIntoQueue() {
+      setRenderIntoQueue = () => {
         ++this.renderCount;
         if (this.renderCount === 1) {
           queueMicrotask(() => {
@@ -133,7 +133,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
             this.renderCount = 0;
           });
         }
-      }
+      };
 
       connectedCallback() {
         if (this.isEmulated) {
@@ -146,7 +146,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Parti
         }
         this.internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e: CustomEvent) => {
-            const propsObj = e.detail.props;
+            const propsObj = (e.detail as { props: Record<string, unknown> }).props;
             propsObj && this.setProps(propsObj);
           })
         );

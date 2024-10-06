@@ -1,7 +1,12 @@
 export type Signal<T> = {
     (): T;
-    set(value: T | ((previousValue: T) => T)): void;
+    set: (value: T | Partial<T> | ((previousValue: T) => T)) => void;
 };
-declare function signal<T>(initialValue: T): Signal<T>;
-declare function augmentor(updateFn: () => void, fn: () => void): () => void;
+type SignalFunction = {
+    <T>(): Signal<T | undefined>;
+    <T>(initialValue: T): Signal<T>;
+    <T>(initialValue: T, reducer?: (previousState: T, newState: T) => T): Signal<T>;
+};
+declare const signal: SignalFunction;
+declare const augmentor: (updateFn: () => void, fn: () => void) => (() => void);
 export { augmentor, signal };

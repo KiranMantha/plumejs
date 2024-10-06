@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "lib": ["DOM", "ESNext", "DOM.Iterable"],
     "module": "ESNext",
     "target": "ESNext",
@@ -21,5 +20,5 @@
     "noEmitOnError": true,
     "typeRoots": ["@types", "node_modules/@types"]
   },
-  "exclude": ["__tests__", "dist", "node_modules", "vite.config.js"]
+  "exclude": ["__tests__", "dist", "node_modules", "vite.config.js", "eslint.config.js"]
 }

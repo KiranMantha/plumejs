@@ -1,5 +1,5 @@
 interface IComponentRegistry {
-  globalStyles: any;
+  globalStyles: CSSStyleSheet | string;
   globalStyleTag: Node;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
@@ -7,7 +7,7 @@ interface IComponentRegistry {
 }
 
 const componentRegistry: IComponentRegistry = new (class implements IComponentRegistry {
-  globalStyles: any;
+  globalStyles: CSSStyleSheet | string;
   style_registry: Map<string, string>;
   isRootNodeSet: boolean;
   globalStyleTag: Node;
@@ -23,13 +23,13 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
     this.globalStyleTag = null;
   }
 
-  getComputedCss = (styles = '', standalone: boolean) => {
-    let csoArray = [];
+  getComputedCss = (styles = '', standalone: boolean): CSSStyleSheet[] => {
+    let csoArray: CSSStyleSheet[] = [];
     const defaultStyles = new CSSStyleSheet();
     defaultStyles.insertRule(`:host { display: block; }`);
-    csoArray = !!standalone ? [defaultStyles] : [this.globalStyles, defaultStyles];
+    csoArray = standalone ? [defaultStyles] : [this.globalStyles as CSSStyleSheet, defaultStyles];
     if (styles) {
-      const sheet: any = new CSSStyleSheet();
+      const sheet = new CSSStyleSheet();
       sheet.replace(styles);
       csoArray.push(sheet);
     }

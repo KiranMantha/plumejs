@@ -1,34 +1,34 @@
-import { ConstructorType } from './types';
+import { MetadataConstructor } from './types';
 
 interface IInjector {
-  register: (klass: any, instance: ConstructorType<any>) => void;
-  getService: (klass: ConstructorType<any>) => Record<string, any>;
-  removeService: (klass: ConstructorType<any>) => void;
+  register: <T>(klass: MetadataConstructor<T>, instance: T) => void;
+  getService: <T>(klass: T) => MetadataConstructor<T>;
+  removeService: <T>(klass: MetadataConstructor<T>) => void;
   clear: () => void;
 }
 
 const Injector: IInjector = new (class implements IInjector {
-  private map = new WeakMap<any, any>();
+  private map = new WeakMap<object, MetadataConstructor<object>>();
 
-  public register<T>(klass: T, instance: T) {
-    if (!this.map.get(klass)) {
-      this.map.set(klass, instance);
+  public register<T>(klass: MetadataConstructor<T>, instance: T) {
+    if (!this.map.get(klass as object)) {
+      this.map.set(klass as object, instance as MetadataConstructor<object>);
     } else {
-      throw Error(`${klass} is already registered service.`);
+      throw Error(`${klass.name} is already registered service.`);
     }
   }
 
-  public getService<T>(klass: T): T {
-    const instance: T = this.map.get(klass);
+  public getService<T>(klass: T): MetadataConstructor<T> {
+    const instance = this.map.get(klass as object) as MetadataConstructor<T>;
     if (instance) {
       return instance;
     } else {
-      throw Error(`${klass} is not a registered provider.`);
+      throw Error(`${klass['name']} is not a registered provider.`);
     }
   }
 
-  public removeService(klass: ConstructorType<any>) {
-    this.map.delete(klass);
+  public removeService<T>(klass: T) {
+    this.map.delete(klass as object);
   }
 
   public clear(): void {

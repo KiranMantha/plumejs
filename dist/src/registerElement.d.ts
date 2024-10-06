@@ -1,3 +1,3 @@
-import { ComponentDecoratorOptions, IHooks } from './types';
-declare const registerElement: (options: ComponentDecoratorOptions, target: Partial<IHooks>) => Promise<void>;
+import { ComponentDecoratorOptions, IHooks, MetadataConstructor } from './types';
+declare const registerElement: (options: ComponentDecoratorOptions, target: MetadataConstructor<Partial<IHooks>>) => Promise<void>;
 export { registerElement };

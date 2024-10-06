@@ -1,8 +1,8 @@
-import { ConstructorType } from './types';
+import { MetadataConstructor } from './types';
 interface IInjector {
-    register: (klass: any, instance: ConstructorType<any>) => void;
-    getService: (klass: ConstructorType<any>) => Record<string, any>;
-    removeService: (klass: ConstructorType<any>) => void;
+    register: <T>(klass: MetadataConstructor<T>, instance: T) => void;
+    getService: <T>(klass: T) => MetadataConstructor<T>;
+    removeService: <T>(klass: MetadataConstructor<T>) => void;
     clear: () => void;
 }
 declare const Injector: IInjector;

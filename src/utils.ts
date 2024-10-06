@@ -1,9 +1,10 @@
-import { ConstructorType } from './types';
-
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 const klass = Symbol('klass');
-const isObject = (value: any) => value !== null && typeof value === 'object';
-const isFunction = (value: any) => typeof value === 'function';
-const isUndefined = (value: any) => typeof value == 'undefined';
+const isObject = (value: unknown) => value !== null && typeof value === 'object';
+const isFunction = (value: unknown) => typeof value === 'function';
+const isUndefined = (value: unknown) => typeof value == 'undefined';
 const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
 const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 
@@ -192,7 +193,7 @@ const sanitizeHTML = (htmlString: string): string => {
   return html.innerHTML;
 };
 
-const proxifiedClass = (setRenderIntoQueue: () => void, target: ConstructorType<any>) => {
+const proxifiedClass = (setRenderIntoQueue: () => void, target) => {
   const handler = () => ({
     get(obj: object, prop: string) {
       const propertyType = Object.prototype.toString.call(obj[prop]);
