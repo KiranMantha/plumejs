@@ -13,6 +13,7 @@ const CSS_SHEET_SUPPORTED = (() => {
     new CSSStyleSheet();
     return true;
   } catch (e) {
+    console.warn('CSSStyleSheet not supported', e);
     return false;
   }
 })();

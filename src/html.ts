@@ -93,7 +93,7 @@ const { html, render } = (() => {
       case /ref/.test(attributeName): {
         const closure = ((node: HTMLElement, fn: (node: HTMLElement) => void) => {
           return () => {
-            node.isConnected && fn(node);
+            if (node.isConnected) fn(node);
           };
         })(node, attributeValue as (node: HTMLElement) => void);
         refNodes.push(closure);
@@ -280,7 +280,7 @@ const { html, render } = (() => {
 
       // If element doesn't exist, create it
       if (!domNode) {
-        element && element.appendChild(node);
+        if (element) element.appendChild(node);
         return;
       }
 

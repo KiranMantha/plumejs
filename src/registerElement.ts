@@ -24,7 +24,7 @@ const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
 const createStyleTag = (content: string, where: Node = null) => {
   const tag = document.createElement('style');
   tag.innerHTML = content;
-  where && where.appendChild(tag);
+  if (where) where.appendChild(tag);
   return tag;
 };
 
@@ -114,7 +114,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
             try {
               (this.klass[key] as Signal<unknown>).set(value || undefined);
             } catch (e) {
-              console.error(`Input ${key} of ${options.selector} should be a signal`);
+              console.error(`Input ${key} of ${options.selector} should be a signal`, e);
             }
           }
         }
@@ -147,7 +147,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
         this.internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e: CustomEvent) => {
             const propsObj = (e.detail as { props: Record<string, unknown> }).props;
-            propsObj && this.setProps(propsObj);
+            if (propsObj) this.setProps(propsObj);
           })
         );
         this.internalSubscriptions.add(

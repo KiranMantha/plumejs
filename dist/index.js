@@ -4,8 +4,8 @@ var h = (e, t, o) => K(e, typeof t != "symbol" ? t + "" : t, o);
 const $ = (e) => typeof e == "function", Q = (e) => !!e && typeof e.subscribe == "function", F = (e) => !!e && typeof e.then == "function", B = (() => {
   try {
     return new CSSStyleSheet(), !0;
-  } catch {
-    return !1;
+  } catch (e) {
+    return console.warn("CSSStyleSheet not supported", e), !1;
   }
 })(), Y = (e) => ({
   subscribe: (t) => {
@@ -69,22 +69,22 @@ class Z {
 const ue = (e) => Q(e) ? e : F(e) ? G(Promise.resolve(e)) : Y(e), x = (e, t, o, i = !1) => (e.addEventListener(t, o, i), () => {
   e.removeEventListener(t, o, i);
 }), V = (e) => {
-  const t = () => new DOMParser().parseFromString(e, "text/html").body || document.createElement("body"), o = (p) => {
-    const b = p.querySelectorAll("script");
-    for (const _ of b)
-      _.remove();
-  }, i = (p, b) => {
-    if (b = b.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(p) && (b.includes("javascript:") || b.includes("data:")) || p.startsWith("on")) return !0;
-  }, u = (p) => {
-    const b = p.attributes;
-    for (const { name: _, value: v } of b)
-      i(_, v) && p.removeAttribute(_);
-  }, f = (p) => {
-    const b = p.children;
-    for (const _ of b)
-      u(_), f(_);
+  const t = () => new DOMParser().parseFromString(e, "text/html").body || document.createElement("body"), o = (b) => {
+    const f = b.querySelectorAll("script");
+    for (const S of f)
+      S.remove();
+  }, i = (b, f) => {
+    if (f = f.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(b) && (f.includes("javascript:") || f.includes("data:")) || b.startsWith("on")) return !0;
+  }, u = (b) => {
+    const f = b.attributes;
+    for (const { name: S, value: v } of f)
+      i(S, v) && b.removeAttribute(S);
+  }, p = (b) => {
+    const f = b.children;
+    for (const S of f)
+      u(S), p(S);
   }, m = t();
-  return o(m), f(m), m.innerHTML;
+  return o(m), p(m), m.innerHTML;
 }, de = () => {
   let e;
   return [new Promise((o) => {
@@ -106,8 +106,8 @@ const ee = (e, t) => {
   const o = O[E];
   let i = e;
   const u = () => i;
-  return u.set = (f) => {
-    t && $(t) ? i = t(i, f) : i = $(f) ? f(i) : f;
+  return u.set = (p) => {
+    t && $(t) ? i = t(i, p) : i = $(p) ? p(i) : p;
     try {
       o();
     } catch (m) {
@@ -149,7 +149,7 @@ const ee = (e, t) => {
     return new e(...i);
   } else
     return new e();
-}, S = new class {
+}, _ = new class {
   constructor() {
     h(this, "globalStyles");
     h(this, "style_registry");
@@ -166,15 +166,15 @@ const ee = (e, t) => {
     });
     try {
       this.globalStyles = new CSSStyleSheet();
-    } catch {
-      this.globalStyles = "";
+    } catch (e) {
+      console.warn(e), this.globalStyles = "";
     }
     this.isRootNodeSet = !1, this.globalStyleTag = null;
   }
 }(), { html: fe, render: se } = /* @__PURE__ */ (() => {
-  const e = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/, t = /<[a-z][^>]+$/i, o = "attr", i = /^attr([^ ]+)/, u = "insertNode", f = /^insertNode([^ ]+)/;
-  let m = [], p = [];
-  const b = (s) => {
+  const e = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/, t = /<[a-z][^>]+$/i, o = "attr", i = /^attr([^ ]+)/, u = "insertNode", p = /^insertNode([^ ]+)/;
+  let m = [], b = [];
+  const f = (s) => {
     const n = {
       "&": "&amp;",
       "<": "&lt;",
@@ -185,7 +185,7 @@ const ee = (e, t) => {
     let r = JSON.stringify(s);
     const c = (a) => n[a] || a;
     return r = ((a) => a.replace(/[&<>()]/g, c))(r), JSON.parse(r);
-  }, _ = (s, n) => {
+  }, S = (s, n) => {
     const r = s.options, c = Array.isArray(n) ? n : [n];
     let d, a, l = r.length;
     for (; l--; ) {
@@ -211,7 +211,7 @@ const ee = (e, t) => {
         }
       });
     };
-    s[r] = n ? JSON.stringify(n) : "", p.push(c);
+    s[r] = n ? JSON.stringify(n) : "", b.push(c);
   }, L = (s, n, r) => {
     switch (!0) {
       case /attrs/.test(n): {
@@ -238,7 +238,7 @@ const ee = (e, t) => {
       }
       case /^data-+/.test(n):
       case /^aria-+/.test(n): {
-        n === "data-input" ? N(s, r, Symbol("input")) : s.setAttribute(n, b(r));
+        n === "data-input" ? N(s, r, Symbol("input")) : s.setAttribute(n, f(r));
         break;
       }
       case /class/.test(n): {
@@ -246,7 +246,7 @@ const ee = (e, t) => {
         break;
       }
       case /value/.test(n): {
-        s.nodeName.toLowerCase() === "select" ? _(s, r) : s.value = b(r);
+        s.nodeName.toLowerCase() === "select" ? S(s, r) : s.value = f(r);
         break;
       }
       case /disabled/.test(n):
@@ -255,7 +255,7 @@ const ee = (e, t) => {
         break;
       }
       default:
-        s.setAttribute(n, b(r));
+        s.setAttribute(n, f(r));
     }
   }, J = (s, n) => {
     const r = document.createTreeWalker(s, NodeFilter.SHOW_ELEMENT, null);
@@ -274,7 +274,7 @@ const ee = (e, t) => {
     const r = document.createTreeWalker(s, NodeFilter.SHOW_COMMENT, null);
     let c = r.nextNode(), d;
     for (; c; ) {
-      if (d = f.exec(c.data)) {
+      if (d = p.exec(c.data)) {
         const a = Array.isArray(n[d[1]]) ? n[d[1]] : [n[d[1]]];
         c.replaceWith(...a), r.currentNode = s;
       }
@@ -365,9 +365,9 @@ const ee = (e, t) => {
   }, render: (s, n) => {
     s && !s.children.length ? (s.innerHTML = "", s.appendChild(n)) : A(n, s, !1), m.forEach((r) => {
       r();
-    }), m = [], p.forEach((r) => {
+    }), m = [], b.forEach((r) => {
       r();
-    }), p = [];
+    }), b = [];
   } };
 })();
 class j {
@@ -401,9 +401,9 @@ const ne = {
     const o = await e.styles;
     e.styles = o.default.toString();
   }
-  if (e.styles = e.styles.toString(), e.root && !S.isRootNodeSet)
-    S.isRootNodeSet = !0, e.styles && (S.globalStyleTag = D(e.styles, document.head), S.globalStyles.replace(e.styles));
-  else if (e.root && S.isRootNodeSet)
+  if (e.styles = e.styles.toString(), e.root && !_.isRootNodeSet)
+    _.isRootNodeSet = !0, e.styles && (_.globalStyleTag = D(e.styles, document.head), _.globalStyles.replace(e.styles));
+  else if (e.root && _.isRootNodeSet)
     throw Error("Cannot register duplicate root component in " + e.selector + " component");
   window.customElements.define(
     e.selector,
@@ -420,8 +420,8 @@ const ne = {
           const i = new j(this, this.shadow);
           i.update = () => {
             this.update();
-          }, i.emitEvent = (u, f) => {
-            this.emitEvent(u, f);
+          }, i.emitEvent = (u, p) => {
+            this.emitEvent(u, p);
           }, this.internalSubscriptions.add(
             te(this.setRenderIntoQueue, () => {
               this.klass = W(t, e.deps, i);
@@ -433,21 +433,21 @@ const ne = {
           typeof i == "string" ? this.shadow.innerHTML = V(i) : se(this.shadow, i);
         });
         h(this, "emitEvent", (i, u) => {
-          const f = new CustomEvent(i, {
+          const p = new CustomEvent(i, {
             detail: u
           });
-          this.dispatchEvent(f);
+          this.dispatchEvent(p);
         });
         h(this, "setProps", (i) => {
-          var u, f;
-          for (const [m, p] of Object.entries(i))
-            if (t.prototype.__inputs__.find((b) => b === m))
+          var u, p;
+          for (const [m, b] of Object.entries(i))
+            if (t.prototype.__inputs__.find((f) => f === m))
               try {
-                this.klass[m].set(p || void 0);
-              } catch {
-                console.error(`Input ${m} of ${e.selector} should be a signal`);
+                this.klass[m].set(b || void 0);
+              } catch (f) {
+                console.error(`Input ${m} of ${e.selector} should be a signal`, f);
               }
-          (f = (u = this.klass).onPropertiesChanged) == null || f.call(u);
+          (p = (u = this.klass).onPropertiesChanged) == null || p.call(u);
         });
         h(this, "getInstance", () => this.klass);
         h(this, "setRenderIntoQueue", () => {
@@ -455,7 +455,7 @@ const ne = {
             this.update(), this.renderCount = 0;
           });
         });
-        e.shadowDomEncapsulation && B ? (this.isEmulated = !1, this.shadow = this.attachShadow({ mode: "open" }), this.shadow.adoptedStyleSheets = S.getComputedCss(
+        e.shadowDomEncapsulation && B ? (this.isEmulated = !1, this.shadow = this.attachShadow({ mode: "open" }), this.shadow.adoptedStyleSheets = _.getComputedCss(
           e.styles,
           e.standalone
         )) : (this.isEmulated = !1, this.shadow = this), this.createProxyInstance();
@@ -464,17 +464,17 @@ const ne = {
         return t.observedAttributes || [];
       }
       connectedCallback() {
-        var i, u, f, m;
+        var i, u, p, m;
         if (this.isEmulated) {
-          const p = R();
-          this.setAttribute("data-did", p);
-          const b = e.styles.replaceAll(":host", `${e.selector}[data-did='${p}']`);
-          !e.root && b && (this.componentStyleTag = D(b, document.head));
+          const b = R();
+          this.setAttribute("data-did", b);
+          const f = e.styles.replaceAll(":host", `${e.selector}[data-did='${b}']`);
+          !e.root && f && (this.componentStyleTag = D(f, document.head));
         }
         this.internalSubscriptions.add(
-          x(this, "bindprops", (p) => {
-            const b = p.detail.props;
-            b && this.setProps(b);
+          x(this, "bindprops", (b) => {
+            const f = b.detail.props;
+            f && this.setProps(f);
           })
         ), this.internalSubscriptions.add(
           x(this, "refresh_component", () => {
@@ -484,15 +484,15 @@ const ne = {
           x(window, "onLanguageChange", () => {
             this.update();
           })
-        ), (u = (i = this.klass).beforeMount) == null || u.call(i), this.update(), (m = (f = this.klass).mount) == null || m.call(f);
+        ), (u = (i = this.klass).beforeMount) == null || u.call(i), this.update(), (m = (p = this.klass).mount) == null || m.call(p);
       }
-      attributeChangedCallback(i, u, f) {
-        var m, p;
-        (p = (m = this.klass).onAttributesChanged) == null || p.call(m, i, u, f);
+      attributeChangedCallback(i, u, p) {
+        var m, b;
+        (b = (m = this.klass).onAttributesChanged) == null || b.call(m, i, u, p);
       }
       disconnectedCallback() {
-        var i, u, f;
-        this.renderCount = 0, (u = (i = this.klass).unmount) == null || u.call(i), (f = this.componentStyleTag) == null || f.remove(), this.internalSubscriptions.unsubscribe();
+        var i, u, p;
+        this.renderCount = 0, (u = (i = this.klass).unmount) == null || u.call(i), (p = this.componentStyleTag) == null || p.remove(), this.internalSubscriptions.unsubscribe();
       }
     }
   );
