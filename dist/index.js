@@ -77,8 +77,8 @@ const ue = (e) => Q(e) ? e : F(e) ? G(Promise.resolve(e)) : Y(e), x = (e, t, o, 
     if (f = f.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(b) && (f.includes("javascript:") || f.includes("data:")) || b.startsWith("on")) return !0;
   }, u = (b) => {
     const f = b.attributes;
-    for (const { name: S, value: v } of f)
-      i(S, v) && b.removeAttribute(S);
+    for (const { name: S, value: k } of f)
+      i(S, k) && b.removeAttribute(S);
   }, p = (b) => {
     const f = b.children;
     for (const S of f)
@@ -194,7 +194,7 @@ const ee = (e, t) => {
       (a.selected = c.indexOf(y) > -1) && (d = !0);
     }
     d || (s.selectedIndex = -1);
-  }, v = (s) => {
+  }, k = (s) => {
     const n = document.createElement("template");
     return n.innerHTML = s, n.content;
   }, N = (s, n, r) => {
@@ -297,26 +297,26 @@ const ee = (e, t) => {
       const l = w(s, "input")[1], y = w(n, "input");
       l && y[1] && l !== y[1] && N(n, JSON.parse(l), y[0]);
     }
-  }, P = (s) => s.nodeType === 3 ? "text" : s.nodeType === 8 ? "comment" : s.tagName.toLowerCase(), I = (s) => s.childNodes && s.childNodes.length > 0 ? null : s.textContent, A = (s, n, r) => {
+  }, I = (s) => s.nodeType === 3 ? "text" : s.nodeType === 8 ? "comment" : s.tagName.toLowerCase(), P = (s) => s.childNodes && s.childNodes.length > 0 ? null : s.textContent, v = (s, n, r) => {
     const c = n ? Array.from(n.childNodes) : [], d = s ? Array.from(s.childNodes) : [];
     let a = c.length - d.length;
     if (a > 0)
       for (; a > 0; a--)
         c[c.length - a].parentNode.removeChild(c[c.length - a]);
     d.forEach((l, y) => {
-      const g = c[y], k = w(l, "key")[1], C = w(g, "key")[1];
+      const g = c[y], A = w(l, "key")[1], C = w(g, "key")[1];
       if (U(l, g), r && g && g.nodeType === 1 && g.tagName.indexOf("-") > -1)
         return;
       if (!g) {
         n && n.appendChild(l);
         return;
       }
-      if (k && C && k !== C || P(l) !== P(g)) {
+      if (A && C && A !== C || I(l) !== I(g)) {
         g.replaceWith(l);
         return;
       }
-      const T = I(l);
-      if (T && T !== I(g)) {
+      const T = P(l);
+      if (T && T !== P(g)) {
         g.textContent = T;
         return;
       }
@@ -326,11 +326,11 @@ const ee = (e, t) => {
       }
       if (g.childNodes.length < 1 && l.childNodes.length > 0) {
         const M = document.createDocumentFragment();
-        A(l, M, !1), g.appendChild(M);
+        v(l, M, !1), g.appendChild(M);
         return;
       }
       if (l.childNodes.length > 0) {
-        A(l, g, !0);
+        v(l, g, !0);
         return;
       }
     });
@@ -343,7 +343,7 @@ const ee = (e, t) => {
       let y = !1;
       if (r += s[a - 1], e.test(r) && t.test(r) && (r = r.replace(
         e,
-        (g, k, C) => `${o}${a - 1}=${C || '"'}${k}${C ? "" : '"'}`
+        (g, A, C) => `${o}${a - 1}=${C || '"'}${A}${C ? "" : '"'}`
       ), y = !0), !y)
         switch (!0) {
           case Array.isArray(l):
@@ -360,10 +360,10 @@ const ee = (e, t) => {
         }
     }
     r += s[c - 1];
-    const d = v(r.trim());
+    const d = k(r.trim());
     return J(d, n), z(d, n), d;
   }, render: (s, n) => {
-    s && !s.children.length ? (s.innerHTML = "", s.appendChild(n)) : A(n, s, !1), m.forEach((r) => {
+    s && !s.children.length ? (s.innerHTML = "", s.appendChild(n)) : v(n, s, !1), m.forEach((r) => {
       r();
     }), m = [], b.forEach((r) => {
       r();
@@ -415,6 +415,7 @@ const ne = {
         h(this, "componentStyleTag", null);
         h(this, "internalSubscriptions", new Z());
         h(this, "isEmulated", !1);
+        h(this, "dataInputAttr", "");
         h(this, "renderCount", 0);
         h(this, "createProxyInstance", () => {
           const i = new j(this, this.shadow);
@@ -458,7 +459,7 @@ const ne = {
         e.shadowDomEncapsulation && B ? (this.isEmulated = !1, this.shadow = this.attachShadow({ mode: "open" }), this.shadow.adoptedStyleSheets = _.getComputedCss(
           e.styles,
           e.standalone
-        )) : (this.isEmulated = !1, this.shadow = this), this.createProxyInstance();
+        )) : (this.isEmulated = !1, this.shadow = this), this.dataInputAttr = this.getAttribute("data-input") || "", this.removeAttribute("data-input"), this.createProxyInstance();
       }
       static get observedAttributes() {
         return t.observedAttributes || [];
@@ -484,7 +485,7 @@ const ne = {
           x(window, "onLanguageChange", () => {
             this.update();
           })
-        ), (u = (i = this.klass).beforeMount) == null || u.call(i), this.update(), (m = (p = this.klass).mount) == null || m.call(p);
+        ), (u = (i = this.klass).beforeMount) == null || u.call(i), this.update(), (m = (p = this.klass).mount) == null || m.call(p), this.dataInputAttr && this.setProps(JSON.parse(this.dataInputAttr));
       }
       attributeChangedCallback(i, u, p) {
         var m, b;

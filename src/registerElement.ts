@@ -55,6 +55,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
       private componentStyleTag: HTMLStyleElement = null;
       private internalSubscriptions = new Subscriptions();
       private isEmulated = false;
+      private dataInputAttr = '';
       renderCount = 0;
 
       static get observedAttributes() {
@@ -74,6 +75,8 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
           this.isEmulated = false;
           this.shadow = this as unknown as ShadowRoot;
         }
+        this.dataInputAttr = this.getAttribute('data-input') || '';
+        this.removeAttribute('data-input');
         this.createProxyInstance();
       }
 
@@ -163,6 +166,9 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
         this.klass.beforeMount?.();
         this.update();
         this.klass.mount?.();
+        if (this.dataInputAttr) {
+          this.setProps(JSON.parse(this.dataInputAttr));
+        }
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {
