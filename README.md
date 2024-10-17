@@ -14,11 +14,7 @@
 [![GitHub watchers badge](https://img.shields.io/github/watchers/kiranmantha/plumejs?style=social)](https://github.com/kiranmantha/plumejs/watchers)
 [![GitHub stars badge](https://img.shields.io/github/stars/kiranmantha/plumejs.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/kiranmantha/plumejs/stargazers/)
 
-PlumeJs is a very light weight typescript framework to build spa's. It is build on more accessable web components, typescript. It comes with features like change detection during async operations, data-sharing via services and props, dependency injection.
-
-PlumeJs is a conceptual combination of angularjs and react. Just like angular one can register `Services`, `Components` and `life-cycle hooks`. It has `setProps` and `onbindprops` for passing data from one component to another and like react `update` function to update the view after modal updations and a `render` function to render the component.
-
-PlumeJs has very few syntaxes enabling faster learning curve.
+PlumeJs is a very light weight typescript framework to build spa's using webcomponents.
 
 ## Documentation
 
