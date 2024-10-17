@@ -24,7 +24,7 @@ const DEFAULT_COMPONENT_OPTIONS: ComponentDecoratorOptions = {
 const createStyleTag = (content: string, where: Node = null) => {
   const tag = document.createElement('style');
   tag.innerHTML = content;
-  where && where.appendChild(tag);
+  if (where) where.appendChild(tag);
   return tag;
 };
 
@@ -55,6 +55,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
       private componentStyleTag: HTMLStyleElement = null;
       private internalSubscriptions = new Subscriptions();
       private isEmulated = false;
+      private dataInputAttr = '';
       renderCount = 0;
 
       static get observedAttributes() {
@@ -74,6 +75,8 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
           this.isEmulated = false;
           this.shadow = this as unknown as ShadowRoot;
         }
+        this.dataInputAttr = this.getAttribute('data-input') || '';
+        this.removeAttribute('data-input');
         this.createProxyInstance();
       }
 
@@ -114,7 +117,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
             try {
               (this.klass[key] as Signal<unknown>).set(value || undefined);
             } catch (e) {
-              console.error(`Input ${key} of ${options.selector} should be a signal`);
+              console.error(`Input ${key} of ${options.selector} should be a signal`, e);
             }
           }
         }
@@ -147,7 +150,7 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
         this.internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e: CustomEvent) => {
             const propsObj = (e.detail as { props: Record<string, unknown> }).props;
-            propsObj && this.setProps(propsObj);
+            if (propsObj) this.setProps(propsObj);
           })
         );
         this.internalSubscriptions.add(
@@ -163,6 +166,9 @@ const registerElement = async (options: ComponentDecoratorOptions, target: Metad
         this.klass.beforeMount?.();
         this.update();
         this.klass.mount?.();
+        if (this.dataInputAttr) {
+          this.setProps(JSON.parse(this.dataInputAttr));
+        }
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {

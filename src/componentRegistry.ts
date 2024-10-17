@@ -16,6 +16,7 @@ const componentRegistry: IComponentRegistry = new (class implements IComponentRe
     try {
       this.globalStyles = new CSSStyleSheet();
     } catch (e) {
+      console.warn(e);
       this.globalStyles = '';
     }
 
